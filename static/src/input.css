@@ -1,0 +1,11 @@
+/* 1. Import the core framework */
+@import "tailwindcss";
+
+/* 2. Explicitly tell Tailwind where your HTML lives */
+@source "../../templates";
+
+/* 3. Define your custom theme colors directly in CSS */
+@theme {
+  --color-primary: #2563eb;
+  --color-dark: #0f172a;
+}

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find a Mentor | Base Template</title>
+    <link href="../static/css/output.css" rel="stylesheet" />
+  </head>
+  <body class="bg-slate-950 text-slate-300 font-sans min-h-screen">
+    <nav
+      class="flex items-center justify-between px-6 py-4 border-b border-slate-800"
+    >
+      <div class="flex items-center gap-2">
+        <div
+          class="w-8 h-8 bg-emerald-600 rounded-md flex items-center justify-center text-white font-bold"
+        >
+          A
+        </div>
+        <span class="text-xl font-bold text-white tracking-wide">Aegis</span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-6">
+        <a href="#" class="text-sm hover:text-white transition"
+          >For Departments</a
+        >
+        <a
+          href="/login"
+          class="text-sm text-white border border-slate-700 px-4 py-2 rounded-full hover:bg-slate-800 transition"
+          >Login</a
+        >
+        <a
+          href="#"
+          class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-full text-sm font-semibold transition"
+          >Browse all mentors</a
+        >
+      </div>
+    </nav>
+
+    <div
+      class="flex gap-8 px-6 py-3 border-b border-slate-800 text-sm overflow-x-auto whitespace-nowrap hide-scrollbar"
+    >
+      <a href="#" class="hover:text-white transition">Engineering Mentors</a>
+      <a href="#" class="hover:text-white transition">Design Mentors</a>
+      <a href="#" class="hover:text-white transition">Data Structures</a>
+      <a href="#" class="hover:text-white transition">Networking</a>
+      <a href="#" class="hover:text-white transition">Database Admins</a>
+    </div>
+
+    <main class="max-w-4xl mx-auto mt-24 px-6 text-center">
+      <h1
+        class="text-5xl md:text-6xl font-serif text-white mb-6 tracking-tight"
+      >
+        What do you want to achieve next?
+      </h1>
+      <p class="text-lg text-slate-400 mb-12">
+        Get practical guidance from a peer mentor who has already navigated the
+        path.
+      </p>
+
+      <div
+        class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-5 text-left shadow-2xl max-w-2xl mx-auto"
+      >
+        <div class="flex items-center border-b border-slate-700 pb-4 mb-4">
+          <input
+            type="text"
+            id="mentor-search"
+            placeholder="I need help with..."
+            class="w-full bg-transparent outline-none text-white text-lg placeholder-slate-500"
+          />
+          <button
+            class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-full transition flex-shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex gap-3 text-xs overflow-x-auto pb-1">
+          <span class="text-slate-500 font-semibold py-1.5 mr-2"
+            >Suggested:</span
+          >
+          <button
+            class="px-3 py-1.5 bg-slate-800 rounded-full hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+          >
+            Ace interviews
+          </button>
+          <button
+            class="px-3 py-1.5 bg-slate-800 rounded-full hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+          >
+            Learn Python
+          </button>
+          <button
+            class="px-3 py-1.5 bg-slate-800 rounded-full hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+          >
+            Review Code
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <section class="mt-24 mb-20 px-6 max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-600 transition group cursor-pointer mentor-card"
+          data-skills="python backend data structures"
+        >
+          <div class="aspect-[4/5] bg-slate-800 relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80 z-10"
+            ></div>
+          </div>
+
+          <div class="p-5 relative z-20 -mt-16">
+            <h3 class="font-bold text-xl text-white mentor-name">
+              Alex Johnson
+            </h3>
+            <p class="text-sm text-slate-400 mb-3">Senior Frontend Dev</p>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >Python</span
+              >
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >Backend</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-600 transition group cursor-pointer mentor-card"
+          data-skills="ui ux design html css"
+        >
+          <div class="aspect-[4/5] bg-slate-800 relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80 z-10"
+            ></div>
+          </div>
+          <div class="p-5 relative z-20 -mt-16">
+            <h3 class="font-bold text-xl text-white mentor-name">Sarah Lee</h3>
+            <p class="text-sm text-slate-400 mb-3">UI/UX Designer</p>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >UI/UX</span
+              >
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >HTML/CSS</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-600 transition group cursor-pointer mentor-card"
+          data-skills="ui ux design html css"
+        >
+          <div class="aspect-[4/5] bg-slate-800 relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80 z-10"
+            ></div>
+          </div>
+          <div class="p-5 relative z-20 -mt-16">
+            <h3 class="font-bold text-xl text-white mentor-name">Sarah Lee</h3>
+            <p class="text-sm text-slate-400 mb-3">UI/UX Designer</p>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >UI/UX</span
+              >
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >HTML/CSS</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-600 transition group cursor-pointer mentor-card"
+          data-skills="ui ux design html css"
+        >
+          <div class="aspect-[4/5] bg-slate-800 relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80 z-10"
+            ></div>
+          </div>
+          <div class="p-5 relative z-20 -mt-16">
+            <h3 class="font-bold text-xl text-white mentor-name">Sarah Lee</h3>
+            <p class="text-sm text-slate-400 mb-3">UI/UX Designer</p>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >UI/UX</span
+              >
+              <span
+                class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+                >HTML/CSS</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="/static/js/filters.js"></script>
+  </body>
+</html>
