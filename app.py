@@ -84,10 +84,11 @@ def login():
             data = request.get_json()
             email = data.get("email", "").strip().lower()
             password = data.get("password", "")
+            remember_me = data.get("rememberMe", False)
         else:
             email = request.form.get("email", "").strip().lower()
             password = request.form.get("password", "")
-
+            remember_me = request.form.get("rememberMe", False)
         # Validation
         if not email or not password:
             msg = "Email and password are required."
@@ -125,10 +126,19 @@ def login():
         # else:
         #     redirect_url = "/user/dashboard"
 
+        cookie_name = f"trusted_{email}"
+        is_trusted = request.cookies.get(cookie_name)
+
+        if is_trusted == "yes":
+            # BYPASS OTP! Log them straight in.
+            session["logged_in"] = True
+            return jsonify({"success": True, "redirect": "/"}), 200
+
         # Generate OTP
         otp_code = generate_otp()
 
         session["otp_email"] = email
+        session["remember_device"] = remember_me
         session["otp_code"] = otp_code
         session["otp_expiry"] = (
             int(time.time()) + 300
@@ -217,9 +227,17 @@ def login_otp():
         session.pop("otp_round", None)
         session["logged_in"] = True
 
-        return jsonify({"success": True, "redirect_url": "/"})
+        response = jsonify({"success": True, "redirect": "/"})
 
-    # 6. Wrong code (We don't increment here because we already did it at step 2)
+        if session.pop("remember_device", False):
+            cookie_name = f"trusted_{session['otp_email']}"
+            # max_age=2592000 is exactly 30 days in seconds (30 * 24 * 60 * 60)
+            # httponly=True prevents malicious JavaScript from stealing the cookie
+            response.set_cookie(cookie_name, "yes", max_age=2592000, httponly=True)
+
+        return response, 200
+
+    # 6. Wrong code
     return jsonify(
         {
             "success": False,
