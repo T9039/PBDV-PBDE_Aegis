@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
 
             // UI Feedback: Show a loading state
             const originalBtnText = submitBtn.textContent;
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password, rememberMe })
                 });
 
                 const data = await response.json();
