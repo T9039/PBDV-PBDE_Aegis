@@ -2,6 +2,7 @@ from flask import Flask
 
 from routes.auth import auth_bp
 from routes.main import main_bp
+from utils import seed_database
 
 app = Flask(__name__)
 
@@ -11,6 +12,9 @@ app.secret_key = "secret_super_development_key_for_testing"
 # Registering blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
+
+
+seed_database()
 
 
 # FUNCTIONS
