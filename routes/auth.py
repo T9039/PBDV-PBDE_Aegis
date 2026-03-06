@@ -12,6 +12,7 @@ from flask import (
 )
 
 from utils import (
+    CAMPUS_DB,
     generate_otp,
     get_user,
     is_valid_dut_email,
