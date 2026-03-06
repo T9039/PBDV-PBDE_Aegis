@@ -17,6 +17,7 @@ from utils import (
     get_user,
     is_valid_dut_email,
     send_email,
+    update_password,
     verify_credentials,
 )
 
@@ -216,7 +217,7 @@ def login_otp_resend():
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "GET":
-        return render_template("auth/forgot_password.html")
+        return render_template("auth/forgot-password.html")
 
     data = request.get_json(silent=True) or {}
     email = data.get("email")
@@ -244,3 +245,47 @@ def forgot_password():
 
     # We return the exact same success message regardless of if the email was in the DB
     return jsonify({"success": True, "message": success_message})
+
+
+@auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    # 1. Verify the token against what we saved in the session
+    session_token = session.get("reset_token")
+    email = session.get("reset_email")
+
+    # If the token doesn't match or is missing, they are using an invalid/expired link
+    if not session_token or session_token != token or not email:
+        if request.method == "GET":
+            # You can redirect to login or render an error page here
+            return render_template(
+                "auth/login.html", error="Invalid or expired reset link."
+            )
+        return jsonify(
+            {"success": False, "message": "Invalid or expired reset link."}
+        ), 400
+
+    # 2. Handle the GET request (Show the form)
+    if request.method == "GET":
+        return render_template("auth/reset-password.html", token=token)
+
+    # 3. Handle the POST request (Save the new password)
+    data = request.get_json(silent=True) or {}
+    new_password = data.get("password")
+
+    if update_password(email, new_password):
+        # Security: Destroy the token so it can't be used twice
+        session.pop("reset_token", None)
+        session.pop("reset_email", None)
+        session.modified = True
+
+        return jsonify(
+            {
+                "success": True,
+                "redirect_url": "/login",
+                "message": "Password updated successfully!",
+            }
+        )
+
+    return jsonify(
+        {"success": False, "message": "Failed to update password. User not found."}
+    ), 500
