@@ -1,8 +1,23 @@
 import time
+import uuid
 
-from flask import Blueprint, jsonify, redirect, render_template, request, session
+from flask import (
+    Blueprint,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
-from utils import generate_otp, is_valid_dut_email, send_email
+from utils import (
+    generate_otp,
+    get_user,
+    is_valid_dut_email,
+    send_email,
+    verify_credentials,
+)
 
 # Create the blueprint
 auth_bp = Blueprint("auth", __name__)
@@ -34,19 +49,19 @@ def login():
                 return jsonify({"success": False, "message": msg}), 400
             return msg, 400
 
-        # user = User.query.filter_by(user_email=email).first()
-        #
-        # # Check credentials
-        # if not user or not user.check_pass_hash(password):
-        #     msg = "Invalid email or password."
-        #     if request.is_json:
-        #         return jsonify({"success": False, "message": msg}), 401
-        #     return msg, 401
-        #
-        # # ✅ Store session data safely
-        # session["user_id"] = user.user_id
-        # session["email"] = user.user_email
-        # session["role"] = user.user_role.value  # <-- FIXED HERE
+        if not verify_credentials(email, password):
+            return jsonify(
+                {"success": False, "message": "Invalid campus email or password."}
+            ), 401
+
+        # 2. Fetch the user's details safely (Replaces your old User.query)
+        user = get_user(email) or {}
+
+        # 3. Store session data safely
+        session["email"] = email
+        session["role"] = user.get("role")
+        session["full_name"] = user.get("full_name")
+        session["is_profile_complete"] = user.get("is_profile_complete")
         #
         # # ✅ Decide redirect URL based on role
         # role_value = user.user_role.value.lower()
@@ -197,9 +212,34 @@ def login_otp_resend():
     return jsonify({"success": True, "message": f"New OTP sent to {otp_email}"}), 200
 
 
-# @auth_bp.route("/forgot-password", methods=["GET", "POST"])
-# def forgot_password():
-#     if request.method == "GET":
-#         return render_template("auth/forgot_password.html")
-#     # Logic for verifying email and sending reset link goes here
-#     return jsonify({"success": True, "message": "Reset link sent if email exists."})
+@auth_bp.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "GET":
+        return render_template("auth/forgot_password.html")
+
+    data = request.get_json(silent=True) or {}
+    email = data.get("email")
+
+    # Security Best Practice: Never tell the user if the email exists or not.
+    # It prevents attackers from "guessing" which students have accounts.
+    success_message = "If an account matches that email, a reset link has been sent."
+
+    if email in CAMPUS_DB:
+        # 1. Generate a unique, random token
+        reset_token = str(uuid.uuid4())
+
+        # 2. Store it in the session so we can verify it later
+        session["reset_token"] = reset_token
+        session["reset_email"] = email
+        session.modified = True
+
+        # 3. Create the fully qualified URL to send in the email
+        # _external=True ensures it includes http://127.0.0.1:5000 in the link
+        reset_link = url_for("auth.reset_password", token=reset_token, _external=True)
+
+        # 4. Send it to Mailtrap
+        email_body = f"Hello,\n\nYou requested a password reset for Aegis.\n\nClick the link below to set a new password:\n{reset_link}\n\nIf you did not request this, please ignore this email."
+        send_email(email, "Aegis - Password Reset Request", email_body)
+
+    # We return the exact same success message regardless of if the email was in the DB
+    return jsonify({"success": True, "message": success_message})
