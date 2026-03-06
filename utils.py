@@ -17,7 +17,7 @@ CAMPUS_DB = {}
 def seed_database():
     """Populates the dummy database with initial users."""
     add_user(
-        email="22012345@student.dut4life.ac.za",
+        email="22012345@dut4life.ac.za",
         plain_password="password123",
         full_name="Thuto",
         role="student",
@@ -90,6 +90,14 @@ def verify_credentials(email, plain_password):
     return check_password_hash(user["password_hash"], plain_password)
 
 
+def update_password(email, new_plain_password):
+    """Updates a user's password with a fresh hash."""
+    if email in CAMPUS_DB:
+        CAMPUS_DB[email]["password_hash"] = generate_password_hash(new_plain_password)
+        return True
+    return False
+
+
 # FUNCTIONS
 def generate_otp():
     return str(random.randint(100000, 999999))
@@ -136,7 +144,3 @@ def is_valid_dut_email(email: str) -> bool:
         return True
     except EmailNotValidError:
         return False
-
-
-# Initialize the dummy data when this file is imported
-seed_database()
