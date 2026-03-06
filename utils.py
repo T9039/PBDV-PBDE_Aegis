@@ -3,6 +3,91 @@ import smtplib
 import socket
 
 from email_validator import EmailNotValidError, validate_email
+from werkzeug.security import check_password_hash, generate_password_hash
+
+# -------------------------------------------------------------------
+# MOCK DATABASE SETUP
+# -------------------------------------------------------------------
+
+# We define the dictionary, but we will populate it using a function
+# so the passwords get hashed properly when the app starts.
+CAMPUS_DB = {}
+
+
+def seed_database():
+    """Populates the dummy database with initial users."""
+    add_user(
+        email="22012345@student.dut4life.ac.za",
+        plain_password="password123",
+        full_name="Thuto",
+        role="student",
+        department="ICT",
+    )
+    add_user(
+        email="alex@dut.ac.za",
+        plain_password="admin",
+        full_name="Alex Johnson",
+        role="mentor",
+        department="Computer Science",
+        is_profile_complete=True,  # Alex already set up their profile
+    )
+
+
+# -------------------------------------------------------------------
+# DATABASE HELPER FUNCTIONS (CRUD & Auth)
+# -------------------------------------------------------------------
+
+
+def add_user(
+    email,
+    plain_password,
+    full_name,
+    role="student",
+    department="",
+    is_profile_complete=False,
+):
+    """Adds a new user to the mock database with a securely hashed password."""
+    if email in CAMPUS_DB:
+        return False, "User already exists"
+
+    CAMPUS_DB[email] = {
+        "password_hash": generate_password_hash(plain_password),
+        "full_name": full_name,
+        "role": role,
+        "department": department,
+        "is_profile_complete": is_profile_complete,
+    }
+    return True, "User created successfully"
+
+
+def delete_user(email):
+    """Removes a user from the mock database."""
+    if email in CAMPUS_DB:
+        del CAMPUS_DB[email]
+        return True
+    return False
+
+
+def get_user(email):
+    """Retrieves a user's data without exposing the password hash."""
+    user = CAMPUS_DB.get(email)
+    if not user:
+        return None
+
+    # Return a copy of the data WITHOUT the password hash for safety
+    safe_user_data = user.copy()
+    safe_user_data.pop("password_hash", None)
+    return safe_user_data
+
+
+def verify_credentials(email, plain_password):
+    """Checks if the email exists and the password matches the hash."""
+    user = CAMPUS_DB.get(email)
+    if not user:
+        return False  # Email not found
+
+    # check_password_hash does the heavy lifting of comparing the plain text to the hash
+    return check_password_hash(user["password_hash"], plain_password)
 
 
 # FUNCTIONS
@@ -51,3 +136,7 @@ def is_valid_dut_email(email: str) -> bool:
         return True
     except EmailNotValidError:
         return False
+
+
+# Initialize the dummy data when this file is imported
+seed_database()
