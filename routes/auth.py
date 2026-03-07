@@ -300,3 +300,18 @@ def reset_password(token):
     return jsonify(
         {"success": False, "message": "Failed to update password. User not found."}
     ), 500
+
+
+@auth_bp.route("/logout")
+def logout():
+    user_email = session.get("email")
+
+    session.clear()
+
+    response = redirect("/")
+
+    if user_email:
+        cookie_name = f"trusted_{user_email}"
+        response.delete_cookie(cookie_name)
+
+    return response
