@@ -1,5 +1,6 @@
-/* 1. Import the core framework */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* 2. Explicitly tell Tailwind where your HTML lives */
 @source "../../templates";
