@@ -53,7 +53,7 @@ def login():
 
         if not verify_credentials(email, password):
             return jsonify(
-                {"success": False, "message": "Invalid campus email or password."}
+                {"success": False, "error": "Invalid campus email or password."}
             ), 401
 
         # 2. Fetch the user's details safely (Replaces your old User.query)
@@ -81,6 +81,10 @@ def login():
         if is_trusted == "yes":
             # BYPASS OTP! Log them straight in.
             session["logged_in"] = True
+
+            # user_role = session.get("role", "student")
+            # target_url = "/mentor" if user_role == "mentor" else "/student"
+
             return jsonify({"success": True, "redirect": "/"}), 200
 
         # Generate OTP
@@ -132,8 +136,10 @@ def login_otp():
     if otp_expiry_timestamp is None:
         return jsonify(
             {
-                "message": "Session expired or invalid. Please log in again.",
+                "error": "Session expired or invalid. Please log in again.",
                 "success": False,
+                "server_time": int(time.time()),  # Current time
+                "expiry": otp_expiry_timestamp,
             }
         ), 400
 
@@ -146,7 +152,7 @@ def login_otp():
     # 3. Timezone-proof expiry check
     if int(time.time()) > otp_expiry_timestamp:
         return jsonify(
-            {"success": False, "message": "OTP expired. Please request a new one."}
+            {"success": False, "error": "OTP expired. Please request a new one."}
         )
 
     # 4. Handle Max Attempts
@@ -165,16 +171,21 @@ def login_otp():
 
         send_email(session["otp_email"], "Your OTP Code", f"Your OTP is {new_otp}")
         return jsonify(
-            {"success": False, "message": "Too many attempts. A new OTP has been sent."}
+            {"success": False, "error": "Too many attempts. A new OTP has been sent."}
         )
 
     # 5. Check Code (Cast both to strings just in case JS sends an int)
     if str(otp_input).strip() == str(otp_code).strip():
+        user_role = session.get("role", "student")
+
         session.pop("otp_code", None)
         session.pop("otp_expiry", None)
         session.pop("otp_attempts", None)
         session.pop("otp_round", None)
         session["logged_in"] = True
+
+        # Role based redirect
+        target_url = "/mentor" if user_role == "mentor" else "/student"
 
         response = jsonify({"success": True, "redirect": "/"})
 
@@ -190,7 +201,7 @@ def login_otp():
     return jsonify(
         {
             "success": False,
-            "message": f"Incorrect code. Attempt {current_attempts} of 3.",
+            "error": f"Incorrect code. Attempt {current_attempts} of 3.",
         }
     )
 
