@@ -42,12 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await response.json();
 
-                if (response.ok && data.redirect_url) {
+                if (response.ok && data.redirect) {
                     // Success! The server validated the OTP and told us where to go next.
-                    window.location.href = data.redirect_url;
+                    window.location.href = data.redirect;
                 } else {
                     // Failure! (e.g., Wrong OTP, expired OTP)
-                    console.log(data.expiry)
+                    console.log("Server time:", data.server_time, "Expiry:", data.expiry)
                     otpAlert.textContent = data.error || 'Invalid verification code. Please try again.';
                     otpAlert.classList.remove('hidden');
                     
