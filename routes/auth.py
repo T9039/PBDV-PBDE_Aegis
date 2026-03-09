@@ -11,8 +11,8 @@ from flask import (
     url_for,
 )
 
+from models import User
 from utils import (
-    CAMPUS_DB,
     generate_otp,
     get_user,
     is_valid_dut_email,
@@ -60,8 +60,9 @@ def login():
         user = get_user(email) or {}
 
         # 3. Store session data safely
-        session["email"] = email
-        session["role"] = user.get("role")
+        session["email"] = user.get("email")
+        session["campus_role"] = user.get("campus_role")
+        session["mentor_status"] = user.get("mentor_status")
         session["full_name"] = user.get("full_name")
         session["is_profile_complete"] = user.get("is_profile_complete")
         #
@@ -210,7 +211,9 @@ def login_otp():
 def login_otp_resend():
     otp_email = session.get("otp_email")
     if not otp_email:
-        return jsonify({"success": False, "message": "No email in session"}), 400
+        return jsonify(
+            {"success": False, "message": "No email in session. Please log in again."}
+        ), 400
 
     new_otp = generate_otp()
     session["otp_code"] = new_otp
@@ -220,7 +223,16 @@ def login_otp_resend():
     session["otp_attempts"] = 0
     session["otp_round"] = session.get("otp_round", 1) + 1
 
-    send_email(otp_email, "Your OTP Code", f"Your OTP is {new_otp}")
+    # Capture the return value (True or False)
+    email_sent = send_email(
+        otp_email, "Your OTP Code", f"Your OTP is {new_otp}. It expires in 5 minutes."
+    )
+
+    # If send_email returned False, tell the frontend it failed!
+    if not email_sent:
+        return jsonify(
+            {"success": False, "message": "Failed to send OTP email. Please try again."}
+        ), 500
 
     return jsonify({"success": True, "message": f"New OTP sent to {otp_email}"}), 200
 
@@ -237,7 +249,10 @@ def forgot_password():
     # It prevents attackers from "guessing" which students have accounts.
     success_message = "If an account matches that email, a reset link has been sent."
 
-    if email in CAMPUS_DB:
+    # --- REAL DATABASE QUERY START ---
+    user = User.query.filter_by(email=email).first()
+
+    if user:
         # 1. Generate a unique, random token
         reset_token = str(uuid.uuid4())
 
@@ -251,8 +266,9 @@ def forgot_password():
         reset_link = url_for("auth.reset_password", token=reset_token, _external=True)
 
         # 4. Send it to Mailtrap
-        email_body = f"Hello,\n\nYou requested a password reset for Aegis.\n\nClick the link below to set a new password:\n{reset_link}\n\nIf you did not request this, please ignore this email."
+        email_body = f"Hello {user.full_name},\n\nYou requested a password reset for Aegis.\n\nClick the link below to set a new password:\n{reset_link}\n\nIf you did not request this, please ignore this email."
         send_email(email, "Aegis - Password Reset Request", email_body)
+    # --- REAL DATABASE QUERY END ---
 
     # We return the exact same success message regardless of if the email was in the DB
     return jsonify({"success": True, "message": success_message})
@@ -283,6 +299,7 @@ def reset_password(token):
     data = request.get_json(silent=True) or {}
     new_password = data.get("password")
 
+    # This now safely writes to MariaDB because we updated it in utils.py!
     if update_password(email, new_password):
         # Security: Destroy the token so it can't be used twice
         session.pop("reset_token", None)

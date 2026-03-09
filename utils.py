@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from email_validator import EmailNotValidError, validate_email
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from models import CampusRole, MentorStatus, User, db
+
 # -------------------------------------------------------------------
 # MOCK DATABASE SETUP
 # -------------------------------------------------------------------
@@ -16,23 +18,23 @@ from werkzeug.security import check_password_hash, generate_password_hash
 CAMPUS_DB = {}
 
 
-def seed_database():
-    """Populates the dummy database with initial users."""
-    add_user(
-        email="22012345@dut4life.ac.za",
-        plain_password="password123",
-        full_name="Thuto",
-        role="student",
-        department="ICT",
-    )
-    add_user(
-        email="alex@dut.ac.za",
-        plain_password="admin",
-        full_name="Alex Johnson",
-        role="mentor",
-        department="Computer Science",
-        is_profile_complete=True,  # Alex already set up their profile
-    )
+# def seed_database():
+#     """Populates the dummy database with initial users."""
+#     add_user(
+#         email="22012345@dut4life.ac.za",
+#         plain_password="password123",
+#         full_name="Thuto",
+#         role="student",
+#         department="ICT",
+#     )
+#     add_user(
+#         email="alex@dut.ac.za",
+#         plain_password="admin",
+#         full_name="Alex Johnson",
+#         role="mentor",
+#         department="Computer Science",
+#         is_profile_complete=True,  # Alex already set up their profile
+#     )
 
 
 # -------------------------------------------------------------------
@@ -45,58 +47,100 @@ def add_user(
     plain_password,
     full_name,
     role="student",
-    department="",
     is_profile_complete=False,
 ):
-    """Adds a new user to the mock database with a securely hashed password."""
-    if email in CAMPUS_DB:
+    """Adds a new user to the MariaDB database with a securely hashed password."""
+
+    # 1. Check if the user already exists to prevent duplicate entries
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
         return False, "User already exists"
 
-    CAMPUS_DB[email] = {
-        "password_hash": generate_password_hash(plain_password),
-        "full_name": full_name,
-        "role": role,
-        "department": department,
-        "is_profile_complete": is_profile_complete,
-    }
-    return True, "User created successfully"
+    # 2. Convert the string role into our strict CampusRole Enum
+    mapped_role = CampusRole.STAFF if role.lower() == "staff" else CampusRole.STUDENT
+
+    # 3. Create the SQLAlchemy User object
+    new_user = User(
+        email=email,
+        password_hash=generate_password_hash(plain_password),
+        full_name=full_name,
+        campus_role=mapped_role,
+        mentor_status=MentorStatus.NONE,
+    )
+
+    # Manually set fields not handled by the __init__ constructor
+    new_user.is_profile_complete = is_profile_complete
+
+    # 4. Save to the database safely
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return True, "User created successfully"
+    except Exception as e:
+        db.session.rollback()  # Cancel the transaction if it crashes
+        print(f"Error adding user to DB: {e}")
+        return False, "Database error occurred"
 
 
 def delete_user(email):
-    """Removes a user from the mock database."""
-    if email in CAMPUS_DB:
-        del CAMPUS_DB[email]
-        return True
+    """Removes a user from the MariaDB database."""
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting user from DB: {e}")
+            return False
+
     return False
 
 
 def get_user(email):
-    """Retrieves a user's data without exposing the password hash."""
-    user = CAMPUS_DB.get(email)
-    if not user:
-        return None
+    """Fetches a user from the DB and returns their data as a dictionary."""
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return {
+            "email": user.email,
+            "campus_role": user.campus_role.value,  # student or staff
+            "mentor_status": user.mentor_status.value,  # none, pending, approved
+            "full_name": user.full_name,
+            "is_profile_complete": user.is_profile_complete,
+        }
+    return None
 
-    # Return a copy of the data WITHOUT the password hash for safety
-    safe_user_data = user.copy()
-    safe_user_data.pop("password_hash", None)
-    return safe_user_data
 
-
-def verify_credentials(email, plain_password):
-    """Checks if the email exists and the password matches the hash."""
-    user = CAMPUS_DB.get(email)
-    if not user:
-        return False  # Email not found
-
-    # check_password_hash does the heavy lifting of comparing the plain text to the hash
-    return check_password_hash(user["password_hash"], plain_password)
+def verify_credentials(email, password):
+    """Checks if the email exists in the DB and the password matches the hash."""
+    user = User.query.filter_by(email=email).first()
+    if user and check_password_hash(user.password_hash, password):
+        return True
+    return False
 
 
 def update_password(email, new_plain_password):
-    """Updates a user's password with a fresh hash."""
-    if email in CAMPUS_DB:
-        CAMPUS_DB[email]["password_hash"] = generate_password_hash(new_plain_password)
-        return True
+    """Updates a user's password with a fresh hash in the database."""
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        try:
+            # 1. Generate the new hash and assign it to the user object
+            user.password_hash = generate_password_hash(new_plain_password)
+
+            # 2. Commit the transaction to save it permanently in MariaDB
+            db.session.commit()
+            return True
+
+        except Exception as e:
+            # If the database crashes during the save, roll back the transaction
+            # so we don't accidentally corrupt the table.
+            db.session.rollback()
+            print(f"Error updating password in DB: {e}")
+            return False
+
     return False
 
 
