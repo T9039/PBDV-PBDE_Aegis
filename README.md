@@ -23,7 +23,7 @@ Before you start, make sure you have the following installed on your machine:
 Pull the latest code to your local machine:
 
 ```bash
-git clone <https://github.com/T9039/PBDV-PBDE_Aegis.git>
+git clone https://github.com/T9039/PBDV-PBDE_Aegis.git
 cd Aegis
 ```
 
