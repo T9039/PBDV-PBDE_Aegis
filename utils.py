@@ -1,7 +1,9 @@
+import os
 import random
 import smtplib
 import socket
 
+from dotenv import load_dotenv
 from email_validator import EmailNotValidError, validate_email
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -103,26 +105,38 @@ def generate_otp():
     return str(random.randint(100000, 999999))
 
 
+load_dotenv(override=True)
+
+
 def send_email(to_email, subject, body):
+    # 1. Pull credentials dynamically from the .env file
+    mailtrap_user = os.getenv("MAILTRAP_USERNAME")
+    mailtrap_pass = os.getenv("MAILTRAP_PASSWORD")
+
+    print(f"🔥 DEBUG: Sending as user -> {mailtrap_user}")
+    if not mailtrap_user or not mailtrap_pass:
+        print("Error: Mailtrap credentials missing from .env file!")
+        return False
+
     try:
         socket.create_connection(("smtp.mailtrap.io", 587), timeout=5)
-        print("Can reach Mailtrap SMTP!")
     except Exception as e:
         print("Cannot connect to Mailtrap:", e)
-
-    """
-    Simplest option: use Gmail SMTP or Mailtrap.io (free).
-    For a school project you can hardcode Mailtrap credentials.
-    """
-    from_email = "aa66b1448e7173"
-    from_password = "370f53b9a831dc"
 
     try:
         with smtplib.SMTP("smtp.mailtrap.io", 587) as server:
             server.starttls()
-            server.login(from_email, from_password)
-            message = f"Subject: {subject}\n\n{body}"
-            server.sendmail(from_email, to_email, message)
+            # 2. Authenticate using the dynamic credentials
+            server.login(mailtrap_user, mailtrap_pass)
+
+            # 3. Format proper email headers
+            sender_email = "auth@aegis.local"
+            message = (
+                f"Subject: {subject}\nFrom: {sender_email}\nTo: {to_email}\n\n{body}"
+            )
+
+            server.sendmail(sender_email, to_email, message)
+
         return True
     except Exception as e:
         print("Email send failed:", e)
