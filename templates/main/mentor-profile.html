@@ -50,7 +50,8 @@
           <form
             action="/mentor/complete-profile"
             method="POST"
-            class="space-y-6"
+            enctype="multipart/form-data"
+            class="space-y-8"
           >
             <div
               class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-950/50 border border-slate-800 rounded-xl"
@@ -95,74 +96,198 @@
               </div>
             </div>
 
-            <div class="space-y-4">
-              <div>
-                <label
-                  for="full_name"
-                  class="block text-sm font-medium text-slate-300 mb-1"
-                  >Full Name <span class="text-amber-500">*</span></label
-                >
-                <input
-                  type="text"
-                  id="full_name"
-                  name="full_name"
-                  value="{{ session.get('full_name') or '' }}"
-                  required
-                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-600"
-                  placeholder="e.g., Jane Doe"
-                />
-              </div>
+            <div>
+              <h3
+                class="text-sm font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-2 mb-4"
+              >
+                Public Profile (Seen by Students)
+              </h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      for="full_name"
+                      class="block text-sm font-medium text-slate-300 mb-1"
+                      >Full Name <span class="text-amber-500">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="full_name"
+                      name="full_name"
+                      value="{{ session.get('full_name') or '' }}"
+                      required
+                      class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-500"
+                      placeholder="e.g., Jane Doe"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="year_of_study"
+                      class="block text-sm font-medium text-slate-300 mb-1"
+                      >Year of Study
+                      <span class="text-amber-500">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="year_of_study"
+                      name="year_of_study"
+                      required
+                      class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-500"
+                      placeholder="e.g., 3rd Year, Alumni, Staff"
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <label
-                  for="subjects"
-                  class="block text-sm font-medium text-slate-300 mb-1"
-                  >Subjects You Can Teach
-                  <span class="text-amber-500">*</span></label
-                >
-                <input
-                  type="text"
-                  id="subjects"
-                  name="subjects"
-                  required
-                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-600"
-                  placeholder="e.g., Mathematics I, Web Development"
-                />
-              </div>
+                <div>
+                  <label
+                    for="subjects"
+                    class="block text-sm font-medium text-slate-300 mb-1"
+                    >Subjects You Teach
+                    <span class="text-amber-500">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="subjects"
+                    name="subjects"
+                    required
+                    class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-500"
+                    placeholder="e.g., Mathematics I, Web Development"
+                  />
+                </div>
 
-              <div>
-                <label
-                  for="motivation"
-                  class="block text-sm font-medium text-slate-300 mb-1"
-                  >Why do you want to be a mentor?
-                  <span class="text-amber-500">*</span></label
-                >
-                <textarea
-                  id="motivation"
-                  name="motivation"
-                  rows="3"
-                  required
-                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-600"
-                  placeholder="I enjoy helping my peers understand complex topics..."
-                ></textarea>
-              </div>
+                <div>
+                  <label
+                    for="experience"
+                    class="block text-sm font-medium text-slate-300 mb-1"
+                    >Experience <span class="text-amber-500">*</span></label
+                  >
+                  <textarea
+                    id="experience"
+                    name="experience"
+                    rows="2"
+                    required
+                    class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-500"
+                    placeholder="What makes you a great mentor? e.g., Got 90% in Math I, won 2 hackathons..."
+                  ></textarea>
+                </div>
 
-              <div>
-                <label
-                  for="bio"
-                  class="block text-sm font-medium text-slate-300 mb-1"
-                  >Short Bio
-                  <span class="text-slate-500 text-xs font-normal"
-                    >(Optional)</span
-                  ></label
+                <div>
+                  <label
+                    for="bio"
+                    class="block text-sm font-medium text-slate-300 mb-1"
+                    >Short Bio
+                    <span class="text-slate-500 text-xs font-normal"
+                      >(Optional)</span
+                    ></label
+                  >
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    rows="2"
+                    class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-500"
+                    placeholder="Tell students a bit about your teaching style..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3
+                class="text-sm font-bold text-amber-500 uppercase tracking-wider border-b border-slate-800 pb-2 mb-4"
+              >
+                Verification Details (Admins Only)
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label
+                    for="motivation"
+                    class="block text-sm font-medium text-slate-300 mb-1"
+                    >Motivation <span class="text-amber-500">*</span></label
+                  >
+                  <textarea
+                    id="motivation"
+                    name="motivation"
+                    rows="2"
+                    required
+                    class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-500"
+                    placeholder="Why do you want to be a mentor for Aegis?"
+                  ></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      for="linkedin_url"
+                      class="block text-sm font-medium text-slate-300 mb-1"
+                      >LinkedIn URL
+                      <span class="text-slate-500 text-xs font-normal"
+                        >(Optional)</span
+                      ></label
+                    >
+                    <input
+                      type="url"
+                      id="linkedin_url"
+                      name="linkedin_url"
+                      class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-500"
+                      placeholder="https://linkedin.com/in/..."
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="certifications"
+                      class="block text-sm font-medium text-slate-300 mb-1"
+                      >Certifications
+                      <span class="text-slate-500 text-xs font-normal"
+                        >(Optional)</span
+                      ></label
+                    >
+                    <input
+                      type="text"
+                      id="certifications"
+                      name="certifications"
+                      class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-500"
+                      placeholder="e.g., AWS Cloud Practitioner"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950/30 p-4 rounded-xl border border-slate-800"
                 >
-                <textarea
-                  id="bio"
-                  name="bio"
-                  rows="2"
-                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-600"
-                  placeholder="Tell students a bit about your teaching style..."
-                ></textarea>
+                  <div>
+                    <label
+                      for="cv_file"
+                      class="block text-sm font-medium text-slate-300 mb-1"
+                      >Upload CV (PDF)
+                      <span class="text-amber-500">*</span></label
+                    >
+                    <input
+                      type="file"
+                      id="cv_file"
+                      name="cv_file"
+                      accept=".pdf"
+                      required
+                      class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 transition cursor-pointer"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="transcript_file"
+                      class="block text-sm font-medium text-slate-300 mb-1"
+                      >Academic Transcript (PDF)
+                      <span class="text-slate-500 text-xs font-normal"
+                        >(Optional)</span
+                      ></label
+                    >
+                    <input
+                      type="file"
+                      id="transcript_file"
+                      name="transcript_file"
+                      accept=".pdf"
+                      class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600 transition cursor-pointer"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -176,7 +301,7 @@
                 type="submit"
                 class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-8 rounded-xl transition shadow-lg shadow-emerald-900/20"
               >
-                Save & Continue
+                Submit Application
               </button>
             </div>
           </form>

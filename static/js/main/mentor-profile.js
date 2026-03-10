@@ -33,34 +33,31 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (profileForm) {
     profileForm.addEventListener('submit', async (e) => {
-      e.preventDefault(); // Stop the browser from refreshing the page
+      e.preventDefault(); 
       
-      // Grab the submit button so we can show a loading state
       const submitBtn = profileForm.querySelector('button[type="submit"]');
       const originalText = submitBtn.innerText;
-      submitBtn.innerText = "Saving...";
+      submitBtn.innerText = "Uploading Application...";
       submitBtn.disabled = true;
 
-      // Convert the form fields into a JSON object
+      // 1. Grab all the data, INCLUDING the files, straight from the form
       const formData = new FormData(profileForm);
-      const data = Object.fromEntries(formData.entries());
 
       try {
         const response = await fetch('/mentor/complete-profile', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
+          // 2. CRITICAL: Do NOT set the 'Content-Type' header here. 
+          // The browser will automatically set it to 'multipart/form-data' 
+          // and inject the required boundary string for the files.
+          body: formData
         });
 
         const result = await response.json();
 
         if (result.success) {
-          // Success! Reload the page to permanently hide the modal and update the UI
           window.location.reload();
         } else {
-          alert(result.error || "Something went wrong saving your profile.");
+          alert(result.error || result.message || "Something went wrong saving your profile.");
           submitBtn.innerText = originalText;
           submitBtn.disabled = false;
         }

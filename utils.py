@@ -2,12 +2,16 @@ import os
 import random
 import smtplib
 import socket
+import uuid
+from datetime import datetime
 
 from dotenv import load_dotenv
 from email_validator import EmailNotValidError, validate_email
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from models import CampusRole, MentorStatus, User, db
+
+BASE_UPLOAD_FOLDER = "uploads"
 
 # -------------------------------------------------------------------
 # MOCK DATABASE SETUP
@@ -202,3 +206,38 @@ def is_valid_dut_email(email: str) -> bool:
         return True
     except EmailNotValidError:
         return False
+
+
+def save_uploaded_file(file_obj, user_id, user_role, category, sub_category):
+    """
+    Saves a file into a structured directory: uploads/<category>/<sub_category>/
+    Example Output: uploads/documents/cvs/staff_5_20260310_a1b2c3_resume.pdf
+    """
+    if not file_obj or file_obj.filename == "":
+        return None
+
+    # 1. Build the nested directory path (e.g., "uploads/documents/cvs")
+    target_dir = os.path.join(BASE_UPLOAD_FOLDER, category, sub_category)
+    os.makedirs(target_dir, exist_ok=True)
+
+    # 2. Extract ONLY the file extension (e.g., '.pdf') and make it lowercase
+    _, ext = os.path.splitext(file_obj.filename)
+    ext = ext.lower()
+
+    # 3. Create the strictly controlled filename
+    # Format: {role}_{id}_{date}_{uuid}{extension}
+    date_str = datetime.now().strftime("%Y%m%d")
+    unique_hash = uuid.uuid4().hex[:8]
+
+    new_filename = f"{user_role}_{user_id}_{date_str}_{unique_hash}{ext}"
+
+    # 4. Build the full save path
+    file_path = os.path.join(target_dir, new_filename)
+
+    # 5. Save the file
+    file_obj.save(file_path)
+
+    # 6. Return the clean path for the database
+    db_path = f"{category}/{sub_category}/{new_filename}"
+
+    return db_path
