@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Mentor Portal | Aegis{% endblock %}</title>
+    <link
+      href="{{ url_for('static', filename='css/output.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-slate-950 text-slate-300 font-sans min-h-screen relative overflow-x-hidden"
+  >
+    <div
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-900/20 blur-[120px] rounded-full pointer-events-none z-0"
+    ></div>
+
+    <div class="pt-6 px-6 relative z-50 max-w-6xl mx-auto">
+      <nav
+        class="flex items-center justify-between px-6 py-3 bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-full shadow-lg"
+      >
+        <div class="flex items-center gap-2">
+          <div
+            class="w-7 h-7 bg-emerald-600 rounded flex items-center justify-center text-white font-bold text-sm"
+          >
+            A
+          </div>
+          <span class="text-lg font-bold text-white tracking-wide">Aegis</span>
+        </div>
+
+        <div class="hidden md:flex items-center gap-8">
+          <a
+            href="/mentor/dashboard"
+            class="text-sm text-slate-300 hover:text-white transition"
+            >Dashboard</a
+          >
+          <a
+            href="/mentor/profile"
+            class="text-sm text-slate-300 hover:text-white transition"
+            >My Profile</a
+          >
+          <a href="#" class="text-sm text-slate-300 hover:text-white transition"
+            >Students</a
+          >
+        </div>
+
+        <div class="flex items-center gap-4">
+          {% if not session.get('is_profile_complete') %}
+          <button
+            onclick="openProfileModal()"
+            class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-5 py-2 rounded-full text-sm font-bold transition shadow-lg shadow-amber-900/20 flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="w-4 h-4"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Complete Profile
+          </button>
+          {% else %}
+          <span class="text-emerald-400 text-sm font-semibold px-4"
+            >Awaiting approval</span
+          >
+          {% endif %}
+
+          <a
+            href="/logout"
+            title="Sign Out"
+            class="hidden sm:flex items-center justify-center p-2.5 rounded-full border border-transparent text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all group"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="group-hover:translate-x-0.5 transition-transform duration-200"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </div>
+
+
+    <div class="relative z-10">{% block content %} {% endblock %}</div>
+    {% block modals %}
+        {% endblock %}
+
+    <div id="toast-container" class="fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script> 
+
+    {% block scripts %} {% endblock %}
+
+  </body>
+</html>

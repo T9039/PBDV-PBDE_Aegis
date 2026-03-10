@@ -84,7 +84,7 @@ def login():
             session["logged_in"] = True
 
             campus_role = session.get("campus_role", "student").lower()
-            target_url = "/student" if campus_role == "student" else "/mentor"
+            target_url = "/student" if campus_role == "student" else "/mentor/dashboard"
 
             return jsonify({"success": True, "redirect": target_url}), 200
 
@@ -186,7 +186,7 @@ def login_otp():
         session["logged_in"] = True
 
         # Role based redirect
-        target_url = "/student" if campus_role == "student" else "/mentor"
+        target_url = "/student" if campus_role == "student" else "/mentor/dashboard"
 
         response = jsonify({"success": True, "redirect": target_url})
 
