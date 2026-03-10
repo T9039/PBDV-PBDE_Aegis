@@ -83,10 +83,10 @@ def login():
             # BYPASS OTP! Log them straight in.
             session["logged_in"] = True
 
-            # user_role = session.get("role", "student")
-            # target_url = "/mentor" if user_role == "mentor" else "/student"
+            campus_role = session.get("campus_role", "student").lower()
+            target_url = "/student" if campus_role == "student" else "/mentor"
 
-            return jsonify({"success": True, "redirect": "/"}), 200
+            return jsonify({"success": True, "redirect": target_url}), 200
 
         # Generate OTP
         otp_code = generate_otp()
@@ -177,7 +177,7 @@ def login_otp():
 
     # 5. Check Code (Cast both to strings just in case JS sends an int)
     if str(otp_input).strip() == str(otp_code).strip():
-        user_role = session.get("role", "student")
+        campus_role = session.get("campus_role", "student").lower()
 
         session.pop("otp_code", None)
         session.pop("otp_expiry", None)
@@ -186,9 +186,9 @@ def login_otp():
         session["logged_in"] = True
 
         # Role based redirect
-        target_url = "/mentor" if user_role == "mentor" else "/student"
+        target_url = "/student" if campus_role == "student" else "/mentor"
 
-        response = jsonify({"success": True, "redirect": "/"})
+        response = jsonify({"success": True, "redirect": target_url})
 
         if session.pop("remember_device", False):
             cookie_name = f"trusted_{session['otp_email']}"

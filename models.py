@@ -68,21 +68,28 @@ class MentorProfile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(
-        db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False
+        db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True
     )
 
-    # Application Fields (Filled out when status is 'pending')
-    motivation = db.Column(db.Text, nullable=True)
-    subjects_to_teach = db.Column(
-        db.String(255), nullable=True
-    )  # e.g., "Math 101, Physics 201"
-    year_of_study = db.Column(db.String(50), nullable=True)
-
-    # Active Mentor Fields (Used on the dashboard once 'approved')
+    # --- PUBLIC: Displayed on the Mentor Card for Students ---
+    year_of_study = db.Column(db.String(255), nullable=True)
+    subjects = db.Column(db.String(255), nullable=False)
     bio = db.Column(db.Text, nullable=True)
-    meeting_link = db.Column(db.String(255), nullable=True)  # Teams/Zoom link
+    experience = db.Column(
+        db.Text, nullable=True
+    )  # e.g., "Helped 1st-year students with Python, participated in 3 hackathons."
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # --- PRIVATE: Seen ONLY by Admins for Verification ---
+    motivation = db.Column(db.Text, nullable=False)
+    linkedin_url = db.Column(db.String(255), nullable=True)
+    # github_url = db.Column(db.String(255), nullable=True)
+    certifications = db.Column(
+        db.String(255), nullable=True
+    )  # e.g., "AWS Cloud Practitioner, CompTIA A+"
+
+    # File Paths (We store the PDF file on the server and save the path here)
+    cv_file_path = db.Column(db.String(255), nullable=True)
+    transcript_file_path = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f"<MentorProfile for User ID {self.user_id}>"
@@ -90,15 +97,24 @@ class MentorProfile(db.Model):
     def __init__(
         self,
         user_id,
+        experience,
         motivation,
-        subjects_to_teach,
+        subjects,
+        linkedin_url,
+        # github_url,
+        certifications,
+        cv_file_path,
+        transcript_file_path=None,
         bio=None,
         year_of_study=None,
-        meeting_link=None,
     ):
         self.user_id = user_id
+        self.experience = experience
+        self.linkedin_url = linkedin_url
+        self.certifications = certifications
+        self.cv_file_path = cv_file_path
+        self.transcript_file_path = transcript_file_path
         self.motivation = motivation
-        self.subjects_to_teach = subjects_to_teach
+        self.subjects = subjects
         self.year_of_study = year_of_study
         self.bio = bio
-        self.meeting_link = meeting_link
