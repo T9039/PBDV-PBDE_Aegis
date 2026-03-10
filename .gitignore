@@ -4,3 +4,4 @@ __pycache__
 server/
 server2.zip
 .env
+uploads/
