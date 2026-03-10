@@ -117,15 +117,14 @@ npm run dev:css
 
 ## 🌱 Seeding the Database
 
-Because everyone runs their own local database, yours is currently empty! We have a script that automatically builds the tables and injects mock users so you can test the app immediately.
+Because everyone runs their own local database, yours is currently empty! We have a script that automatically builds the tables, injects mock users, and generates mock PDF files so you can test the app immediately.
 
 Make sure your Python virtual environment is active, then run:
 
 ```bash
 python seed.py
 ```
-
-_(You can run this command anytime you want to wipe your database and start fresh with the mock data!)_
+*(Note: You can run this command anytime you want to wipe your database and start fresh. Warning: This will also completely delete and reset your local `uploads/` folder!)*
 
 ---
 
