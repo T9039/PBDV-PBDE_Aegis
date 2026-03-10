@@ -9,6 +9,182 @@
   <body
     class="bg-slate-950 text-slate-300 font-sans min-h-screen relative overflow-x-hidden"
   >
+    {% if not session.get('is_profile_complete') %}
+    <div
+      id="modal-backdrop"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 opacity-0 pointer-events-none transition-opacity duration-600"
+    >
+      <div
+        id="modal-box"
+        class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar transform scale-75 opacity-0 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative"
+      >
+        <button
+          onclick="closeProfileModal()"
+          class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full p-2 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <div class="p-8">
+          <h2 class="text-2xl font-bold text-white mb-2">
+            Complete Your Profile
+          </h2>
+          <p class="text-slate-400 mb-8 pr-8">
+            Before you can accept students, we need a few more details to set up
+            your mentor dashboard.
+          </p>
+
+          <form
+            action="/mentor/complete-profile"
+            method="POST"
+            class="space-y-6"
+          >
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-950/50 border border-slate-800 rounded-xl"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1"
+                  >Email</label
+                >
+                <input
+                  type="text"
+                  value="{{ session.get('email') }}"
+                  readonly
+                  class="w-full bg-slate-800/50 border border-slate-700 text-slate-400 text-sm rounded-lg px-3 py-2 cursor-not-allowed focus:outline-none"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1"
+                    >Role</label
+                  >
+                  <input
+                    type="text"
+                    value="{{ session.get('campus_role') | title }}"
+                    readonly
+                    class="w-full bg-slate-800/50 border border-slate-700 text-slate-400 text-sm rounded-lg px-3 py-2 cursor-not-allowed focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1"
+                    >Status</label
+                  >
+                  <input
+                    type="text"
+                    value="{{ session.get('mentor_status') | title }}"
+                    readonly
+                    class="w-full bg-slate-800/50 border border-slate-700 text-emerald-500/70 font-semibold text-sm rounded-lg px-3 py-2 cursor-not-allowed focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label
+                  for="full_name"
+                  class="block text-sm font-medium text-slate-300 mb-1"
+                  >Full Name <span class="text-amber-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  value="{{ session.get('full_name') or '' }}"
+                  required
+                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-600"
+                  placeholder="e.g., Jane Doe"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="subjects"
+                  class="block text-sm font-medium text-slate-300 mb-1"
+                  >Subjects You Can Teach
+                  <span class="text-amber-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="subjects"
+                  name="subjects"
+                  required
+                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors placeholder:text-slate-600"
+                  placeholder="e.g., Mathematics I, Web Development"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="motivation"
+                  class="block text-sm font-medium text-slate-300 mb-1"
+                  >Why do you want to be a mentor?
+                  <span class="text-amber-500">*</span></label
+                >
+                <textarea
+                  id="motivation"
+                  name="motivation"
+                  rows="3"
+                  required
+                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-600"
+                  placeholder="I enjoy helping my peers understand complex topics..."
+                ></textarea>
+              </div>
+
+              <div>
+                <label
+                  for="bio"
+                  class="block text-sm font-medium text-slate-300 mb-1"
+                  >Short Bio
+                  <span class="text-slate-500 text-xs font-normal"
+                    >(Optional)</span
+                  ></label
+                >
+                <textarea
+                  id="bio"
+                  name="bio"
+                  rows="2"
+                  class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-none placeholder:text-slate-600"
+                  placeholder="Tell students a bit about your teaching style..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div
+              class="pt-4 border-t border-slate-800 flex items-center justify-between"
+            >
+              <span class="text-xs text-slate-500"
+                ><span class="text-amber-500">*</span> Required fields</span
+              >
+              <button
+                type="submit"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-8 rounded-xl transition shadow-lg shadow-emerald-900/20"
+              >
+                Save & Continue
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <div
       class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-900/20 blur-[120px] rounded-full pointer-events-none z-0"
     ></div>
@@ -39,11 +215,32 @@
         </div>
 
         <div class="flex items-center gap-4">
+          {% if not session.get('is_profile_complete') %}
+          <button
+            onclick="openProfileModal()"
+            class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-5 py-2 rounded-full text-sm font-bold transition shadow-lg shadow-amber-900/20 flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="w-4 h-4"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Complete Profile
+          </button>
+          {% else %}
           <a
             href="#"
             class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-full text-sm font-semibold transition"
             >Get Started</a
           >
+          {% endif %}
 
           <a
             href="/logout"
@@ -165,5 +362,7 @@
         </div>
       </div>
     </section>
+
+    <script src="{{ url_for('static', filename='js/main/mentor-profile.js') }}"></script>
   </body>
 </html>
