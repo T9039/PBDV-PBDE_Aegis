@@ -1,0 +1,120 @@
+{% extends "student/base.html" %} {% block content %}
+<div
+  class="flex gap-8 px-6 py-3 border-b border-slate-800 text-sm overflow-x-auto whitespace-nowrap hide-scrollbar"
+>
+  <a href="#" class="hover:text-white transition">Engineering Mentors</a>
+  <a href="#" class="hover:text-white transition">Design Mentors</a>
+  <a href="#" class="hover:text-white transition">Data Structures</a>
+  <a href="#" class="hover:text-white transition">Networking</a>
+  <a href="#" class="hover:text-white transition">Database Admins</a>
+</div>
+
+<main class="max-w-4xl mx-auto mt-24 px-6 text-center">
+  <h1 class="text-5xl md:text-6xl font-serif text-white mb-6 tracking-tight">
+    What do you want to achieve next?
+  </h1>
+  <p class="text-lg text-slate-400 mb-12">
+    Get practical guidance from a peer mentor who has already navigated the
+    path.
+  </p>
+
+  <div
+    class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-5 text-left shadow-2xl max-w-2xl mx-auto"
+  >
+    <div class="flex items-center border-b border-slate-700 pb-4 mb-4">
+      <input
+        type="text"
+        id="mentor-search"
+        placeholder="I need help with... (e.g., Python, Math)"
+        class="w-full bg-transparent outline-none text-white text-lg placeholder-slate-500"
+      />
+      <button
+        class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-full transition flex-shrink-0"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex gap-3 text-xs overflow-x-auto pb-1">
+      <span class="text-slate-500 font-semibold py-1.5 mr-2">Suggested:</span>
+      <button
+        class="suggestion-btn px-3 py-1.5 bg-slate-800 rounded-full hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+      >
+        Python
+      </button>
+      <button
+        class="suggestion-btn px-3 py-1.5 bg-slate-800 rounded-full hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+      >
+        Mathematics
+      </button>
+      <button
+        class="suggestion-btn px-3 py-1.5 bg-slate-800 rounded-full hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+      >
+        Web Development
+      </button>
+    </div>
+  </div>
+</main>
+
+<section class="mt-24 mb-20 px-6 max-w-7xl mx-auto">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+    id="mentor-grid"
+  >
+    {% for profile, user in mentors %}
+    <div
+      class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-600 transition group cursor-pointer mentor-card"
+      data-search="{{ profile.subjects | lower }} {{ user.full_name | lower }}"
+    >
+      <div
+        class="aspect-[4/5] bg-slate-800 relative flex items-center justify-center overflow-hidden"
+      >
+        <span class="text-6xl font-bold text-slate-700 z-0"
+          >{{ user.full_name[0] }}</span
+        >
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-90 z-10"
+        ></div>
+      </div>
+
+      <div class="p-5 relative z-20 -mt-16">
+        <h3 class="font-bold text-xl text-white mentor-name">
+          {{ user.full_name }}
+        </h3>
+        <p class="text-sm text-slate-400 mb-3">
+          {{ user.campus_role.value | title if user.campus_role else 'Mentor' }}
+        </p>
+
+        <div class="flex flex-wrap gap-2">
+          {% for subject in profile.subjects.split(',') %}
+          <span
+            class="bg-slate-800 border border-slate-700 text-xs px-2 py-1 rounded text-slate-300"
+            >{{ subject.strip() }}</span
+          >
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div id="no-results" class="hidden text-center py-12">
+    <p class="text-slate-500 text-lg">No mentors found matching your search.</p>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/student/dashboard.js') }}"></script>
+{% endblock %}
