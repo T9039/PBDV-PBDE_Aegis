@@ -118,3 +118,66 @@ class MentorProfile(db.Model):
         self.subjects = subjects
         self.year_of_study = year_of_study
         self.bio = bio
+
+
+class StudentProfile(db.Model):
+    __tablename__ = "student_profiles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    # Enforce 1-to-1 relationship with the User table
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True
+    )
+
+    # --- Academic Context ---
+    # What are they studying? (e.g., "Diploma in ICT", "BSc Computer Science")
+    degree_program = db.Column(db.String(150), nullable=False)
+    # Helps mentors gauge the level of difficulty (e.g., "1st Year", "2nd Year")
+    year_of_study = db.Column(db.String(50), nullable=False)
+
+    # --- Matchmaking Data (The Algorithm's Bread & Butter) ---
+    # Comma-separated list of what they are struggling with (e.g., "Python, Networking")
+    # We will cross-reference this with the MentorProfile.subjects field!
+    subjects_needing_help = db.Column(db.String(255), nullable=False)
+
+    # What do they actually want to achieve? (e.g., "Exam Prep", "Career Advice", "Project Help")
+    primary_goals = db.Column(db.String(255), nullable=True)
+
+    # --- Personalization (For the Mentor to read) ---
+    # Let them explain their situation in their own words
+    bio = db.Column(db.Text, nullable=True)
+
+    # E.g., "Visual learner", "I need hands-on coding help", "Just need concepts explained"
+    preferred_learning_style = db.Column(db.String(100), nullable=True)
+
+    # --- Timestamps ---
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp(),
+    )
+
+    # Relationship back to the User model
+    user = db.relationship("User", backref=db.backref("student_profile", uselist=False))
+
+    def __repr__(self):
+        return f"<StudentProfile for User ID {self.user_id}>"
+
+    def __init__(
+        self,
+        user_id,
+        degree_program,
+        year_of_study,
+        subjects_needing_help,
+        primary_goals=None,
+        bio=None,
+        preferred_learning_style=None,
+    ):
+        self.user_id = user_id
+        self.degree_program = degree_program
+        self.year_of_study = year_of_study
+        self.subjects_needing_help = subjects_needing_help
+        self.primary_goals = primary_goals
+        self.bio = bio
+        self.preferred_learning_style = preferred_learning_style
