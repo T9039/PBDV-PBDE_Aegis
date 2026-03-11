@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, redirect, render_template, request, session
 
-from models import MentorProfile, User, db
+from models import MentorProfile, StudentProfile, User, db
 from utils import save_uploaded_file  # Import your new function!
 
 # Create the blueprint
@@ -126,7 +126,7 @@ def mentor_profile():
     profile = MentorProfile.query.filter_by(user_id=user.id).first()
 
     # 3. Render the new page, passing the data to Jinja
-    return render_template("mentor/profile.html", user=user, profile=profile)
+    return render_template("mentor/mentor-profile.html", user=user, profile=profile)
 
 
 @main_bp.route("/mentor/edit-profile", methods=["POST"])
@@ -193,6 +193,129 @@ def edit_profile():
         return jsonify({"success": False, "error": "Database error occurred."}), 500
 
 
-@main_bp.route("/student")
-def student_profile():
-    return render_template("student/student_profile.html")
+@main_bp.route("/student/dashboard")
+def student_dashboard():
+    email = session.get("email")
+    if not email:
+        return redirect("/")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return redirect("/")
+
+    # Fetch mentors for the cards
+    mentors = db.session.query(MentorProfile, User).join(User).all()
+
+    has_profile = StudentProfile.query.filter_by(user_id=user.id).first() is not None
+
+    # --- ADD THIS PRINT STATEMENT ---
+    print(f"DEBUG: User {user.email} | Profile Found: {has_profile}")
+    # --------------------------------
+
+    return render_template(
+        "student/dashboard.html", mentors=mentors, has_profile=has_profile
+    )
+
+
+@main_bp.route("/student/complete-profile", methods=["POST"])
+def complete_student_profile():
+    email = session.get("email")
+    if not email:
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        return jsonify({"success": False, "error": "User account not found."}), 404
+
+    # Check if they already have one to prevent duplicates
+    if StudentProfile.query.filter_by(user_id=user.id).first():
+        return jsonify({"success": False, "error": "Profile already exists."}), 400
+
+    data = request.form
+
+    try:
+        new_profile = StudentProfile(
+            user_id=user.id,
+            degree_program=data.get("degree_program"),
+            year_of_study=data.get("year_of_study"),
+            subjects_needing_help=data.get("subjects_needing_help"),
+            primary_goals=data.get("primary_goals"),
+            bio=data.get("bio"),
+            preferred_learning_style=data.get("preferred_learning_style"),
+        )
+        db.session.add(new_profile)
+        db.session.commit()
+
+        return jsonify(
+            {"success": True, "message": "Welcome to Aegis! Profile saved."}
+        ), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error saving student profile: {e}")
+        return jsonify({"success": False, "error": "Database error occurred."}), 500
+
+
+@main_bp.route("/student/profile", methods=["GET"])
+def student_profile_view():
+    email = session.get("email")
+    if not email:
+        return redirect("/")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return redirect("/")
+
+    profile = StudentProfile.query.filter_by(user_id=user.id).first()
+
+    # We still want to pass has_profile so the base template's navbar works correctly
+    return render_template(
+        "student/student-profile.html",
+        user=user,
+        profile=profile,
+        has_profile=(profile is not None),
+    )
+
+
+@main_bp.route("/student/edit-profile", methods=["POST"])
+def edit_student_profile():
+    email = session.get("email")
+    if not email:
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"success": False, "error": "User not found."}), 404
+
+    profile = StudentProfile.query.filter_by(user_id=user.id).first()
+    if not profile:
+        return jsonify({"success": False, "error": "Profile not found."}), 404
+
+    data = request.form
+
+    try:
+        # Update User data
+        user.full_name = data.get("full_name", user.full_name)
+        session["full_name"] = user.full_name  # Keep the session in sync
+
+        # Update Profile data
+        profile.degree_program = data.get("degree_program", profile.degree_program)
+        profile.year_of_study = data.get("year_of_study", profile.year_of_study)
+        profile.subjects_needing_help = data.get(
+            "subjects_needing_help", profile.subjects_needing_help
+        )
+        profile.primary_goals = data.get("primary_goals", profile.primary_goals)
+        profile.preferred_learning_style = data.get(
+            "preferred_learning_style", profile.preferred_learning_style
+        )
+        profile.bio = data.get("bio", profile.bio)
+
+        db.session.commit()
+        return jsonify(
+            {"success": True, "message": "Profile updated successfully!"}
+        ), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating student profile: {e}")
+        return jsonify({"success": False, "error": "Database error occurred."}), 500
