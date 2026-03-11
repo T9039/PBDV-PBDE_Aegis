@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.openProfileModal = function() {
     backdrop.classList.remove('opacity-0', 'pointer-events-none');
     backdrop.classList.add('opacity-100', 'pointer-events-auto');
+
+    backdrop.style.opacity = '';
+    backdrop.style.pointerEvents = '';
     
     box.classList.remove('scale-75', 'opacity-0');
     box.classList.add('scale-100', 'opacity-100');

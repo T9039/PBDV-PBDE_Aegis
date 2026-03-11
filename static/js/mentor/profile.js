@@ -2,6 +2,9 @@
 function openEditModal() {
     const backdrop = document.getElementById('edit-modal-backdrop');
     const box = document.getElementById('edit-modal-box');
+
+    backdrop.style.opacity = '';
+    backdrop.style.pointerEvents = '';
     
     backdrop.classList.remove('opacity-0', 'pointer-events-none');
     box.classList.remove('scale-95', 'opacity-0');
