@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up – StudySphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
+                </svg>
+            </div>
+            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+        </a>
+        <a href="login.html" class="text-sm text-gray-500 hover:text-gray-700">Already have an account? <span class="font-semibold" style="color:#003087">Log in</span></a>
+    </div>
+</nav>
+
+<main class="flex-1 flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#eff6ff">
+                    <svg class="w-8 h-8" style="color:#003087" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold mb-1" style="color:#003087">Create Your Account</h1>
+                <p class="text-gray-500 text-sm">Join the DUT StudySphere community</p>
+            </div>
+
+            <form id="signup-form" novalidate>
+                <!-- Email -->
+                <div class="mb-5">
+                    <label class="form-label" for="email">DUT Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="22789001@dut.ac.za" autocomplete="email">
+                    <p class="form-error" id="email-error"></p>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-5">
+                    <label class="form-label" for="password">Create Password</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="password" class="form-input pr-12" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)">
+                        <button type="button" class="pw-toggle" id="pw-btn" onclick="togglePassword('password','pw-btn')">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Strength bar -->
+                    <div class="mt-2 bg-gray-200 rounded-full h-1.5">
+                        <div id="strength-bar" class="h-1.5 rounded-full transition-all duration-300 w-0"></div>
+                    </div>
+                    <p id="strength-text" class="text-xs mt-1 text-gray-400"></p>
+                    <p class="form-error" id="password-error"></p>
+                    <p class="text-xs text-gray-400 mt-1">Must be 8+ characters with 1 uppercase, 1 number, 1 special character</p>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-6">
+                    <label class="form-label" for="confirm-password">Confirm Password</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="confirm-password" class="form-input pr-12" placeholder="Re-enter your password" autocomplete="new-password">
+                        <button type="button" class="pw-toggle" id="cpw-btn" onclick="togglePassword('confirm-password','cpw-btn')">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="form-error" id="confirm-error"></p>
+                </div>
+
+                <!-- POPIA Notice -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 text-sm text-blue-800">
+                    <p class="leading-relaxed">This platform complies with the <strong>Protection of Personal Information Act (POPIA)</strong>. Your personal information will only be used for account creation and mentorship matching.</p>
+                    <p class="mt-2">For more information, please read our
+                        <button type="button" onclick="openModal('privacy-modal')" class="font-bold underline cursor-pointer hover:text-blue-900">Privacy Policy</button>
+                        and check the required box to agree to this policy.
+                    </p>
+                </div>
+
+                <!-- POPIA Checkbox -->
+                <div class="flex items-start gap-3 mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <input type="checkbox" id="popia-check" class="w-4 h-4 mt-0.5 flex-shrink-0 rounded" style="accent-color:#003087">
+                    <label for="popia-check" class="text-sm text-gray-700 leading-relaxed">
+                        I agree to the <button type="button" onclick="openModal('privacy-modal')" class="font-semibold underline" style="color:#003087">Privacy Policy</button> and the processing of my personal information in accordance with POPIA.
+                    </label>
+                </div>
+                <p class="form-error" id="popia-error"></p>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-primary w-full justify-center py-3 text-base mt-2">
+                    Create Account
+                </button>
+            </form>
+
+            <p class="text-center text-sm text-gray-500 mt-6">
+                Already have an account?
+                <a href="login.html" class="font-semibold hover:underline" style="color:#003087">Log in here</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+<!-- PRIVACY POLICY MODAL -->
+<div class="modal-overlay" id="privacy-modal">
+    <div class="modal-box">
+        <button onclick="closeModal('privacy-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#eff6ff">
+                <svg class="w-5 h-5" style="color:#003087" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold" style="color:#003087">Privacy Policy</h2>
+        </div>
+        <div class="space-y-4 text-sm text-gray-700 leading-relaxed">
+            <p>This application collects personal information such as names and email addresses in order to create user accounts and facilitate mentorship connections.</p>
+            <p>We comply with the <strong>Protection of Personal Information Act (POPIA) of South Africa</strong>. Your personal information will only be used for the purposes of providing mentorship services within the platform.</p>
+            <p>We <strong>do not</strong> share or sell your information to third parties.</p>
+            <p>All personal data is stored securely and access is restricted to authorised system processes only.</p>
+            <p>Users have the right to update or delete their personal information at any time.</p>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                <p class="font-semibold text-blue-800">Contact Us</p>
+                <p class="text-blue-700 mt-1">For any privacy concerns, contact us at: <strong>Admin@dut.ac.za</strong></p>
+            </div>
+        </div>
+        <button onclick="closeModal('privacy-modal')" class="btn-primary w-full justify-center mt-6">
+            I Understand — Close
+        </button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
+<script>
+    function checkStrength(password) {
+        const bar = document.getElementById('strength-bar');
+        const text = document.getElementById('strength-text');
+        const errors = validatePassword(password);
+        const score = 4 - errors.length;
+        const levels = [
+            { w: '0%', color: '', label: '' },
+            { w: '25%', color: '#ef4444', label: 'Weak' },
+            { w: '50%', color: '#f59e0b', label: 'Fair' },
+            { w: '75%', color: '#3b82f6', label: 'Good' },
+            { w: '100%', color: '#10b981', label: 'Strong' }
+        ];
+        const l = levels[score] || levels[0];
+        bar.style.width = l.w;
+        bar.style.background = l.color;
+        text.textContent = l.label ? `Password strength: ${l.label}` : '';
+        text.style.color = l.color;
+    }
+
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const popiaChecked = document.getElementById('popia-check').checked;
+
+        // Clear previous errors
+        ['email-error','password-error','confirm-error','popia-error'].forEach(id => {
+            document.getElementById(id).textContent = '';
+        });
+        document.getElementById('email').classList.remove('error');
+        document.getElementById('password').classList.remove('error');
+
+        let valid = true;
+
+        // Email validation
+        if (!email) {
+            document.getElementById('email-error').textContent = 'Email address is required.';
+            document.getElementById('email').classList.add('error');
+            valid = false;
+        } else if (!validateEmail(email)) {
+            document.getElementById('email-error').textContent = 'Email must contain @ and be a valid address.';
+            document.getElementById('email').classList.add('error');
+            valid = false;
+        }
+
+        // Password validation
+        const pwErrors = validatePassword(password);
+        if (pwErrors.length > 0) {
+            document.getElementById('password-error').textContent = pwErrors[0];
+            document.getElementById('password').classList.add('error');
+            valid = false;
+        }
+
+        // Confirm password
+        if (password !== confirmPassword) {
+            document.getElementById('confirm-error').textContent = 'Passwords do not match.';
+            document.getElementById('confirm-password').classList.add('error');
+            valid = false;
+        }
+
+        // POPIA checkbox — REQUIRED
+        if (!popiaChecked) {
+            document.getElementById('popia-error').textContent = 'You must agree to the Privacy Policy to continue.';
+            valid = false;
+        }
+
+        if (!valid) return;
+
+        // TODO (Backend): POST /api/register — send email and hashed password to database
+        // Store temp signup data and proceed to role selection
+        sessionStorage.setItem('ss_signup', JSON.stringify({ email, password }));
+        showFlash('Account created! Choose your role to continue.', 'success');
+        setTimeout(() => { window.location.href = 'choose_role.html'; }, 800);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Student Profile – StudySphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
+                </svg>
+            </div>
+            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+        </div>
+    </div>
+</nav>
+
+<!-- Progress Bar -->
+<div class="bg-white border-b border-gray-100 px-6 py-3">
+    <div class="max-w-xl mx-auto">
+        <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
+            <span class="text-green-600 font-medium">✓ Account Created</span>
+            <span class="text-gray-300">→</span>
+            <span class="text-green-600 font-medium">✓ Role Selected</span>
+            <span class="text-gray-300">→</span>
+            <span class="font-semibold" style="color:#003087">Build Your Profile</span>
+        </div>
+        <div class="h-2 bg-gray-200 rounded-full">
+            <div class="h-2 rounded-full" style="width:90%;background:#003087"></div>
+        </div>
+    </div>
+</div>
+
+<main class="flex-1 flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-xl">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#eff6ff">
+                    <svg class="w-8 h-8" style="color:#003087" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold mb-1" style="color:#003087">Create Your Student Profile</h1>
+                <p class="text-gray-500 text-sm">Tell us about yourself so mentors can get to know you</p>
+            </div>
+
+            <form id="student-profile-form" novalidate>
+                <!-- Full Name -->
+                <div class="mb-5">
+                    <label class="form-label" for="fullname">Full Name</label>
+                    <input type="text" id="fullname" class="form-input" placeholder="e.g. Sipho Dlamini">
+                    <p class="form-error" id="fullname-error"></p>
+                </div>
+
+                <!-- Degree Program -->
+                <div class="mb-5">
+                    <label class="form-label" for="degree">Degree Programme</label>
+                    <input type="text" id="degree" class="form-input" placeholder="e.g. Bachelor of Science in Computer Science">
+                    <p class="form-error" id="degree-error"></p>
+                </div>
+
+                <!-- Year of Study -->
+                <div class="mb-5">
+                    <label class="form-label" for="year">Year of Study</label>
+                    <select id="year" class="form-input">
+                        <option value="">Select your year of study</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="Postgraduate">Postgraduate</option>
+                    </select>
+                    <p class="form-error" id="year-error"></p>
+                </div>
+
+                <!-- Preferred Learning Style -->
+                <div class="mb-5">
+                    <label class="form-label" for="learning-style">Preferred Learning Style</label>
+                    <select id="learning-style" class="form-input">
+                        <option value="">Select your learning style</option>
+                        <option value="Visual Learner">Visual Learner – I learn best from diagrams, charts, and visuals</option>
+                        <option value="Auditory Learner">Auditory Learner – I learn best by listening and discussing</option>
+                        <option value="Reading/Writing Learner">Reading/Writing Learner – I learn best through text and notes</option>
+                        <option value="Social Learner">Social Learner – I learn best in groups and peer sessions</option>
+                    </select>
+                    <p class="form-error" id="style-error"></p>
+                </div>
+
+                <!-- Bio -->
+                <div class="mb-7">
+                    <label class="form-label" for="bio">Short Bio</label>
+                    <textarea id="bio" class="form-input resize-none" rows="3" placeholder="Tell us a little about yourself, your academic goals, or subjects you need help with..."></textarea>
+                    <p class="text-xs text-gray-400 mt-1">Max 250 characters</p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-primary w-full justify-center py-3 text-base">
+                    Let's Get Started!
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
+<script>
+    document.getElementById('student-profile-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const degree = document.getElementById('degree').value.trim();
+        const year = document.getElementById('year').value;
+        const style = document.getElementById('learning-style').value;
+        const bio = document.getElementById('bio').value.trim();
+
+        // Clear errors
+        ['fullname-error','degree-error','year-error','style-error'].forEach(id => {
+            document.getElementById(id).textContent = '';
+        });
+
+        let valid = true;
+        if (!fullname) { document.getElementById('fullname-error').textContent = 'Full name is required.'; valid = false; }
+        if (!degree) { document.getElementById('degree-error').textContent = 'Degree programme is required.'; valid = false; }
+        if (!year) { document.getElementById('year-error').textContent = 'Please select your year of study.'; valid = false; }
+        if (!style) { document.getElementById('style-error').textContent = 'Please select your learning style.'; valid = false; }
+
+        if (!valid) return;
+
+        // Get signup info
+        const signup = JSON.parse(sessionStorage.getItem('ss_signup') || '{}');
+
+        const profile = { fullName: fullname, degreeProgram: degree, yearOfStudy: year, learningStyle: style, bio };
+
+        // TODO (Backend): POST /api/users/student-profile — save profile to database
+        //   Body: { email: signup.email, ...profile }
+
+        // Store locally for demo
+        const userObj = { email: signup.email || 'new_student@dut.ac.za', role: 'student', profile };
+        setCurrentUser(userObj);
+        sessionStorage.removeItem('ss_signup');
+        sessionStorage.removeItem('ss_role');
+
+        showFlash('Profile created successfully! Welcome to StudySphere!', 'success');
+        setTimeout(() => { window.location.href = 'student_dashboard.html'; }, 1000);
+    });
+</script>
+</body>
+</html>

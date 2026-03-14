@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Role – StudySphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
+                </svg>
+            </div>
+            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-1 flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-2xl">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5" style="background:#003087">
+                <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-extrabold mb-3" style="color:#003087">Let's begin my journey as a:</h1>
+            <p class="text-gray-500">Select your role on the StudySphere platform</p>
+        </div>
+
+        <!-- Role Cards -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <!-- Student -->
+            <div class="role-card" id="student-card" onclick="selectRole('student')">
+                <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5" style="background:#eff6ff">
+                    <svg class="w-10 h-10" style="color:#003087" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold mb-2" style="color:#003087">Student</h2>
+                <p class="text-gray-500 text-sm leading-relaxed">I want to find mentors, book sessions, and get academic help in my modules.</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-600 text-left">
+                    <li class="flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:#d1fae5"><svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></span> Search & book mentors</li>
+                    <li class="flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:#d1fae5"><svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></span> Peer learning sessions</li>
+                    <li class="flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:#d1fae5"><svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></span> Track academic progress</li>
+                </ul>
+            </div>
+
+            <!-- Mentor -->
+            <div class="role-card" id="mentor-card" onclick="selectRole('mentor')">
+                <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5" style="background:#fef3c7">
+                    <svg class="w-10 h-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold mb-2" style="color:#92400e">Mentor</h2>
+                <p class="text-gray-500 text-sm leading-relaxed">I want to share my knowledge and guide students in their academic journey.</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-600 text-left">
+                    <li class="flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fef3c7"><svg class="w-3 h-3 text-yellow-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></span> Manage your availability</li>
+                    <li class="flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fef3c7"><svg class="w-3 h-3 text-yellow-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></span> Guide students in your modules</li>
+                    <li class="flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fef3c7"><svg class="w-3 h-3 text-yellow-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></span> Requires admin approval</li>
+                </ul>
+                <div class="mt-3 flex items-center justify-center gap-1 text-xs text-yellow-700 bg-yellow-50 rounded-lg py-1.5 px-3">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Application subject to admin approval
+                </div>
+            </div>
+        </div>
+
+        <!-- Continue button -->
+        <div class="text-center">
+            <button id="continue-btn" onclick="continueToProfile()" class="btn-primary py-3 px-10 text-base opacity-50 cursor-not-allowed" disabled>
+                Continue
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </button>
+        </div>
+    </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
+<script>
+    let selectedRole = null;
+
+    function selectRole(role) {
+        selectedRole = role;
+        document.getElementById('student-card').classList.remove('selected');
+        document.getElementById('mentor-card').classList.remove('selected');
+        document.getElementById(role + '-card').classList.add('selected');
+
+        const btn = document.getElementById('continue-btn');
+        btn.disabled = false;
+        btn.classList.remove('opacity-50','cursor-not-allowed');
+    }
+
+    function continueToProfile() {
+        if (!selectedRole) return;
+        sessionStorage.setItem('ss_role', selectedRole);
+        if (selectedRole === 'student') {
+            window.location.href = 'create_student_profile.html';
+        } else {
+            window.location.href = 'create_mentor_profile.html';
+        }
+    }
+</script>
+</body>
+</html>
