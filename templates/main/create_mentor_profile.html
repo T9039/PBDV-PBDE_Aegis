@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Mentor Profile – StudySphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
+                </svg>
+            </div>
+            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+        </div>
+    </div>
+</nav>
+
+<!-- Progress Bar -->
+<div class="bg-white border-b border-gray-100 px-6 py-3">
+    <div class="max-w-xl mx-auto">
+        <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
+            <span class="text-green-600 font-medium">✓ Account Created</span>
+            <span class="text-gray-300">→</span>
+            <span class="text-green-600 font-medium">✓ Role Selected</span>
+            <span class="text-gray-300">→</span>
+            <span class="font-semibold" style="color:#003087">Mentor Application</span>
+        </div>
+        <div class="h-2 bg-gray-200 rounded-full">
+            <div class="h-2 rounded-full" style="width:90%;background:#d97706"></div>
+        </div>
+    </div>
+</div>
+
+<main class="flex-1 flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-xl">
+        <!-- Info Banner -->
+        <div class="alert alert-warning flex items-start gap-3 mb-5">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div>
+                <strong>Mentor applications require admin approval.</strong>
+                <p class="text-sm mt-0.5">Your application will be reviewed by the StudySphere administrator. You will be notified within 24-48 hours.</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#fef3c7">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold mb-1" style="color:#003087">Mentor Application</h1>
+                <p class="text-gray-500 text-sm">Share your expertise and start making a difference</p>
+            </div>
+
+            <form id="mentor-form" novalidate>
+                <!-- Full Name -->
+                <div class="mb-5">
+                    <label class="form-label" for="fullname">Full Name</label>
+                    <input type="text" id="fullname" class="form-input" placeholder="e.g. Prof. Thabo Nkosi">
+                    <p class="form-error" id="fullname-error"></p>
+                </div>
+
+                <!-- Modules -->
+                <div class="mb-5">
+                    <label class="form-label" for="modules">Modules You Specialise In</label>
+                    <input type="text" id="modules" class="form-input" placeholder="e.g. Mathematics, Physics, Statistics (separate with commas)">
+                    <p class="text-xs text-gray-400 mt-1">List all modules you can mentor students in</p>
+                    <p class="form-error" id="modules-error"></p>
+                </div>
+
+                <!-- Faculty -->
+                <div class="mb-5">
+                    <label class="form-label" for="faculty">Faculty</label>
+                    <select id="faculty" class="form-input">
+                        <option value="">Select your faculty</option>
+                        <option>Faculty of Applied Sciences</option>
+                        <option>Faculty of Engineering &amp; Technology</option>
+                        <option>Faculty of Accounting &amp; Informatics</option>
+                        <option>Faculty of Health Sciences</option>
+                        <option>Faculty of Arts &amp; Design</option>
+                        <option>Faculty of Management Sciences</option>
+                        <option>Faculty of Education</option>
+                        <option>Faculty of Communication</option>
+                    </select>
+                    <p class="form-error" id="faculty-error"></p>
+                </div>
+
+                <!-- Qualification -->
+                <div class="mb-5">
+                    <label class="form-label" for="qualification">Your Qualification(s)</label>
+                    <input type="text" id="qualification" class="form-input" placeholder="e.g. MSc Mathematics, BSc Honours Physics">
+                    <p class="form-error" id="qualification-error"></p>
+                </div>
+
+                <!-- Awards -->
+                <div class="mb-7">
+                    <label class="form-label" for="awards">Awards & Achievements <span class="text-gray-400 font-normal">(Optional)</span></label>
+                    <textarea id="awards" class="form-input resize-none" rows="3" placeholder="e.g. Best Tutor Award 2023, Academic Excellence Award 2022..."></textarea>
+                    <p class="text-xs text-gray-400 mt-1">List any awards or recognitions in your specialist modules</p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-gold w-full py-3 text-base font-bold rounded-xl">
+                    Request Application as a Mentor
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="success-modal">
+    <div class="modal-box max-w-md text-center">
+        <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5" style="background:#d1fae5">
+            <svg class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h2 class="text-xl font-bold mb-3" style="color:#003087">Request Sent Successfully!</h2>
+        <p class="text-gray-600 mb-4 leading-relaxed">
+            Your mentor application has been submitted to the StudySphere admin team.
+        </p>
+        <div class="alert alert-info text-left mb-4">
+            <strong>What happens next?</strong>
+            <ul class="mt-2 space-y-1 text-sm">
+                <li>• Your application will be reviewed within <strong>24-48 hours</strong></li>
+                <li>• You will receive an email notification once a decision is made</li>
+                <li>• Should any issues arise, please email: <strong>Admin@dut.ac.za</strong></li>
+            </ul>
+        </div>
+        <p class="text-sm text-gray-500 mb-5">You will be redirected to the home page. Please check your email for updates.</p>
+        <button onclick="goHome()" class="btn-primary w-full justify-center">
+            Return to Home Page
+        </button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
+<script>
+    document.getElementById('mentor-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const modules = document.getElementById('modules').value.trim();
+        const faculty = document.getElementById('faculty').value;
+        const qualification = document.getElementById('qualification').value.trim();
+        const awards = document.getElementById('awards').value.trim();
+
+        // Clear errors
+        ['fullname-error','modules-error','faculty-error','qualification-error'].forEach(id => {
+            document.getElementById(id).textContent = '';
+        });
+
+        let valid = true;
+        if (!fullname) { document.getElementById('fullname-error').textContent = 'Full name is required.'; valid = false; }
+        if (!modules) { document.getElementById('modules-error').textContent = 'Please list the modules you specialise in.'; valid = false; }
+        if (!faculty) { document.getElementById('faculty-error').textContent = 'Please select your faculty.'; valid = false; }
+        if (!qualification) { document.getElementById('qualification-error').textContent = 'Qualification is required.'; valid = false; }
+
+        if (!valid) return;
+
+        const signup = JSON.parse(sessionStorage.getItem('ss_signup') || '{}');
+
+        // TODO (Backend): POST /api/mentor-requests — save mentor application to database
+        //   Body: { email, fullName, modules, faculty, qualification, awards, status: 'pending' }
+        //   Also: notify admin via email API (e.g. SendGrid)
+
+        // Add to pending requests (local demo)
+        const existing = JSON.parse(localStorage.getItem('ss_pending_mentors') || '[]');
+        existing.push({
+            id: Date.now(),
+            name: fullname,
+            email: signup.email || 'applicant@dut.ac.za',
+            faculty, modules, qualification, awards,
+            submittedDate: new Date().toISOString().split('T')[0],
+            status: 'pending'
+        });
+        localStorage.setItem('ss_pending_mentors', JSON.stringify(existing));
+
+        openModal('success-modal');
+    });
+
+    function goHome() {
+        sessionStorage.removeItem('ss_signup');
+        sessionStorage.removeItem('ss_role');
+        window.location.href = 'index.html';
+    }
+</script>
+</body>
+</html>

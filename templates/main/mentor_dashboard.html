@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard – StudySphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-50">
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+    <div class="p-5 border-b border-blue-800">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20">
+                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                </svg>
+            </div>
+            <div>
+                <span class="text-white font-bold text-base block">StudySphere</span>
+                <span class="text-blue-200 text-xs">Mentor Portal</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
+        <div class="flex items-center gap-3">
+            <div class="avatar" id="sidebar-avatar" style="background:#d97706;width:36px;height:36px;font-size:13px;">TN</div>
+            <div>
+                <p class="text-white text-sm font-semibold leading-tight" id="sidebar-name">Prof. Thabo Nkosi</p>
+                <p class="text-blue-200 text-xs" id="sidebar-email">Mentor@dut.ac.za</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex-1 py-2">
+        <button class="sidebar-tab" data-tab="home">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Home
+        </button>
+        <button class="sidebar-tab" data-tab="availability">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            My Availability
+        </button>
+        <button class="sidebar-tab" data-tab="messages">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            Messages
+        </button>
+        <button class="sidebar-tab" data-tab="feedback">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+            Feedback
+        </button>
+        <button class="sidebar-tab" data-tab="profile">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            My Profile
+        </button>
+    </nav>
+
+    <div class="pb-4 px-0">
+        <button class="sidebar-tab logout-tab" onclick="logout()">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Log Out
+        </button>
+    </div>
+</aside>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main class="main-content">
+
+    <!-- ===== HOME TAB ===== -->
+    <div class="tab-panel" id="panel-home">
+        <div class="section-title">Mentor Dashboard</div>
+        <p class="section-subtitle">Welcome back, <span id="home-name">Prof. Nkosi</span></p>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
+            <div class="stat-card">
+                <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Sessions This Week</p>
+                <p class="text-3xl font-extrabold" style="color:#003087" id="week-count">2</p>
+            </div>
+            <div class="stat-card">
+                <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Total Sessions</p>
+                <p class="text-3xl font-extrabold text-green-600" id="total-count">4</p>
+            </div>
+            <div class="stat-card">
+                <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Upcoming</p>
+                <p class="text-3xl font-extrabold text-yellow-600" id="upcoming-count">2</p>
+            </div>
+            <div class="stat-card">
+                <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Students Mentored</p>
+                <p class="text-3xl font-extrabold text-purple-600" id="students-count">2</p>
+            </div>
+        </div>
+
+        <!-- Upcoming Bookings -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-800 mb-4">Upcoming Bookings</h3>
+            <div id="upcoming-bookings"></div>
+        </div>
+    </div>
+
+    <!-- ===== AVAILABILITY TAB ===== -->
+    <div class="tab-panel" id="panel-availability">
+        <div class="section-title">My Availability</div>
+        <p class="section-subtitle">Manage your available time slots for students to book</p>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Calendar -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Monthly Overview</h3>
+                <div id="avail-calendar"></div>
+                <div class="mt-4 flex flex-wrap gap-3 text-xs">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block" style="background:#d1fae5"></span>Has Availability</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block bg-yellow-200"></span>Has Booking</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block" style="background:#003087"></span>Today</span>
+                </div>
+            </div>
+
+            <!-- Day Editor -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-1">Edit Day Slots</h3>
+                <p class="text-sm text-gray-500 mb-4">Click a day on the calendar to edit slots</p>
+                <div id="day-editor">
+                    <p class="text-gray-400 text-sm text-center py-6">← Select a day from the calendar to manage slots</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MESSAGES TAB ===== -->
+    <div class="tab-panel" id="panel-messages">
+        <div class="section-title">Messages to Students</div>
+        <p class="section-subtitle">Send feedback and notes to your students after sessions</p>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Recent Sessions -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Recent Sessions</h3>
+                <div id="recent-sessions-list"></div>
+            </div>
+
+            <!-- Send Message Form -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Add Message to Student</h3>
+                <form id="message-form">
+                    <div class="mb-4">
+                        <label class="form-label">Select Student</label>
+                        <select id="msg-student" class="form-input">
+                            <option value="">Choose a student...</option>
+                            <option value="Student1@dut.ac.za">Sipho Dlamini</option>
+                            <option value="Student2@dut.ac.za">Nomsa Khumalo</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Performance Rating</label>
+                        <select id="msg-rating" class="form-input">
+                            <option value="">Select rating...</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="attention">Attention Needed</option>
+                        </select>
+                    </div>
+                    <div class="mb-5">
+                        <label class="form-label">Message / Focus Areas</label>
+                        <textarea id="msg-text" class="form-input resize-none" rows="4" placeholder="e.g. Focus on Chapter 5 integration. Complete exercises 5.1-5.3 before next session. Study the test from 2024..."></textarea>
+                    </div>
+                    <!-- TODO (Backend): POST /api/messages — save message in database, display on student dashboard -->
+                    <button type="submit" class="btn-primary w-full justify-center">Send Message to Student</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FEEDBACK TAB ===== -->
+    <div class="tab-panel" id="panel-feedback">
+        <div class="section-title">Student Feedback</div>
+        <p class="section-subtitle">Reviews and messages from your students</p>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Reviews -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Student Reviews</h3>
+                <div id="student-reviews"></div>
+            </div>
+            <!-- Messages from students -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Messages from Students</h3>
+                <div id="student-messages-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PROFILE TAB ===== -->
+    <div class="tab-panel" id="panel-profile">
+        <div class="section-title">My Profile</div>
+        <p class="section-subtitle">Update your mentor profile information</p>
+
+        <div class="max-w-xl">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+                <div class="flex items-center gap-4 mb-7 p-4 bg-gray-50 rounded-xl">
+                    <div class="avatar text-xl" id="profile-avatar" style="background:#d97706;width:60px;height:60px;">TN</div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-lg" id="profile-display-name">Prof. Thabo Nkosi</p>
+                        <p class="text-gray-500 text-sm" id="profile-display-email">Mentor@dut.ac.za</p>
+                        <span class="badge badge-in-progress mt-1">Mentor</span>
+                    </div>
+                </div>
+
+                <form id="edit-profile-form">
+                    <div class="mb-4">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="edit-name" class="form-input">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Modules You Specialise In</label>
+                        <input type="text" id="edit-modules" class="form-input" placeholder="Separate with commas">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Faculty</label>
+                        <select id="edit-faculty" class="form-input">
+                            <option>Faculty of Applied Sciences</option>
+                            <option>Faculty of Engineering &amp; Technology</option>
+                            <option>Faculty of Accounting &amp; Informatics</option>
+                            <option>Faculty of Health Sciences</option>
+                            <option>Faculty of Arts &amp; Design</option>
+                            <option>Faculty of Management Sciences</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Qualifications</label>
+                        <input type="text" id="edit-qualification" class="form-input">
+                    </div>
+                    <div class="mb-6">
+                        <label class="form-label">Awards & Achievements</label>
+                        <textarea id="edit-awards" class="form-input resize-none" rows="3"></textarea>
+                    </div>
+                    <!-- TODO (Backend): PUT /api/users/profile — update mentor profile in database -->
+                    <button type="submit" class="btn-primary w-full justify-center">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ===== STUDENT DETAIL MODAL ===== -->
+<div class="modal-overlay" id="student-detail-modal">
+    <div class="modal-box max-w-md">
+        <button onclick="closeModal('student-detail-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div id="student-detail-content"></div>
+        <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+            <button onclick="closeModal('student-detail-modal')" class="btn-sm btn-blue-sm px-4 py-2">Close</button>
+            <button id="report-student-btn" class="btn-sm btn-red-sm px-4 py-2">Report Student</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== REPORT MODAL ===== -->
+<div class="modal-overlay" id="report-modal">
+    <div class="modal-box max-w-md">
+        <button onclick="closeModal('report-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <h2 class="text-lg font-bold mb-1 text-red-700">Report Student</h2>
+        <p class="text-sm text-gray-500 mb-4">Reporting: <span id="report-target-name" class="font-semibold text-gray-700"></span></p>
+        <textarea id="report-message" class="form-input resize-none mb-4" rows="4" placeholder="Describe the issue or conduct concern in detail..."></textarea>
+        <!-- TODO (Backend): POST /api/reports — save report in database, notify admin -->
+        <button onclick="submitReport()" class="btn-primary w-full justify-center" style="background:#dc2626;">Submit Report to Admin</button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
+<script>
+let currentUser = null;
+let reportTargetEmail = '';
+let reportTargetName = '';
+let selectedEditDate = null;
+
+// All time slots available to set
+const ALL_TIME_SLOTS = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+
+window.addEventListener('DOMContentLoaded', () => {
+    currentUser = requireAuth('mentor');
+    if (!currentUser) return;
+
+    const p = currentUser.profile;
+    const initials = p && p.fullName ? p.fullName.split(' ').filter(w=>!w.startsWith('.')).map(w=>w[0]).join('').slice(0,2).toUpperCase() : 'MT';
+    const name = (p && p.fullName) || 'Mentor';
+
+    document.getElementById('sidebar-name').textContent = name;
+    document.getElementById('sidebar-email').textContent = currentUser.email;
+    document.getElementById('sidebar-avatar').textContent = initials;
+    document.getElementById('home-name').textContent = name.split(' ').pop();
+    document.getElementById('profile-avatar').textContent = initials;
+    document.getElementById('profile-display-name').textContent = name;
+    document.getElementById('profile-display-email').textContent = currentUser.email;
+
+    if (p) {
+        document.getElementById('edit-name').value = p.fullName || '';
+        document.getElementById('edit-modules').value = Array.isArray(p.modules) ? p.modules.join(', ') : (p.modules || '');
+        document.getElementById('edit-qualification').value = p.qualification || '';
+        document.getElementById('edit-awards').value = p.awards || '';
+        const facEl = document.getElementById('edit-faculty');
+        for (let i=0;i<facEl.options.length;i++) { if (facEl.options[i].value.includes(p.faculty||'')) { facEl.selectedIndex=i; break; } }
+    }
+
+    initTabs('home');
+    renderHomeTab();
+    renderAvailability();
+    renderRecentSessions();
+    renderFeedbackTab();
+});
+
+// ─── HOME ───────────────────────────────────────────────
+function renderHomeTab() {
+    const userEmail = currentUser.email;
+    const mySessions = MOCK_SESSIONS.filter(s => s.mentorEmail === userEmail);
+    const today = new Date();
+    const weekEnd = new Date(today); weekEnd.setDate(today.getDate()+7);
+
+    const weekSessions = mySessions.filter(s => {
+        const d = new Date(s.date); return d >= today && d <= weekEnd && s.status !== 'cancelled';
+    });
+    const upcoming = mySessions.filter(s => s.status === 'booked' || s.status === 'in-progress');
+    const studentEmails = [...new Set(mySessions.map(s => s.studentEmail))];
+
+    document.getElementById('week-count').textContent = weekSessions.length;
+    document.getElementById('total-count').textContent = mySessions.length;
+    document.getElementById('upcoming-count').textContent = upcoming.length;
+    document.getElementById('students-count').textContent = studentEmails.length;
+
+    const div = document.getElementById('upcoming-bookings');
+    if (upcoming.length === 0) {
+        div.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">No upcoming bookings</p>'; return;
+    }
+    div.innerHTML = upcoming.map(s => {
+        const student = MOCK_STUDENTS.find(st => st.email === s.studentEmail) || { name: s.studentName, program: 'Unknown', avatar: 'ST', avatarColor: '#94a3b8' };
+        const prevSessions = mySessions.filter(x => x.studentEmail === s.studentEmail && x.id !== s.id);
+        return `<div class="border border-gray-100 rounded-xl p-4 mb-3 hover:bg-gray-50 transition-colors">
+            <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <div class="avatar" style="background:${student.avatarColor};width:36px;height:36px;font-size:12px;">${student.avatar}</div>
+                    <div>
+                        <p class="font-semibold text-gray-800">${s.studentName}</p>
+                        <p class="text-xs text-gray-500">${student.program}</p>
+                    </div>
+                </div>
+                <span class="badge badge-${s.status.replace(' ','-')}">${s.status}</span>
+            </div>
+            <div class="text-sm text-gray-600 mb-2">
+                <span class="font-medium text-gray-700">Module:</span> ${s.module} &nbsp;|&nbsp; <span class="font-medium text-gray-700">Date:</span> ${s.date} &nbsp;|&nbsp; <span class="font-medium text-gray-700">Time:</span> ${s.time}
+            </div>
+            <div class="flex gap-2">
+                <button onclick="viewStudentDetail('${s.studentEmail}', '${s.studentName}')" class="btn-sm btn-blue-sm py-1">View Details</button>
+                ${s.status !== 'cancelled' ? `<button onclick="cancelMentorSession(${s.id})" class="btn-sm btn-red-sm py-1">Cancel</button>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function cancelMentorSession(id) {
+    const s = MOCK_SESSIONS.find(x => x.id === id);
+    if (s) { s.status = 'cancelled'; renderHomeTab(); showFlash('Session cancelled.', 'info'); }
+    // TODO (Backend): DELETE /api/sessions/:id
+}
+
+function viewStudentDetail(email, name) {
+    const student = MOCK_STUDENTS.find(s => s.email === email) || { name, program: 'N/A', year: 'N/A', avatar: 'ST', avatarColor: '#94a3b8' };
+    const prevSessions = MOCK_SESSIONS.filter(s => s.studentEmail === email && s.mentorEmail === currentUser.email);
+    document.getElementById('student-detail-content').innerHTML = `
+        <div class="flex items-center gap-4 mb-5">
+            <div class="avatar text-xl" style="background:${student.avatarColor};width:56px;height:56px;">${student.avatar}</div>
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">${student.name}</h2>
+                <p class="text-gray-500 text-sm">${student.program}</p>
+                <p class="text-xs text-gray-400">${student.year}</p>
+            </div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4 mb-4">
+            <p class="text-sm font-semibold text-blue-800 mb-2">Sessions with You</p>
+            <p class="text-2xl font-bold text-blue-700">${prevSessions.length} total sessions</p>
+            <div class="mt-2 space-y-1">
+                ${prevSessions.map(s => `<div class="flex justify-between text-sm text-blue-700"><span>${s.module} — ${s.date}</span><span class="badge badge-${s.status.replace(' ','-')}">${s.status}</span></div>`).join('')}
+            </div>
+        </div>`;
+    reportTargetEmail = email;
+    reportTargetName = name;
+    document.getElementById('report-student-btn').onclick = () => {
+        closeModal('student-detail-modal');
+        document.getElementById('report-target-name').textContent = name;
+        openModal('report-modal');
+    };
+    openModal('student-detail-modal');
+}
+
+// ─── AVAILABILITY ───────────────────────────────────────
+function renderAvailability() {
+    const today = new Date();
+    renderCalendar('avail-calendar', today.getFullYear(), today.getMonth(), MENTOR_AVAILABILITY, (dateStr) => {
+        openDayEditor(dateStr);
+    });
+}
+
+function openDayEditor(dateStr) {
+    selectedEditDate = dateStr;
+    const slots = MENTOR_AVAILABILITY[dateStr] || [];
+    const bookedSlots = MOCK_SESSIONS.filter(s => s.date === dateStr && s.status !== 'cancelled').map(s => s.time);
+
+    const div = document.getElementById('day-editor');
+    div.innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="font-bold text-gray-800">Slots for ${dateStr}</h4>
+            <button onclick="clearDaySlots('${dateStr}')" class="btn-sm btn-red-sm py-1 text-xs">Clear All</button>
+        </div>
+        <div class="flex flex-wrap gap-2 mb-4">
+            ${ALL_TIME_SLOTS.map(t => {
+                const isAvail = slots.includes(t);
+                const isBooked = bookedSlots.includes(t);
+                let cls = isBooked ? 'booked' : (isAvail ? 'available' : 'unavailable');
+                let label = isBooked ? t + ' (Booked)' : t;
+                return `<button class="time-slot ${cls}" onclick="${isBooked ? '' : `toggleSlot('${dateStr}','${t}')`}" ${isBooked ? 'disabled title="Already booked"' : ''}>${label}</button>`;
+            }).join('')}
+        </div>
+        <div class="flex gap-2">
+            <button onclick="makeAllAvailable('${dateStr}')" class="btn-sm btn-green-sm py-1 text-xs flex-1">Make All Available</button>
+            <button onclick="saveAvailability()" class="btn-primary text-sm py-2 px-4">Save Changes</button>
+        </div>
+        <p class="text-xs text-gray-400 mt-3">Green = available, Yellow = booked, Grey = unavailable. Click to toggle.</p>`;
+    // TODO (Backend): Changes should be synced via PUT /api/availability — updates availability in database
+    //   This change must also reflect on the student booking page
+}
+
+function toggleSlot(dateStr, time) {
+    if (!MENTOR_AVAILABILITY[dateStr]) MENTOR_AVAILABILITY[dateStr] = [];
+    const idx = MENTOR_AVAILABILITY[dateStr].indexOf(time);
+    if (idx === -1) {
+        MENTOR_AVAILABILITY[dateStr].push(time);
+        MENTOR_AVAILABILITY[dateStr].sort();
+    } else {
+        MENTOR_AVAILABILITY[dateStr].splice(idx, 1);
+    }
+    openDayEditor(dateStr);
+    renderAvailability();
+}
+
+function clearDaySlots(dateStr) {
+    const bookedSlots = MOCK_SESSIONS.filter(s => s.date === dateStr && s.status !== 'cancelled').map(s => s.time);
+    MENTOR_AVAILABILITY[dateStr] = bookedSlots; // keep booked, remove available
+    openDayEditor(dateStr);
+    renderAvailability();
+}
+
+function makeAllAvailable(dateStr) {
+    MENTOR_AVAILABILITY[dateStr] = [...ALL_TIME_SLOTS];
+    openDayEditor(dateStr);
+    renderAvailability();
+}
+
+function saveAvailability() {
+    // TODO (Backend): PUT /api/availability — sync changes with database so students see updates
+    showFlash('Availability saved and students will see updated slots.', 'success');
+}
+
+// ─── MESSAGES ───────────────────────────────────────────
+function renderRecentSessions() {
+    const mySessions = MOCK_SESSIONS.filter(s => s.mentorEmail === currentUser.email);
+    const div = document.getElementById('recent-sessions-list');
+    if (mySessions.length === 0) {
+        div.innerHTML = '<p class="text-gray-400 text-sm">No sessions yet</p>'; return;
+    }
+    div.innerHTML = mySessions.map(s => {
+        const student = MOCK_STUDENTS.find(st => st.email === s.studentEmail) || {};
+        return `<div class="border border-gray-100 rounded-xl p-3 mb-3 hover:bg-gray-50 cursor-pointer" onclick="prefillMessage('${s.studentEmail}','${s.studentName}')">
+            <div class="flex justify-between mb-1">
+                <span class="font-semibold text-sm text-gray-800">${s.studentName}</span>
+                <span class="badge badge-${s.status.replace(' ','-')} text-xs">${s.status}</span>
+            </div>
+            <p class="text-xs text-gray-500">${s.module} — ${s.date} at ${s.time}</p>
+            <p class="text-xs text-blue-600 mt-1">Click to send message →</p>
+        </div>`;
+    }).join('');
+}
+
+function prefillMessage(email, name) {
+    const sel = document.getElementById('msg-student');
+    for (let i=0;i<sel.options.length;i++) { if (sel.options[i].value===email) { sel.selectedIndex=i; break; } }
+}
+
+document.getElementById('message-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const studentEmail = document.getElementById('msg-student').value;
+    const rating = document.getElementById('msg-rating').value;
+    const text = document.getElementById('msg-text').value.trim();
+    if (!studentEmail) { showFlash('Please select a student.', 'error'); return; }
+    if (!rating) { showFlash('Please select a performance rating.', 'error'); return; }
+    if (!text) { showFlash('Please write a message.', 'error'); return; }
+    const studentName = document.getElementById('msg-student').options[document.getElementById('msg-student').selectedIndex].text;
+    // TODO (Backend): POST /api/messages — save message in database
+    MOCK_MESSAGES.push({
+        id: Date.now(), fromRole: 'mentor', fromName: currentUser.profile.fullName || 'Mentor',
+        fromEmail: currentUser.email, toEmail: studentEmail,
+        message: text, rating, date: new Date().toISOString().split('T')[0]
+    });
+    showFlash(`Message sent to ${studentName}!`, 'success');
+    this.reset();
+});
+
+// ─── FEEDBACK ───────────────────────────────────────────
+function renderFeedbackTab() {
+    // TODO (Backend): GET /api/feedback?mentor=<email> — fetch reviews from database
+    const reviews = JSON.parse(localStorage.getItem('ss_reviews') || '[]').filter(r => r.mentor === currentUser.email);
+    const reviewDiv = document.getElementById('student-reviews');
+    if (reviews.length === 0) {
+        reviewDiv.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">No reviews received yet</p>';
+    } else {
+        reviewDiv.innerHTML = reviews.map(r => `
+            <div class="border border-gray-100 rounded-xl p-3 mb-3">
+                <div class="flex justify-between mb-1">
+                    <span class="text-yellow-500 text-lg">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+                    <span class="text-xs text-gray-400">${r.date}</span>
+                </div>
+                <p class="text-sm text-gray-700">${r.text}</p>
+            </div>`).join('');
+    }
+
+    // Student messages (what students sent to mentor as focus areas)
+    const msgs = MOCK_MESSAGES.filter(m => m.toEmail === currentUser.email);
+    const msgDiv = document.getElementById('student-messages-list');
+    if (msgs.length === 0) {
+        msgDiv.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">No messages from students yet</p>';
+    } else {
+        msgDiv.innerHTML = msgs.map(m => `
+            <div class="message-bubble from-student mb-3">
+                <div class="flex justify-between mb-1">
+                    <span class="font-semibold text-sm text-gray-800">${m.fromName}</span>
+                    <span class="text-xs text-gray-400">${m.date}</span>
+                </div>
+                <p class="text-sm text-gray-700">${m.message}</p>
+            </div>`).join('');
+    }
+}
+
+// ─── REPORT ─────────────────────────────────────────────
+function submitReport() {
+    const msg = document.getElementById('report-message').value.trim();
+    if (!msg) { showFlash('Please describe the issue.', 'error'); return; }
+    // TODO (Backend): POST /api/reports — save report in database, notify admin
+    showFlash(`Report against ${reportTargetName} submitted to admin.`, 'success');
+    closeModal('report-modal');
+    document.getElementById('report-message').value = '';
+}
+
+// ─── PROFILE ────────────────────────────────────────────
+document.getElementById('edit-profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const updatedProfile = {
+        fullName: document.getElementById('edit-name').value,
+        modules: document.getElementById('edit-modules').value.split(',').map(s => s.trim()),
+        faculty: document.getElementById('edit-faculty').value,
+        qualification: document.getElementById('edit-qualification').value,
+        awards: document.getElementById('edit-awards').value
+    };
+    // TODO (Backend): PUT /api/users/profile — update profile in database
+    currentUser.profile = updatedProfile;
+    setCurrentUser(currentUser);
+    showFlash('Profile updated successfully!', 'success');
+    document.getElementById('profile-display-name').textContent = updatedProfile.fullName;
+    document.getElementById('sidebar-name').textContent = updatedProfile.fullName;
+});
+</script>
+</body>
+</html>
