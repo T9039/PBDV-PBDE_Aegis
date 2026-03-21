@@ -1,151 +1,14 @@
 // ============================================================
-// StudySphere - Shared JavaScript
+// StudySphere - Shared UI & Utility JavaScript
 // ============================================================
-
-// ============================================================
-// MOCK ACCOUNTS
-// TODO (Backend): Replace this object with a POST /api/login
-//   call that checks credentials against the database.
-//   Remove hardcoded passwords before production deployment.
-// ============================================================
-const ACCOUNTS = {
-    'Student1@dut.ac.za': {
-        password: 'Student1!',
-        role: 'student',
-        profile: {
-            fullName: 'Sipho Dlamini',
-            degreeProgram: 'Bachelor of Science in Computer Science',
-            yearOfStudy: '3rd Year',
-            learningStyle: 'Visual Learner',
-            bio: 'Passionate about technology and software development.'
-        }
-    },
-    'Student2@dut.ac.za': {
-        password: 'Student2!',
-        role: 'student',
-        profile: {
-            fullName: 'Nomsa Khumalo',
-            degreeProgram: 'Bachelor of Engineering (Electrical)',
-            yearOfStudy: '2nd Year',
-            learningStyle: 'Auditory Learner',
-            bio: 'Eager to learn and grow academically in engineering.'
-        }
-    },
-    'Mentor@dut.ac.za': {
-        password: 'Mentor1!',
-        role: 'mentor',
-        profile: {
-            fullName: 'Prof. Thabo Nkosi',
-            modules: ['Mathematics', 'Physics', 'Statistics'],
-            faculty: 'Faculty of Applied Sciences',
-            qualification: 'MSc Mathematics, BSc Honours Physics',
-            awards: 'Best Tutor Award 2023, Academic Excellence Award 2022, DUT Outstanding Mentor 2021'
-        }
-    },
-    'Admin@dut.ac.za': {
-        password: 'Admin123!',
-        role: 'admin',
-        profile: { fullName: 'System Administrator' }
-    }
-};
-
-// ============================================================
-// MOCK DATA
-// TODO (Backend): Replace all mock data below with actual
-//   API calls to the database. Each section is labelled.
-// ============================================================
-
-// TODO: GET /api/sessions?user=<email>
-const MOCK_SESSIONS = [
-    { id: 1, mentorName: 'Prof. Thabo Nkosi', mentorEmail: 'Mentor@dut.ac.za', studentName: 'Sipho Dlamini', studentEmail: 'Student1@dut.ac.za', module: 'Mathematics', date: '2026-03-16', time: '10:00', status: 'booked' },
-    { id: 2, mentorName: 'Prof. Thabo Nkosi', mentorEmail: 'Mentor@dut.ac.za', studentName: 'Sipho Dlamini', studentEmail: 'Student1@dut.ac.za', module: 'Physics', date: '2026-03-18', time: '14:00', status: 'booked' },
-    { id: 3, mentorName: 'Prof. Thabo Nkosi', mentorEmail: 'Mentor@dut.ac.za', studentName: 'Nomsa Khumalo', studentEmail: 'Student2@dut.ac.za', module: 'Statistics', date: '2026-03-15', time: '09:00', status: 'in-progress' },
-    { id: 4, mentorName: 'Prof. Thabo Nkosi', mentorEmail: 'Mentor@dut.ac.za', studentName: 'Sipho Dlamini', studentEmail: 'Student1@dut.ac.za', module: 'Mathematics', date: '2026-03-10', time: '11:00', status: 'cancelled' }
-];
-
-// TODO: GET /api/messages?user=<email>
-const MOCK_MESSAGES = [
-    { id: 1, fromRole: 'mentor', fromName: 'Prof. Thabo Nkosi', fromEmail: 'Mentor@dut.ac.za', toEmail: 'Student1@dut.ac.za', message: 'Focus on Chapter 5 of Calculus — practice integration by parts. Complete exercises 5.1 to 5.3 before our next session.', rating: 'good', date: '2026-03-13' },
-    { id: 2, fromRole: 'student', fromName: 'Nomsa Khumalo', fromEmail: 'Student2@dut.ac.za', toEmail: 'Student1@dut.ac.za', message: 'Hey Sipho, want to set up a peer study session for Statistics this week?', date: '2026-03-12' }
-];
-
-// TODO: GET /api/mentors
-const MOCK_MENTORS = [
-    { id: 1, name: 'Prof. Thabo Nkosi', email: 'Mentor@dut.ac.za', faculty: 'Faculty of Applied Sciences', modules: ['Mathematics', 'Physics', 'Statistics'], qualification: 'MSc Mathematics, BSc Honours Physics', awards: 'Best Tutor Award 2023, Academic Excellence Award 2022, DUT Outstanding Mentor 2021', avatar: 'TN', avatarColor: '#003087', sessionsTotal: 48 },
-    { id: 2, name: 'Dr. Zanele Mthembu', email: 'zanele.m@dut.ac.za', faculty: 'Faculty of Engineering & Technology', modules: ['Programming', 'Data Structures', 'Algorithms'], qualification: 'PhD Computer Science, MSc Software Engineering', awards: 'Top Tutor 2023, Best Research Assistant 2022', avatar: 'ZM', avatarColor: '#065f46', sessionsTotal: 35 },
-    { id: 3, name: 'Mr. Ravi Pillay', email: 'ravi.p@dut.ac.za', faculty: 'Faculty of Accounting & Informatics', modules: ['Accounting', 'Financial Management', 'Economics'], qualification: 'BCom Honours Accounting, CPA', awards: 'Academic Excellence 2021, Faculty Top Student 2020', avatar: 'RP', avatarColor: '#7c2d12', sessionsTotal: 22 }
-];
-
-// TODO: GET /api/students
-const MOCK_STUDENTS = [
-    { id: 1, name: 'Sipho Dlamini', email: 'Student1@dut.ac.za', program: 'BSc Computer Science', year: '3rd Year', avatar: 'SD', avatarColor: '#1e40af' },
-    { id: 2, name: 'Nomsa Khumalo', email: 'Student2@dut.ac.za', program: 'BEng Electrical Engineering', year: '2nd Year', avatar: 'NK', avatarColor: '#065f46' }
-];
-
-// TODO: GET /api/availability?mentor=<email>
-let MENTOR_AVAILABILITY = {
-    '2026-03-16': ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00'],
-    '2026-03-17': ['09:00', '10:00', '13:00', '14:00'],
-    '2026-03-18': ['08:00', '09:00', '14:00', '15:00', '16:00'],
-    '2026-03-19': ['10:00', '11:00', '15:00'],
-    '2026-03-20': ['09:00', '10:00', '11:00']
-};
-
-// TODO: GET /api/mentor-requests (admin)
-let PENDING_MENTOR_REQUESTS = [
-    { id: 1, name: 'Ms. Priya Singh', email: 'priya.s@dut.ac.za', faculty: 'Faculty of Health Sciences', modules: 'Anatomy, Physiology', qualification: 'BSc Honours Biomedical Science', submittedDate: '2026-03-13', status: 'pending' },
-    { id: 2, name: 'Mr. Lethiwe Dube', email: 'lethiwe.d@dut.ac.za', faculty: 'Faculty of Arts & Design', modules: 'Graphic Design, Typography', qualification: 'BDes Visual Communication', submittedDate: '2026-03-12', status: 'pending' }
-];
-
-// TODO: GET /api/reports (admin)
-const MOCK_REPORTS = [
-    { id: 1, from: 'Prof. Thabo Nkosi', fromRole: 'mentor', against: 'Sipho Dlamini', againstRole: 'student', message: 'Student has been consistently late to sessions and not completing assigned work prior to meetings.', date: '2026-03-10', status: 'pending' },
-    { id: 2, from: 'Nomsa Khumalo', fromRole: 'student', against: 'Prof. Thabo Nkosi', againstRole: 'mentor', message: 'Mentor cancelled 3 sessions without prior notice this month, affecting my academic progress.', date: '2026-03-11', status: 'pending' }
-];
-
-// TODO: Database query for top requested subjects
-const COURSE_ANALYTICS = [
-    { subject: 'Mathematics', count: 45 },
-    { subject: 'Programming', count: 38 },
-    { subject: 'Physics', count: 29 }
-];
-
-// Peer requests (stored locally for demo)
-let peerRequests = JSON.parse(localStorage.getItem('ss_peer_requests') || '[]');
-let studentReports = JSON.parse(localStorage.getItem('ss_reports') || '[]');
-
-// ============================================================
-// AUTH UTILITIES
-// TODO (Backend): Replace sessionStorage with JWT tokens
-//   from the backend. Validate tokens server-side.
-// ============================================================
-
-function getCurrentUser() {
-    return JSON.parse(sessionStorage.getItem('ss_user') || 'null');
-}
-
-function setCurrentUser(user) {
-    sessionStorage.setItem('ss_user', JSON.stringify(user));
-}
-
-function requireAuth(requiredRole) {
-    const user = getCurrentUser();
-    if (!user) { window.location.href = 'login.html'; return null; }
-    if (requiredRole && user.role !== requiredRole) { window.location.href = 'login.html'; return null; }
-    return user;
-}
-
-function logout() {
-    sessionStorage.removeItem('ss_user');
-    window.location.href = 'index.html';
-}
 
 // ============================================================
 // VALIDATION
 // ============================================================
-
 function validateEmail(email) {
-    return email.includes('@') && email.includes('.');
+    // Basic regex for email validation
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
 }
 
 function validatePassword(password) {
@@ -153,51 +16,13 @@ function validatePassword(password) {
     if (password.length < 8) errors.push('At least 8 characters required');
     if (!/[A-Z]/.test(password)) errors.push('At least 1 uppercase letter required');
     if (!/[0-9]/.test(password)) errors.push('At least 1 number required');
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) errors.push('At least 1 special character required (e.g. ! @ # $)');
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) errors.push('At least 1 special character required');
     return errors;
-}
-
-function showFieldError(inputEl, errorEl, message) {
-    if (inputEl) inputEl.classList.add('error');
-    if (errorEl) errorEl.textContent = message;
-}
-
-function clearFieldError(inputEl, errorEl) {
-    if (inputEl) inputEl.classList.remove('error');
-    if (errorEl) errorEl.textContent = '';
-}
-
-// ============================================================
-// FLASH MESSAGES
-// ============================================================
-
-function showFlash(message, type = 'success') {
-    const old = document.querySelector('.flash-message');
-    if (old) old.remove();
-
-    const colors = {
-        success: 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;',
-        error: 'background:#fee2e2;color:#dc2626;border:1px solid #fecaca;',
-        info: 'background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;',
-        warning: 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;'
-    };
-
-    const el = document.createElement('div');
-    el.className = 'flash-message';
-    el.style.cssText = colors[type] || colors.success;
-    el.textContent = message;
-    document.body.appendChild(el);
-
-    setTimeout(() => {
-        el.style.animation = 'slideOut 0.3s ease forwards';
-        setTimeout(() => el.remove(), 300);
-    }, 4000);
 }
 
 // ============================================================
 // PASSWORD TOGGLE
 // ============================================================
-
 function togglePassword(inputId, btnId) {
     const input = document.getElementById(inputId);
     const btn = document.getElementById(btnId);
@@ -212,7 +37,6 @@ function togglePassword(inputId, btnId) {
 // ============================================================
 // MODAL HELPERS
 // ============================================================
-
 function openModal(id) {
     const m = document.getElementById(id);
     if (m) m.classList.add('active');
@@ -233,7 +57,6 @@ document.addEventListener('click', function(e) {
 // ============================================================
 // TAB SWITCHING (Dashboards)
 // ============================================================
-
 function initTabs(defaultTab) {
     const tabs = document.querySelectorAll('.sidebar-tab[data-tab]');
     const panels = document.querySelectorAll('.tab-panel');
@@ -259,7 +82,6 @@ function initTabs(defaultTab) {
 // ============================================================
 // CALENDAR RENDERER
 // ============================================================
-
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
@@ -277,11 +99,11 @@ function renderCalendar(containerId, year, month, slotData, onDayClick) {
     const today = new Date();
 
     let html = `<div class="flex items-center justify-between mb-4">
-        <button onclick="calNav('${containerId}',-1)" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <button type="button" onclick="calNav('${containerId}',-1)" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </button>
         <span class="font-bold text-gray-800">${MONTH_NAMES[month]} ${year}</span>
-        <button onclick="calNav('${containerId}',1)" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <button type="button" onclick="calNav('${containerId}',1)" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
     </div>
@@ -299,7 +121,7 @@ function renderCalendar(containerId, year, month, slotData, onDayClick) {
         let cls = 'calendar-day';
         if (isToday) cls += ' today';
         else if (hasSlot) cls += ' has-slot';
-        html += `<div class="${cls}" onclick="calDayClick('${ds}','${containerId}')">${day}</div>`;
+        html += `<div class="${cls}" onclick="calDayClick('${ds}','${containerId}', event)">${day}</div>`;
     }
 
     html += `</div>`;
@@ -315,11 +137,11 @@ function calNav(containerId, delta) {
     renderCalendar(containerId, y, m, c._slotData, c._onDayClick);
 }
 
-function calDayClick(ds, containerId) {
-    // Highlight selected day
+function calDayClick(ds, containerId, event) {
     document.querySelectorAll(`#${containerId} .calendar-day`).forEach(d => d.classList.remove('selected'));
-    event.target.classList.add('selected');
-
+    if(event && event.target) {
+        event.target.classList.add('selected');
+    }
     const c = document.getElementById(containerId);
     if (c && c._onDayClick) c._onDayClick(ds);
 }

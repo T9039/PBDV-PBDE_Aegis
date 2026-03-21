@@ -1,200 +1,566 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Mentor Profile – StudySphere</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
-</head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-
-<nav class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      /* Custom styles for the file upload dropzone */
+      .file-drop-area {
+        border: 2px dashed #e5e7eb;
+        transition: all 0.2s ease;
+      }
+      .file-drop-area:hover,
+      .file-drop-area.dragover {
+        border-color: #003087;
+        background-color: #eff6ff;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
-                </svg>
-            </div>
-            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+          <div
+            class="w-9 h-9 rounded-xl flex items-center justify-center"
+            style="background: #003087"
+          >
+            <svg
+              class="w-5 h-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l9-5-9-5-9 5 9 5z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"
+              />
+            </svg>
+          </div>
+          <span class="text-lg font-bold" style="color: #003087"
+            >StudySphere</span
+          >
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<!-- Progress Bar -->
-<div class="bg-white border-b border-gray-100 px-6 py-3">
-    <div class="max-w-xl mx-auto">
+    <div class="bg-white border-b border-gray-100 px-6 py-3">
+      <div class="max-w-xl mx-auto">
         <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
-            <span class="text-green-600 font-medium">✓ Account Created</span>
-            <span class="text-gray-300">→</span>
-            <span class="text-green-600 font-medium">✓ Role Selected</span>
-            <span class="text-gray-300">→</span>
-            <span class="font-semibold" style="color:#003087">Mentor Application</span>
+          <span class="text-green-600 font-medium">✓ Account Created</span>
+          <span class="text-gray-300">→</span>
+          <span class="text-green-600 font-medium">✓ Role Selected</span>
+          <span class="text-gray-300">→</span>
+          <span class="font-semibold" style="color: #003087"
+            >Mentor Application</span
+          >
         </div>
         <div class="h-2 bg-gray-200 rounded-full">
-            <div class="h-2 rounded-full" style="width:90%;background:#d97706"></div>
+          <div
+            class="h-2 rounded-full"
+            style="width: 90%; background: #d97706"
+          ></div>
         </div>
+      </div>
     </div>
-</div>
 
-<main class="flex-1 flex items-center justify-center py-12 px-4">
-    <div class="w-full max-w-xl">
-        <!-- Info Banner -->
-        <div class="alert alert-warning flex items-start gap-3 mb-5">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div>
-                <strong>Mentor applications require admin approval.</strong>
-                <p class="text-sm mt-0.5">Your application will be reviewed by the StudySphere administrator. You will be notified within 24-48 hours.</p>
-            </div>
+    <main class="flex-1 flex items-center justify-center py-12 px-4">
+      <div class="w-full max-w-xl">
+        <div
+          class="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-4 flex items-start gap-3 mb-5"
+        >
+          <svg
+            class="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <strong>Mentor applications require admin approval.</strong>
+            <p class="text-sm mt-0.5">
+              Your application and CV will be reviewed. You will be notified
+              within 24-48 hours.
+            </p>
+          </div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#fef3c7">
-                    <svg class="w-8 h-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                    </svg>
-                </div>
-                <h1 class="text-2xl font-bold mb-1" style="color:#003087">Mentor Application</h1>
-                <p class="text-gray-500 text-sm">Share your expertise and start making a difference</p>
+          <div class="text-center mb-8">
+            <div
+              class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style="background: #fef3c7"
+            >
+              <svg
+                class="w-8 h-8 text-yellow-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
+              </svg>
+            </div>
+            <h1 class="text-2xl font-bold mb-1" style="color: #003087">
+              Mentor Application
+            </h1>
+          </div>
+
+          <form id="mentor-form" enctype="multipart/form-data" novalidate>
+            <div class="mb-5">
+              <label class="form-label" for="fullname">Full Name</label>
+              <input
+                type="text"
+                id="fullname"
+                name="fullname"
+                class="form-input"
+                placeholder="e.g. Prof. Thabo Nkosi"
+              />
+              <p class="form-error" id="fullname-error"></p>
             </div>
 
-            <form id="mentor-form" novalidate>
-                <!-- Full Name -->
-                <div class="mb-5">
-                    <label class="form-label" for="fullname">Full Name</label>
-                    <input type="text" id="fullname" class="form-input" placeholder="e.g. Prof. Thabo Nkosi">
-                    <p class="form-error" id="fullname-error"></p>
-                </div>
+            <div class="mb-5">
+              <label class="form-label" for="modules"
+                >Modules You Specialise In</label
+              >
+              <input
+                type="text"
+                id="modules"
+                name="modules"
+                class="form-input"
+                placeholder="e.g. Mathematics, Programming, Statistics"
+              />
+              <p class="text-xs text-gray-400 mt-1">Separate with commas</p>
+              <p class="form-error" id="modules-error"></p>
+            </div>
 
-                <!-- Modules -->
-                <div class="mb-5">
-                    <label class="form-label" for="modules">Modules You Specialise In</label>
-                    <input type="text" id="modules" class="form-input" placeholder="e.g. Mathematics, Physics, Statistics (separate with commas)">
-                    <p class="text-xs text-gray-400 mt-1">List all modules you can mentor students in</p>
-                    <p class="form-error" id="modules-error"></p>
-                </div>
+            <div class="mb-5">
+              <label class="form-label" for="faculty">Faculty</label>
+              <select
+                id="faculty"
+                name="faculty"
+                class="form-input"
+                onchange="updateYearOptions()"
+              >
+                <option value="">Select your faculty</option>
+                <option value="Applied Sciences">
+                  Faculty of Applied Sciences
+                </option>
+                <option value="Engineering & Technology">
+                  Faculty of Engineering & Technology
+                </option>
+                <option value="Accounting & Informatics">
+                  Faculty of Accounting & Informatics
+                </option>
+                <option value="Health Sciences">
+                  Faculty of Health Sciences
+                </option>
+                <option value="Arts & Design">Faculty of Arts & Design</option>
+                <option value="Management Sciences">
+                  Faculty of Management Sciences
+                </option>
+              </select>
+              <p class="form-error" id="faculty-error"></p>
+            </div>
 
-                <!-- Faculty -->
-                <div class="mb-5">
-                    <label class="form-label" for="faculty">Faculty</label>
-                    <select id="faculty" class="form-input">
-                        <option value="">Select your faculty</option>
-                        <option>Faculty of Applied Sciences</option>
-                        <option>Faculty of Engineering &amp; Technology</option>
-                        <option>Faculty of Accounting &amp; Informatics</option>
-                        <option>Faculty of Health Sciences</option>
-                        <option>Faculty of Arts &amp; Design</option>
-                        <option>Faculty of Management Sciences</option>
-                        <option>Faculty of Education</option>
-                        <option>Faculty of Communication</option>
-                    </select>
-                    <p class="form-error" id="faculty-error"></p>
-                </div>
+            <div class="mb-5">
+              <label class="form-label">Academic Level</label>
+              <div
+                class="flex gap-4 p-1 bg-gray-100 rounded-xl border border-gray-200"
+              >
+                <label
+                  id="label-undergrad"
+                  class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors bg-white shadow-sm font-semibold text-gray-800"
+                >
+                  <input
+                    type="radio"
+                    name="study_level"
+                    value="Undergraduate"
+                    class="hidden"
+                    checked
+                    onchange="updateYearOptions()"
+                  />
+                  Undergraduate
+                </label>
+                <label
+                  id="label-postgrad"
+                  class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-gray-500 hover:text-gray-800"
+                >
+                  <input
+                    type="radio"
+                    name="study_level"
+                    value="Postgraduate"
+                    class="hidden"
+                    onchange="updateYearOptions()"
+                  />
+                  Postgraduate
+                </label>
+              </div>
+            </div>
 
-                <!-- Qualification -->
-                <div class="mb-5">
-                    <label class="form-label" for="qualification">Your Qualification(s)</label>
-                    <input type="text" id="qualification" class="form-input" placeholder="e.g. MSc Mathematics, BSc Honours Physics">
-                    <p class="form-error" id="qualification-error"></p>
-                </div>
+            <div class="mb-6">
+              <label class="form-label" for="year_of_study"
+                >Current Qualification / Year</label
+              >
+              <select
+                id="year_of_study"
+                name="year_of_study"
+                class="form-input disabled:bg-gray-100 disabled:text-gray-400"
+                disabled
+              >
+                <option value="">Select a faculty first</option>
+              </select>
+              <p class="form-error" id="year_of_study-error"></p>
+            </div>
 
-                <!-- Awards -->
-                <div class="mb-7">
-                    <label class="form-label" for="awards">Awards & Achievements <span class="text-gray-400 font-normal">(Optional)</span></label>
-                    <textarea id="awards" class="form-input resize-none" rows="3" placeholder="e.g. Best Tutor Award 2023, Academic Excellence Award 2022..."></textarea>
-                    <p class="text-xs text-gray-400 mt-1">List any awards or recognitions in your specialist modules</p>
-                </div>
+            <hr class="border-gray-100 mb-6" />
 
-                <!-- Submit -->
-                <button type="submit" class="btn-gold w-full py-3 text-base font-bold rounded-xl">
-                    Request Application as a Mentor
-                </button>
-            </form>
+            <div class="mb-5">
+              <label class="form-label"
+                >Professional Links
+                <span class="text-gray-400 font-normal">(Optional)</span></label
+              >
+              <div class="space-y-3">
+                <div class="relative">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                  >
+                    <span class="text-gray-400">🔗</span>
+                  </div>
+                  <input
+                    type="url"
+                    id="linkedin"
+                    name="linkedin"
+                    class="form-input pl-10"
+                    placeholder="LinkedIn or Indeed profile URL"
+                  />
+                </div>
+                <div class="relative">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                  >
+                    <span class="text-gray-400">🌐</span>
+                  </div>
+                  <input
+                    type="url"
+                    id="portfolio"
+                    name="portfolio"
+                    class="form-input pl-10"
+                    placeholder="GitHub, Portfolio, or Citation link"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-6">
+              <label class="form-label" for="awards"
+                >Awards & Achievements
+                <span class="text-gray-400 font-normal">(Optional)</span></label
+              >
+              <textarea
+                id="awards"
+                name="awards"
+                class="form-input resize-none"
+                rows="2"
+                placeholder="e.g. Academic Excellence Award 2022..."
+              ></textarea>
+            </div>
+
+            <div class="mb-8">
+              <label class="form-label"
+                >Upload CV / Transcript
+                <span class="text-red-500">*</span></label
+              >
+              <div
+                class="file-drop-area rounded-xl p-6 text-center cursor-pointer bg-gray-50 relative"
+                onclick="document.getElementById('cv_upload').click()"
+              >
+                <input
+                  type="file"
+                  id="cv_upload"
+                  name="cv_file"
+                  class="hidden"
+                  accept=".pdf,.doc,.docx"
+                  onchange="updateFileName(this)"
+                />
+                <svg
+                  class="mx-auto h-10 w-10 text-gray-400 mb-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <p
+                  class="text-sm text-gray-600 font-medium"
+                  id="file-name-display"
+                >
+                  Click to upload or drag and drop
+                </p>
+                <p class="text-xs text-gray-400 mt-1">
+                  PDF, DOC, or DOCX (Max 5MB)
+                </p>
+              </div>
+              <p class="form-error" id="cv-error"></p>
+            </div>
+
+            <button
+              type="submit"
+              class="btn-gold w-full py-3 text-base font-bold rounded-xl"
+              id="submit-btn"
+            >
+              Submit Application
+            </button>
+          </form>
         </div>
-    </div>
-</main>
+      </div>
+    </main>
 
-<!-- Success Modal -->
-<div class="modal-overlay" id="success-modal">
-    <div class="modal-box max-w-md text-center">
-        <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5" style="background:#d1fae5">
-            <svg class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+    <div
+      id="toast-container"
+      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"
+    ></div>
+
+    <div class="modal-overlay" id="success-modal">
+      <div class="modal-box max-w-md text-center">
+        <div
+          class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5"
+          style="background: #d1fae5"
+        >
+          <svg
+            class="w-10 h-10 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
         </div>
-        <h2 class="text-xl font-bold mb-3" style="color:#003087">Request Sent Successfully!</h2>
+        <h2 class="text-xl font-bold mb-3" style="color: #003087">
+          Request Sent Successfully!
+        </h2>
         <p class="text-gray-600 mb-4 leading-relaxed">
-            Your mentor application has been submitted to the StudySphere admin team.
+          Your mentor application has been submitted to the StudySphere admin
+          team.
         </p>
         <div class="alert alert-info text-left mb-4">
-            <strong>What happens next?</strong>
-            <ul class="mt-2 space-y-1 text-sm">
-                <li>• Your application will be reviewed within <strong>24-48 hours</strong></li>
-                <li>• You will receive an email notification once a decision is made</li>
-                <li>• Should any issues arise, please email: <strong>Admin@dut.ac.za</strong></li>
-            </ul>
+          <strong>What happens next?</strong>
+          <ul class="mt-2 space-y-1 text-sm">
+            <li>
+              • Your application will be reviewed within
+              <strong>24-48 hours</strong>
+            </li>
+            <li>
+              • You will receive an email notification once a decision is made
+            </li>
+            <li>
+              • Should any issues arise, please email:
+              <strong>Admin@dut.ac.za</strong>
+            </li>
+          </ul>
         </div>
-        <p class="text-sm text-gray-500 mb-5">You will be redirected to the home page. Please check your email for updates.</p>
+        <p class="text-sm text-gray-500 mb-5">
+          You will be redirected to the login page.
+        </p>
         <button onclick="goHome()" class="btn-primary w-full justify-center">
-            Return to Home Page
+          Proceed to Login
         </button>
+      </div>
     </div>
-</div>
 
-<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
-<script>
-    document.getElementById('mentor-form').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script>
+      // --- Missing Modal & Navigation Functions ---
+      let nextDestinationUrl = '/';
 
-        const fullname = document.getElementById('fullname').value.trim();
-        const modules = document.getElementById('modules').value.trim();
-        const faculty = document.getElementById('faculty').value;
-        const qualification = document.getElementById('qualification').value.trim();
-        const awards = document.getElementById('awards').value.trim();
+      function openModal(id) {
+        const m = document.getElementById(id);
+        if (m) m.classList.add('active');
+      }
 
-        // Clear errors
-        ['fullname-error','modules-error','faculty-error','qualification-error'].forEach(id => {
-            document.getElementById(id).textContent = '';
-        });
+      function closeModal(id) {
+        const m = document.getElementById(id);
+        if (m) m.classList.remove('active');
+      }
 
-        let valid = true;
-        if (!fullname) { document.getElementById('fullname-error').textContent = 'Full name is required.'; valid = false; }
-        if (!modules) { document.getElementById('modules-error').textContent = 'Please list the modules you specialise in.'; valid = false; }
-        if (!faculty) { document.getElementById('faculty-error').textContent = 'Please select your faculty.'; valid = false; }
-        if (!qualification) { document.getElementById('qualification-error').textContent = 'Qualification is required.'; valid = false; }
+      function goHome() {
+        window.location.href = nextDestinationUrl;
+      }
+      // 1. Backend variables via Jinja
+      const isStaff = {{ 'true' if session.get('reg_is_staff') else 'false' }};
 
-        if (!valid) return;
+      // Degree mappings based on Faculty
+      const degreeMapping = {
+          "Applied Sciences": "BSc / Dip",
+          "Engineering & Technology": "BEng / BSc / Dip",
+          "Accounting & Informatics": "BICT / BCom / Dip",
+          "Health Sciences": "BHSc / Dip",
+          "Arts & Design": "BA / BDes / Dip",
+          "Management Sciences": "BBA / BCom / Dip"
+      };
 
-        const signup = JSON.parse(sessionStorage.getItem('ss_signup') || '{}');
+      document.addEventListener("DOMContentLoaded", () => {
+          // Enforce Postgrad for staff
+          if (isStaff) {
+              const underGradRadio = document.querySelector('input[value="Undergraduate"]');
+              const postGradRadio = document.querySelector('input[value="Postgraduate"]');
 
-        // TODO (Backend): POST /api/mentor-requests — save mentor application to database
-        //   Body: { email, fullName, modules, faculty, qualification, awards, status: 'pending' }
-        //   Also: notify admin via email API (e.g. SendGrid)
+              postGradRadio.checked = true;
+              underGradRadio.disabled = true;
 
-        // Add to pending requests (local demo)
-        const existing = JSON.parse(localStorage.getItem('ss_pending_mentors') || '[]');
-        existing.push({
-            id: Date.now(),
-            name: fullname,
-            email: signup.email || 'applicant@dut.ac.za',
-            faculty, modules, qualification, awards,
-            submittedDate: new Date().toISOString().split('T')[0],
-            status: 'pending'
-        });
-        localStorage.setItem('ss_pending_mentors', JSON.stringify(existing));
+              // Visual lockdown
+              document.getElementById('label-undergrad').classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
+              document.getElementById('label-postgrad').classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-gray-800');
+              document.getElementById('label-postgrad').classList.remove('text-gray-500');
+              document.getElementById('label-undergrad').classList.remove('font-semibold', 'text-gray-800', 'bg-white', 'shadow-sm');
+          }
+      });
 
-        openModal('success-modal');
-    });
+      // Handle Radio styling
+      document.querySelectorAll('input[name="study_level"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+              document.getElementById('label-undergrad').className = "flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-gray-500 hover:text-gray-800";
+              document.getElementById('label-postgrad').className = "flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-gray-500 hover:text-gray-800";
 
-    function goHome() {
-        sessionStorage.removeItem('ss_signup');
-        sessionStorage.removeItem('ss_role');
-        window.location.href = 'index.html';
-    }
-</script>
-</body>
+              if(e.target.value === 'Undergraduate') {
+                  document.getElementById('label-undergrad').classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-gray-800');
+                  document.getElementById('label-undergrad').classList.remove('text-gray-500');
+              } else {
+                  document.getElementById('label-postgrad').classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-gray-800');
+                  document.getElementById('label-postgrad').classList.remove('text-gray-500');
+              }
+          });
+      });
+
+      // Dynamic Dropdown Logic
+      function updateYearOptions() {
+          const faculty = document.getElementById('faculty').value;
+          const select = document.getElementById('year_of_study');
+          const level = document.querySelector('input[name="study_level"]:checked').value;
+
+          select.innerHTML = ''; // Clear current
+
+          if (!faculty) {
+              select.disabled = true;
+              select.innerHTML = '<option value="">Select a faculty first</option>';
+              return;
+          }
+
+          select.disabled = false;
+          select.innerHTML = '<option value="">Select current level</option>';
+
+          if (level === 'Undergraduate') {
+              const prefix = degreeMapping[faculty] || "Degree / Dip";
+              select.innerHTML += `<option value="${prefix} - 1st Year">${prefix} - 1st Year</option>`;
+              select.innerHTML += `<option value="${prefix} - 2nd Year">${prefix} - 2nd Year</option>`;
+              select.innerHTML += `<option value="${prefix} - 3rd Year">${prefix} - 3rd Year</option>`;
+              select.innerHTML += `<option value="${prefix} - 4th Year">${prefix} - 4th Year (BTech/Extended)</option>`;
+          } else {
+              select.innerHTML += `<option value="Advanced Diploma">Advanced Diploma</option>`;
+              select.innerHTML += `<option value="Honours Degree">Honours Degree</option>`;
+              select.innerHTML += `<option value="Masters Degree">Masters Degree</option>`;
+              select.innerHTML += `<option value="PhD / Doctorate">PhD / Doctorate</option>`;
+          }
+      }
+
+      // UI helper for file upload
+      function updateFileName(input) {
+          const display = document.getElementById('file-name-display');
+          if (input.files && input.files[0]) {
+              display.textContent = input.files[0].name;
+              display.classList.add('text-blue-600');
+          } else {
+              display.textContent = "Click to upload or drag and drop";
+              display.classList.remove('text-blue-600');
+          }
+      }
+
+      // Submit Logic using FormData
+      document.getElementById('mentor-form').addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          // Basic Validation
+          let valid = true;
+          const requiredIds = ['fullname', 'modules', 'faculty', 'year_of_study'];
+          requiredIds.forEach(id => {
+              const el = document.getElementById(id);
+              const err = document.getElementById(id + '-error');
+              err.textContent = '';
+
+              if (!el.value.trim()) {
+                  err.textContent = 'This field is required.';
+                  valid = false;
+              }
+          });
+
+          const cvInput = document.getElementById('cv_upload');
+          document.getElementById('cv-error').textContent = '';
+          if (!cvInput.files || cvInput.files.length === 0) {
+              document.getElementById('cv-error').textContent = 'Please upload a CV or Transcript.';
+              valid = false;
+          }
+
+          if (!valid) return;
+
+          // Use FormData to pack the text AND the file
+          const formData = new FormData(this);
+
+          const btn = document.getElementById('submit-btn');
+          btn.disabled = true;
+          btn.innerHTML = "Uploading...";
+
+          fetch("/api/register-mentor", {
+            method: "POST",
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+                showToast(data.error, "error");
+                btn.disabled = false;
+                btn.innerHTML = "Submit Application";
+            } else {
+                // 3. Save the URL from the backend before opening the modal
+                if (data.redirect_url) {
+                    nextDestinationUrl = data.redirect_url;
+                }
+                openModal('success-modal');
+            }
+          })
+      });
+    </script>
+  </body>
 </html>

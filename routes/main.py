@@ -1,6 +1,14 @@
-from flask import Blueprint, jsonify, redirect, render_template, request, session
+from flask import (
+    Blueprint,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
-from models import MentorProfile, StudentProfile, User, db
+from models import CampusRole, MentorProfile, MentorStatus, StudentProfile, User, db
 from utils import save_uploaded_file  # Import your new function!
 
 # Create the blueprint
@@ -18,13 +26,38 @@ def landing():
     #     return jsonify({"success": True, "redirect": target_url}), 200
 
     # Otherwise, show the beautiful public marketing page
-    return render_template("main/home.html")
+    return render_template("main/index.html")
 
 
 # Route for the Mentor Profile View
-@main_bp.route("/mentor/dashboard")
-def mentor():
-    return render_template("mentor/dashboard.html")
+@main_bp.route("/mentor-dashboard")
+def mentor_dashboard():
+    # 1. Security: Are they logged in?
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))  # Adjust route name as needed
+
+    # 2. Fetch the user and their mentor profile
+    user = User.query.get(session["user_id"])
+
+    if not user:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    # 3. Security: Are they allowed here? (Staff or Approved Student-Mentors)
+    is_staff = user.campus_role == CampusRole.STAFF
+    is_approved_student = (
+        user.campus_role == CampusRole.STUDENT
+        and user.mentor_status == MentorStatus.APPROVED
+    )
+
+    if not (is_staff or is_approved_student):
+        # Kick them to the student dashboard if they don't belong here
+        return redirect(url_for("main.student_dashboard"))
+
+    # 4. Render template and pass the database objects directly to Jinja
+    return render_template(
+        "main/mentor_dashboard.html", user=user, profile=user.mentor_profile
+    )
 
 
 @main_bp.route("/mentor/complete-profile", methods=["POST"])
@@ -79,15 +112,14 @@ def complete_profile():
         # 6. Create their new MentorProfile record
         new_profile = MentorProfile(
             user_id=user.id,
-            experience=data.get("experience"),
-            motivation=data.get("motivation"),
-            subjects=data.get("subjects"),
-            linkedin_url=data.get("linkedin_url"),
-            certifications=data.get("certifications"),
-            cv_file_path=cv_path,  # Real path saved here!
-            transcript_file_path=transcript_path,  # Real path saved here!
-            bio=data.get("bio", ""),
+            modules=data.get("modules"),
+            faculty=data.get("faculty"),
+            study_level=data.get("study_level"),
             year_of_study=data.get("year_of_study", ""),
+            cv_file_path=cv_path,  # Real path saved here!
+            awards=data.get("awards"),
+            linkedin_url=data.get("linkedin_url"),
+            portfolio_url=data.get("portfolio_url"),
         )
 
         # 7. Save everything to MariaDB safely
@@ -193,28 +225,28 @@ def edit_profile():
         return jsonify({"success": False, "error": "Database error occurred."}), 500
 
 
-@main_bp.route("/student/dashboard")
-def student_dashboard():
-    email = session.get("email")
-    if not email:
-        return redirect("/")
-
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return redirect("/")
-
-    # Fetch mentors for the cards
-    mentors = db.session.query(MentorProfile, User).join(User).all()
-
-    has_profile = StudentProfile.query.filter_by(user_id=user.id).first() is not None
-
-    # --- ADD THIS PRINT STATEMENT ---
-    print(f"DEBUG: User {user.email} | Profile Found: {has_profile}")
-    # --------------------------------
-
-    return render_template(
-        "student/dashboard.html", mentors=mentors, has_profile=has_profile
-    )
+# @main_bp.route("/student/dashboard")
+# def student_dashboard():
+#     email = session.get("email")
+#     if not email:
+#         return redirect("/")
+#
+#     user = User.query.filter_by(email=email).first()
+#     if not user:
+#         return redirect("/")
+#
+#     # Fetch mentors for the cards
+#     mentors = db.session.query(MentorProfile, User).join(User).all()
+#
+#     has_profile = StudentProfile.query.filter_by(user_id=user.id).first() is not None
+#
+#     # --- ADD THIS PRINT STATEMENT ---
+#     print(f"DEBUG: User {user.email} | Profile Found: {has_profile}")
+#     # --------------------------------
+#
+#     return render_template(
+#         "student/dashboard.html", mentors=mentors, has_profile=has_profile
+#     )
 
 
 @main_bp.route("/student/complete-profile", methods=["POST"])
@@ -237,12 +269,13 @@ def complete_student_profile():
     try:
         new_profile = StudentProfile(
             user_id=user.id,
+            faculty=data.get("faculty"),
             degree_program=data.get("degree_program"),
+            study_level=data.get("study_level"),
             year_of_study=data.get("year_of_study"),
             subjects_needing_help=data.get("subjects_needing_help"),
-            primary_goals=data.get("primary_goals"),
-            bio=data.get("bio"),
             preferred_learning_style=data.get("preferred_learning_style"),
+            bio=data.get("bio"),
         )
         db.session.add(new_profile)
         db.session.commit()
@@ -319,3 +352,50 @@ def edit_student_profile():
         db.session.rollback()
         print(f"Error updating student profile: {e}")
         return jsonify({"success": False, "error": "Database error occurred."}), 500
+
+
+@main_bp.route("/student-dashboard")
+def student_dashboard():
+    # 1. Security: Are they logged in?
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    # 2. Fetch the user
+    user = User.query.get(session["user_id"])
+
+    # Safety catch in case the session cookie outlived the database record
+    if not user:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    # 3. Security: Are they a student? (Or staff acting as a student)
+    if user.campus_role != CampusRole.STUDENT and user.campus_role != CampusRole.STAFF:
+        return redirect(url_for("auth.login"))
+
+    # 4. Pass the user and their specific profile to Jinja
+    return render_template(
+        "main/student_dashboard.html", user=user, profile=user.student_profile
+    )
+
+
+@main_bp.route("/admin-dashboard")
+def admin_dashboard():
+    # 1. Security: Are they logged in?
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.get(session["user_id"])
+
+    if not user:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    # 2. Strict Admin Check
+    # (You can change this to check a specific 'is_admin' boolean if you add one later)
+    if user.email != "Admin@dut.ac.za":
+        # Kick unauthorized users back to their respective dashboards
+        if user.campus_role == CampusRole.STAFF:
+            return redirect(url_for("main.mentor_dashboard"))
+        return redirect(url_for("main.student_dashboard"))
+
+    return render_template("main/admin_dashboard.html", user=user)
