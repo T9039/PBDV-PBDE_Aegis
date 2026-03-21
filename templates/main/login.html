@@ -1,185 +1,318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log In – StudySphere</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
-</head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-
-<!-- NAVBAR -->
-<nav class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
-                </svg>
-            </div>
-            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div
+        class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between"
+      >
+        <a href="/" class="flex items-center gap-3">
+          <div
+            class="w-9 h-9 rounded-xl flex items-center justify-center"
+            style="background: #003087"
+          >
+            <svg
+              class="w-5 h-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l9-5-9-5-9 5 9 5z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"
+              />
+            </svg>
+          </div>
+          <span class="text-lg font-bold" style="color: #003087"
+            >StudySphere</span
+          >
         </a>
-        <a href="index.html" class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to Home
+        <a
+          href="/"
+          class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Home
         </a>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<!-- MAIN -->
-<main class="flex-1 flex items-center justify-center py-12 px-4">
-    <div class="w-full max-w-md">
-        <!-- Card -->
+    <main class="flex-1 flex items-center justify-center py-12 px-4">
+      <div class="w-full max-w-md">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#eff6ff">
-                    <svg class="w-8 h-8" style="color:#003087" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                </div>
-                <h1 class="text-2xl font-bold mb-1" style="color:#003087">Welcome Back</h1>
-                <p class="text-gray-500 text-sm">Log in to your StudySphere account</p>
+          <div class="text-center mb-8">
+            <div
+              class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style="background: #eff6ff"
+            >
+              <svg
+                class="w-8 h-8"
+                style="color: #003087"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
             </div>
-
-            <!-- Error Alert -->
-            <div id="login-error" class="alert alert-error hidden mb-4"></div>
-
-            <form id="login-form" novalidate>
-                <!-- Email -->
-                <div class="mb-5">
-                    <label class="form-label" for="email">Student / Staff Email</label>
-                    <input type="email" id="email" class="form-input" placeholder="22789001@dut.ac.za" autocomplete="email">
-                    <p class="form-error" id="email-error"></p>
-                </div>
-
-                <!-- Password -->
-                <div class="mb-2">
-                    <label class="form-label" for="password">Password</label>
-                    <div class="pw-wrap">
-                        <input type="password" id="password" class="form-input pr-12" placeholder="Enter your password" autocomplete="current-password">
-                        <button type="button" class="pw-toggle" id="pw-toggle-btn" onclick="togglePassword('password','pw-toggle-btn')">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="form-error" id="password-error"></p>
-                </div>
-
-                <!-- Forgot password -->
-                <div class="text-right mb-5">
-                    <button type="button" onclick="forgotPassword()" class="text-sm font-medium hover:underline" style="color:#003087">Forgot password?</button>
-                </div>
-
-                <!-- Remember me -->
-                <div class="flex items-center gap-3 mb-6 p-3 bg-gray-50 rounded-lg">
-                    <input type="checkbox" id="remember" class="w-4 h-4 rounded" style="accent-color:#003087">
-                    <label for="remember" class="text-sm text-gray-600">Remember me for 30 days</label>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit" class="btn-primary w-full justify-center py-3 text-base">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                    Log In
-                </button>
-            </form>
-
-            <!-- Sign up link -->
-            <p class="text-center text-sm text-gray-500 mt-6">
-                Don't have an account?
-                <a href="signup.html" class="font-semibold hover:underline" style="color:#003087">Sign up!</a>
+            <h1 class="text-2xl font-bold mb-1" style="color: #003087">
+              Welcome Back
+            </h1>
+            <p class="text-gray-500 text-sm">
+              Log in to your StudySphere account
             </p>
-        </div>
+          </div>
 
-        <!-- Demo accounts hint -->
-        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm">
-            <p class="font-semibold text-blue-800 mb-2">Demo Accounts:</p>
-            <div class="text-blue-700 space-y-1">
-                <p>Student: <strong>Student1@dut.ac.za</strong> / <strong>Student1!</strong></p>
-                <p>Mentor: <strong>Mentor@dut.ac.za</strong> / <strong>Mentor1!</strong></p>
-                <p>Admin: <strong>Admin@dut.ac.za</strong> / <strong>Admin123!</strong></p>
+          <form id="login-form" novalidate>
+            <div class="mb-5">
+              <label class="form-label" for="email"
+                >Student / Staff Email</label
+              >
+              <input
+                type="email"
+                id="email"
+                class="form-input"
+                placeholder="22789001@dut.ac.za"
+                autocomplete="email"
+              />
+              <p class="form-error" id="email-error"></p>
             </div>
-        </div>
-    </div>
-</main>
 
-<!-- Forgot Password Modal -->
-<div class="modal-overlay" id="forgot-modal">
-    <div class="modal-box max-w-sm">
-        <button onclick="closeModal('forgot-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <div class="mb-2">
+              <label class="form-label" for="password">Password</label>
+              <div class="pw-wrap">
+                <input
+                  type="password"
+                  id="password"
+                  class="form-input pr-12"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  class="pw-toggle"
+                  id="pw-toggle-btn"
+                  onclick="togglePassword('password', 'pw-toggle-btn')"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <p class="form-error" id="password-error"></p>
+            </div>
+
+            <div class="text-right mb-5">
+              <button
+                type="button"
+                onclick="forgotPassword()"
+                class="text-sm font-medium hover:underline"
+                style="color: #003087"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              id="submit-btn"
+              class="btn-primary w-full justify-center py-3 text-base"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
+              </svg>
+              Log In
+            </button>
+          </form>
+
+          <p class="text-center text-sm text-gray-500 mt-6">
+            Don't have an account?
+            <a
+              href="/signup"
+              class="font-semibold hover:underline"
+              style="color: #003087"
+              >Sign up!</a
+            >
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="forgot-modal">
+      <div class="modal-box max-w-sm">
+        <button
+          onclick="closeModal('forgot-modal')"
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
-        <h2 class="text-lg font-bold mb-2" style="color:#003087">Reset Your Password</h2>
-        <p class="text-sm text-gray-500 mb-4">Please contact the StudySphere administrator to reset your password.</p>
-        <!-- TODO (Backend): Implement password reset via email API (e.g. SendGrid) -->
-        <div class="alert alert-info">
-            <strong>Contact Admin:</strong> Admin@dut.ac.za<br>
-            <span class="text-xs">Include your student number and registered email.</span>
+        <h2 class="text-lg font-bold mb-2" style="color: #003087">
+          Reset Your Password
+        </h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Please contact the StudySphere administrator to reset your password.
+        </p>
+        <div class="alert alert-info text-left">
+          <strong>Contact Admin:</strong> Admin@dut.ac.za<br />
+          <span class="text-xs"
+            >Include your student number and registered email.</span
+          >
         </div>
-        <button onclick="closeModal('forgot-modal')" class="btn-primary w-full justify-center mt-4">Close</button>
+        <button
+          onclick="closeModal('forgot-modal')"
+          class="btn-primary w-full justify-center mt-4"
+        >
+          Close
+        </button>
+      </div>
     </div>
-</div>
 
-<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
-<script>
-    const form = document.getElementById('login-form');
+    <div
+      id="toast-container"
+      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"
+    ></div>
 
-    form.addEventListener('submit', function(e) {
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
+    <script>
+      const form = document.getElementById("login-form");
+
+      form.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const errorBox = document.getElementById('login-error');
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
 
         // Clear errors
-        errorBox.classList.add('hidden');
-        errorBox.textContent = '';
-        document.getElementById('email-error').textContent = '';
-        document.getElementById('password-error').textContent = '';
+        document.getElementById("email-error").textContent = "";
+        document.getElementById("password-error").textContent = "";
 
-        // Basic validation
-        if (!email) { document.getElementById('email-error').textContent = 'Email is required.'; return; }
-        if (!validateEmail(email)) { document.getElementById('email-error').textContent = 'Please enter a valid email address.'; return; }
-        if (!password) { document.getElementById('password-error').textContent = 'Password is required.'; return; }
+        let valid = true;
 
-        // TODO (Backend): Replace the check below with a POST /api/login request
-        //   and validate credentials server-side against the database.
-        const account = ACCOUNTS[email];
-        if (!account || account.password !== password) {
-            errorBox.textContent = 'Incorrect email or password. Please try again.';
-            errorBox.classList.remove('hidden');
-            return;
+        if (!email) {
+          document.getElementById("email-error").textContent =
+            "Email is required.";
+          valid = false;
+        } else if (!validateEmail(email)) {
+          document.getElementById("email-error").textContent =
+            "Please enter a valid email address.";
+          valid = false;
         }
 
-        // Remember me (TODO Backend: set a persistent session/token)
-        if (document.getElementById('remember').checked) {
-            localStorage.setItem('ss_remembered', email);
+        if (!password) {
+          document.getElementById("password-error").textContent =
+            "Password is required.";
+          valid = false;
         }
 
-        // Set session user
-        setCurrentUser({ email: email, role: account.role, profile: account.profile });
+        if (!valid) return;
 
-        showFlash('Login successful! Redirecting...', 'success');
+        const btn = document.getElementById("submit-btn");
+        btn.disabled = true;
+        btn.innerHTML = "Authenticating...";
 
-        // Redirect based on role
-        setTimeout(() => {
-            if (account.role === 'student') window.location.href = 'student_dashboard.html';
-            else if (account.role === 'mentor') window.location.href = 'mentor_dashboard.html';
-            else if (account.role === 'admin') window.location.href = 'admin_dashboard.html';
-        }, 800);
-    });
+        // Send to backend
+        fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, password: password }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              showToast(data.error, "error");
+              btn.disabled = false;
+              btn.innerHTML = "Log In";
+            } else {
+              showToast("Login successful! Redirecting...", "success");
+              setTimeout(() => {
+                window.location.href = data.redirect_url;
+              }, 1000);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showToast("A server error occurred. Please try again.", "error");
+            btn.disabled = false;
+            btn.innerHTML = "Log In";
+          });
+      });
 
-    function forgotPassword() {
-        openModal('forgot-modal');
-    }
-
-    // Pre-fill if remembered
-    const remembered = localStorage.getItem('ss_remembered');
-    if (remembered) document.getElementById('email').value = remembered;
-</script>
-</body>
+      function forgotPassword() {
+        openModal("forgot-modal");
+      }
+    </script>
+  </body>
 </html>

@@ -20,6 +20,20 @@ class MentorStatus(enum.Enum):
     REJECTED = "rejected"  # Denied
 
 
+class SessionStatus(enum.Enum):
+    PENDING = "pending"
+    BOOKED = "booked"
+    IN_PROGRESS = "in-progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class ReportStatus(enum.Enum):
+    PENDING = "pending"
+    RESOLVED = "resolved"
+    DISMISSED = "dismissed"
+
+
 # ==========================================
 # TABLE 1: Active Users
 # ==========================================
@@ -71,84 +85,67 @@ class MentorProfile(db.Model):
         db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True
     )
 
-    # --- PUBLIC: Displayed on the Mentor Card for Students ---
-    year_of_study = db.Column(db.String(255), nullable=True)
-    subjects = db.Column(db.String(255), nullable=False)
-    bio = db.Column(db.Text, nullable=True)
-    experience = db.Column(
-        db.Text, nullable=True
-    )  # e.g., "Helped 1st-year students with Python, participated in 3 hackathons."
+    # --- Academic Details ---
+    modules = db.Column(db.String(255), nullable=False)
+    faculty = db.Column(db.String(150), nullable=False)
+    study_level = db.Column(
+        db.String(50), nullable=False
+    )  # 'Undergraduate' or 'Postgraduate'
+    year_of_study = db.Column(db.String(100), nullable=False)
 
-    # --- PRIVATE: Seen ONLY by Admins for Verification ---
-    motivation = db.Column(db.Text, nullable=False)
+    # --- Extras & Links ---
+    awards = db.Column(db.Text, nullable=True)
     linkedin_url = db.Column(db.String(255), nullable=True)
-    # github_url = db.Column(db.String(255), nullable=True)
-    certifications = db.Column(
-        db.String(255), nullable=True
-    )  # e.g., "AWS Cloud Practitioner, CompTIA A+"
+    portfolio_url = db.Column(db.String(255), nullable=True)  # GitHub, Citations, etc.
 
-    # File Paths (We store the PDF file on the server and save the path here)
-    cv_file_path = db.Column(db.String(255), nullable=True)
-    transcript_file_path = db.Column(db.String(255), nullable=True)
-
-    def __repr__(self):
-        return f"<MentorProfile for User ID {self.user_id}>"
+    # --- Mandatory File ---
+    cv_file_path = db.Column(db.String(255), nullable=False)
 
     def __init__(
         self,
         user_id,
-        experience,
-        motivation,
-        subjects,
-        linkedin_url,
-        # github_url,
-        certifications,
+        modules,
+        faculty,
+        study_level,
+        year_of_study,
         cv_file_path,
-        transcript_file_path=None,
-        bio=None,
-        year_of_study=None,
+        awards=None,
+        linkedin_url=None,
+        portfolio_url=None,
     ):
         self.user_id = user_id
-        self.experience = experience
-        self.linkedin_url = linkedin_url
-        self.certifications = certifications
-        self.cv_file_path = cv_file_path
-        self.transcript_file_path = transcript_file_path
-        self.motivation = motivation
-        self.subjects = subjects
+        self.modules = modules
+        self.faculty = faculty
+        self.study_level = study_level
         self.year_of_study = year_of_study
-        self.bio = bio
+        self.cv_file_path = cv_file_path
+        self.awards = awards
+        self.linkedin_url = linkedin_url
+        self.portfolio_url = portfolio_url
 
 
 class StudentProfile(db.Model):
     __tablename__ = "student_profiles"
 
     id = db.Column(db.Integer, primary_key=True)
-    # Enforce 1-to-1 relationship with the User table
     user_id = db.Column(
         db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True
     )
 
     # --- Academic Context ---
-    # What are they studying? (e.g., "Diploma in ICT", "BSc Computer Science")
+    faculty = db.Column(db.String(150), nullable=False)
     degree_program = db.Column(db.String(150), nullable=False)
-    # Helps mentors gauge the level of difficulty (e.g., "1st Year", "2nd Year")
-    year_of_study = db.Column(db.String(50), nullable=False)
+    study_level = db.Column(
+        db.String(50), nullable=False
+    )  # 'Undergraduate' or 'Postgraduate'
+    year_of_study = db.Column(db.String(100), nullable=False)
 
-    # --- Matchmaking Data (The Algorithm's Bread & Butter) ---
-    # Comma-separated list of what they are struggling with (e.g., "Python, Networking")
-    # We will cross-reference this with the MentorProfile.subjects field!
+    # --- Matchmaking Data (Crucial!) ---
     subjects_needing_help = db.Column(db.String(255), nullable=False)
-
-    # What do they actually want to achieve? (e.g., "Exam Prep", "Career Advice", "Project Help")
-    primary_goals = db.Column(db.String(255), nullable=True)
-
-    # --- Personalization (For the Mentor to read) ---
-    # Let them explain their situation in their own words
+    preferred_learning_style = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
 
-    # E.g., "Visual learner", "I need hands-on coding help", "Just need concepts explained"
-    preferred_learning_style = db.Column(db.String(100), nullable=True)
+    user = db.relationship("User", backref=db.backref("student_profile", uselist=False))
 
     # --- Timestamps ---
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
@@ -158,26 +155,166 @@ class StudentProfile(db.Model):
         onupdate=db.func.current_timestamp(),
     )
 
-    # Relationship back to the User model
-    user = db.relationship("User", backref=db.backref("student_profile", uselist=False))
-
-    def __repr__(self):
-        return f"<StudentProfile for User ID {self.user_id}>"
-
     def __init__(
         self,
         user_id,
+        faculty,
         degree_program,
+        study_level,
         year_of_study,
         subjects_needing_help,
-        primary_goals=None,
-        bio=None,
         preferred_learning_style=None,
+        bio=None,
     ):
         self.user_id = user_id
+        self.faculty = faculty
         self.degree_program = degree_program
+        self.study_level = study_level
         self.year_of_study = year_of_study
         self.subjects_needing_help = subjects_needing_help
-        self.primary_goals = primary_goals
-        self.bio = bio
         self.preferred_learning_style = preferred_learning_style
+        self.bio = bio
+
+
+# ==========================================
+# TABLE 4: Mentor Availability
+# ==========================================
+class Availability(db.Model):
+    __tablename__ = "availability"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    # Store date as a string (YYYY-MM-DD) or Date object. Date object is better for sorting.
+    date = db.Column(db.Date, nullable=False)
+    time_slot = db.Column(db.String(10), nullable=False)  # e.g., '10:00'
+    is_booked = db.Column(db.Boolean, default=False)
+
+    # Relationship to easily pull a mentor's user data
+    mentor = db.relationship("User", foreign_keys=[mentor_id], backref="availabilities")
+
+    def __init__(self, mentor_id, date, time_slot, is_booked=False):
+        self.mentor_id = mentor_id
+        self.date = date
+        self.time_slot = time_slot
+        self.is_booked = is_booked
+
+
+# ==========================================
+# TABLE 5: Mentorship Sessions (Bookings)
+# ==========================================
+class MentorshipSession(db.Model):
+    __tablename__ = "mentorship_sessions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    date = db.Column(db.Date, nullable=False)
+    time_slot = db.Column(db.String(10), nullable=False)
+    module = db.Column(
+        db.String(150), nullable=False
+    )  # What subject are they studying?
+
+    status = db.Column(
+        db.Enum(SessionStatus), default=SessionStatus.BOOKED, nullable=False
+    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships to easily pull user data for the dashboard cards
+    mentor = db.relationship(
+        "User", foreign_keys=[mentor_id], backref="sessions_as_mentor"
+    )
+    student = db.relationship(
+        "User", foreign_keys=[student_id], backref="sessions_as_student"
+    )
+
+    def __init__(
+        self,
+        mentor_id,
+        student_id,
+        date,
+        time_slot,
+        module,
+        status=SessionStatus.BOOKED,
+    ):
+        self.mentor_id = mentor_id
+        self.student_id = student_id
+        self.date = date
+        self.time_slot = time_slot
+        self.module = module
+        self.status = status
+
+
+# ==========================================
+# TABLE 6: Messages & Feedback Notes
+# ==========================================
+class Message(db.Model):
+    __tablename__ = "messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    content = db.Column(db.Text, nullable=False)
+    performance_rating = db.Column(
+        db.String(50), nullable=True
+    )  # e.g. "excellent", "good", "attention"
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = db.relationship("User", foreign_keys=[sender_id], backref="sent_messages")
+    receiver = db.relationship(
+        "User", foreign_keys=[receiver_id], backref="received_messages"
+    )
+
+    def __init__(self, sender_id, receiver_id, content, performance_rating=None):
+        self.sender_id = sender_id
+        self.receiver_id = receiver_id
+        self.content = content
+        self.performance_rating = performance_rating
+
+
+# ==========================================
+# TABLE 7: Mentor Reviews
+# ==========================================
+class Review(db.Model):
+    __tablename__ = "reviews"
+
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    rating = db.Column(db.Integer, nullable=False)  # 1 to 5 stars
+    review_text = db.Column(db.Text, nullable=True)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, student_id, mentor_id, rating, review_text=None):
+        self.student_id = student_id
+        self.mentor_id = mentor_id
+        self.rating = rating
+        self.review_text = review_text
+
+
+# ==========================================
+# TABLE 8: Moderation Reports
+# ==========================================
+class Report(db.Model):
+    __tablename__ = "reports"
+
+    id = db.Column(db.Integer, primary_key=True)
+    reporter_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    reported_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    reason = db.Column(db.Text, nullable=False)
+    status = db.Column(
+        db.Enum(ReportStatus), default=ReportStatus.PENDING, nullable=False
+    )
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, reporter_id, reported_user_id, reason):
+        self.reporter_id = reporter_id
+        self.reported_user_id = reported_user_id
+        self.reason = reason

@@ -1,159 +1,451 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Student Profile – StudySphere</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
-</head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-
-<nav class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#003087">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"/>
-                </svg>
-            </div>
-            <span class="text-lg font-bold" style="color:#003087">StudySphere</span>
+          <div
+            class="w-9 h-9 rounded-xl flex items-center justify-center"
+            style="background: #003087"
+          >
+            <svg
+              class="w-5 h-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l9-5-9-5-9 5 9 5z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"
+              />
+            </svg>
+          </div>
+          <span class="text-lg font-bold" style="color: #003087"
+            >StudySphere</span
+          >
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<!-- Progress Bar -->
-<div class="bg-white border-b border-gray-100 px-6 py-3">
-    <div class="max-w-xl mx-auto">
+    <div class="bg-white border-b border-gray-100 px-6 py-3">
+      <div class="max-w-xl mx-auto">
         <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
-            <span class="text-green-600 font-medium">✓ Account Created</span>
-            <span class="text-gray-300">→</span>
-            <span class="text-green-600 font-medium">✓ Role Selected</span>
-            <span class="text-gray-300">→</span>
-            <span class="font-semibold" style="color:#003087">Build Your Profile</span>
+          <span class="text-green-600 font-medium">✓ Account Created</span>
+          <span class="text-gray-300">→</span>
+          <span class="text-green-600 font-medium">✓ Role Selected</span>
+          <span class="text-gray-300">→</span>
+          <span class="font-semibold" style="color: #003087"
+            >Build Your Profile</span
+          >
         </div>
         <div class="h-2 bg-gray-200 rounded-full">
-            <div class="h-2 rounded-full" style="width:90%;background:#003087"></div>
+          <div
+            class="h-2 rounded-full"
+            style="width: 90%; background: #003087"
+          ></div>
         </div>
+      </div>
     </div>
-</div>
 
-<main class="flex-1 flex items-center justify-center py-12 px-4">
-    <div class="w-full max-w-xl">
+    <main class="flex-1 flex items-center justify-center py-12 px-4">
+      <div class="w-full max-w-xl">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#eff6ff">
-                    <svg class="w-8 h-8" style="color:#003087" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                </div>
-                <h1 class="text-2xl font-bold mb-1" style="color:#003087">Create Your Student Profile</h1>
-                <p class="text-gray-500 text-sm">Tell us about yourself so mentors can get to know you</p>
+          <div class="text-center mb-8">
+            <div
+              class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style="background: #eff6ff"
+            >
+              <svg
+                class="w-8 h-8"
+                style="color: #003087"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <h1 class="text-2xl font-bold mb-1" style="color: #003087">
+              Create Your Student Profile
+            </h1>
+            <p class="text-gray-500 text-sm">
+              Tell us about yourself so mentors can get to know you
+            </p>
+          </div>
+
+          <form id="student-profile-form" novalidate>
+            <div class="mb-5">
+              <label class="form-label" for="fullname">Full Name</label>
+              <input
+                type="text"
+                id="fullname"
+                class="form-input"
+                placeholder="e.g. Sipho Dlamini"
+              />
+              <p class="form-error" id="fullname-error"></p>
             </div>
 
-            <form id="student-profile-form" novalidate>
-                <!-- Full Name -->
-                <div class="mb-5">
-                    <label class="form-label" for="fullname">Full Name</label>
-                    <input type="text" id="fullname" class="form-input" placeholder="e.g. Sipho Dlamini">
-                    <p class="form-error" id="fullname-error"></p>
-                </div>
+            <div class="mb-5">
+              <label class="form-label" for="faculty">Faculty</label>
+              <select
+                id="faculty"
+                class="form-input"
+                onchange="updateProgrammes()"
+              >
+                <option value="">Select your faculty</option>
+                <option value="Applied Sciences">
+                  Faculty of Applied Sciences
+                </option>
+                <option value="Engineering & Technology">
+                  Faculty of Engineering & Technology
+                </option>
+                <option value="Accounting & Informatics">
+                  Faculty of Accounting & Informatics
+                </option>
+                <option value="Health Sciences">
+                  Faculty of Health Sciences
+                </option>
+                <option value="Arts & Design">Faculty of Arts & Design</option>
+                <option value="Management Sciences">
+                  Faculty of Management Sciences
+                </option>
+              </select>
+              <p class="form-error" id="faculty-error"></p>
+            </div>
 
-                <!-- Degree Program -->
-                <div class="mb-5">
-                    <label class="form-label" for="degree">Degree Programme</label>
-                    <input type="text" id="degree" class="form-input" placeholder="e.g. Bachelor of Science in Computer Science">
-                    <p class="form-error" id="degree-error"></p>
-                </div>
+            <div class="mb-5">
+              <label class="form-label" for="degree">Degree Programme</label>
+              <select
+                id="degree"
+                class="form-input disabled:bg-gray-100 disabled:text-gray-400"
+                disabled
+                onchange="updateYearOptions()"
+              >
+                <option value="">Select a faculty first</option>
+              </select>
+              <p class="form-error" id="degree-error"></p>
+            </div>
 
-                <!-- Year of Study -->
-                <div class="mb-5">
-                    <label class="form-label" for="year">Year of Study</label>
-                    <select id="year" class="form-input">
-                        <option value="">Select your year of study</option>
-                        <option value="1st Year">1st Year</option>
-                        <option value="2nd Year">2nd Year</option>
-                        <option value="3rd Year">3rd Year</option>
-                        <option value="4th Year">4th Year</option>
-                        <option value="Postgraduate">Postgraduate</option>
-                    </select>
-                    <p class="form-error" id="year-error"></p>
-                </div>
+            <div class="mb-5">
+              <label class="form-label">Academic Level</label>
+              <div
+                class="flex gap-4 p-1 bg-gray-100 rounded-xl border border-gray-200"
+              >
+                <label
+                  id="label-undergrad"
+                  class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors bg-white shadow-sm font-semibold text-gray-800"
+                >
+                  <input
+                    type="radio"
+                    name="study_level"
+                    value="Undergraduate"
+                    class="hidden"
+                    checked
+                    onchange="updateYearOptions()"
+                  />
+                  Undergraduate
+                </label>
+                <label
+                  id="label-postgrad"
+                  class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-gray-500 hover:text-gray-800"
+                >
+                  <input
+                    type="radio"
+                    name="study_level"
+                    value="Postgraduate"
+                    class="hidden"
+                    onchange="updateYearOptions()"
+                  />
+                  Postgraduate
+                </label>
+              </div>
+            </div>
 
-                <!-- Preferred Learning Style -->
-                <div class="mb-5">
-                    <label class="form-label" for="learning-style">Preferred Learning Style</label>
-                    <select id="learning-style" class="form-input">
-                        <option value="">Select your learning style</option>
-                        <option value="Visual Learner">Visual Learner – I learn best from diagrams, charts, and visuals</option>
-                        <option value="Auditory Learner">Auditory Learner – I learn best by listening and discussing</option>
-                        <option value="Reading/Writing Learner">Reading/Writing Learner – I learn best through text and notes</option>
-                        <option value="Social Learner">Social Learner – I learn best in groups and peer sessions</option>
-                    </select>
-                    <p class="form-error" id="style-error"></p>
-                </div>
+            <div class="mb-6">
+              <label class="form-label" for="year">Year of Study</label>
+              <select
+                id="year"
+                class="form-input disabled:bg-gray-100 disabled:text-gray-400"
+                disabled
+              >
+                <option value="">Select a programme and level first</option>
+              </select>
+              <p class="form-error" id="year-error"></p>
+            </div>
 
-                <!-- Bio -->
-                <div class="mb-7">
-                    <label class="form-label" for="bio">Short Bio</label>
-                    <textarea id="bio" class="form-input resize-none" rows="3" placeholder="Tell us a little about yourself, your academic goals, or subjects you need help with..."></textarea>
-                    <p class="text-xs text-gray-400 mt-1">Max 250 characters</p>
-                </div>
+            <hr class="border-gray-100 mb-6" />
 
-                <!-- Submit -->
-                <button type="submit" class="btn-primary w-full justify-center py-3 text-base">
-                    Let's Get Started!
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </button>
-            </form>
+            <div class="mb-5">
+              <label class="form-label" for="subjects"
+                >Subjects You Need Help With
+                <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                id="subjects"
+                class="form-input"
+                placeholder="e.g. Mathematics I, Python, Accounting"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                Separate with commas. We use this to match you with the right
+                mentors!
+              </p>
+              <p class="form-error" id="subjects-error"></p>
+            </div>
+
+            <div class="mb-5">
+              <label class="form-label" for="learning-style"
+                >Preferred Learning Style
+                <span class="text-gray-400 font-normal">(Optional)</span></label
+              >
+              <select id="learning-style" class="form-input">
+                <option value="">Select your learning style</option>
+                <option value="Visual Learner">
+                  Visual Learner – I learn best from diagrams and visuals
+                </option>
+                <option value="Auditory Learner">
+                  Auditory Learner – I learn best by listening
+                </option>
+                <option value="Reading/Writing Learner">
+                  Reading/Writing Learner – I learn best through text
+                </option>
+                <option value="Social Learner">
+                  Social Learner – I learn best in groups
+                </option>
+              </select>
+            </div>
+
+            <div class="mb-7">
+              <label class="form-label" for="bio"
+                >Short Bio
+                <span class="text-gray-400 font-normal">(Optional)</span></label
+              >
+              <textarea
+                id="bio"
+                class="form-input resize-none"
+                rows="3"
+                placeholder="Tell us a little about your academic goals..."
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              id="submit-btn"
+              class="btn-primary w-full justify-center py-3 text-base"
+            >
+              Let's Get Started!
+              <svg
+                class="w-5 h-5 ml-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </button>
+          </form>
         </div>
-    </div>
-</main>
+      </div>
+    </main>
 
-<script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
-<script>
-    document.getElementById('student-profile-form').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <div
+      id="toast-container"
+      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"
+    ></div>
 
-        const fullname = document.getElementById('fullname').value.trim();
-        const degree = document.getElementById('degree').value.trim();
-        const year = document.getElementById('year').value;
-        const style = document.getElementById('learning-style').value;
-        const bio = document.getElementById('bio').value.trim();
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script>
+      const isStaff = {{ 'true' if session.get('reg_is_staff') else 'false' }};
 
-        // Clear errors
-        ['fullname-error','degree-error','year-error','style-error'].forEach(id => {
-            document.getElementById(id).textContent = '';
-        });
+      // Generic mock database of programmes per faculty
+      const facultyProgrammes = {
+          "Applied Sciences": ["BSc Mathematics", "BSc Chemistry", "Dip Analytical Chemistry", "Dip Food Technology"],
+          "Engineering & Technology": ["BEng Civil Engineering", "BEng Electrical Engineering", "Dip Mechanical Engineering"],
+          "Accounting & Informatics": ["BICT Information Technology", "BCom Accounting", "Dip ICT Application Development"],
+          "Health Sciences": ["BHSc Nursing", "BHSc Radiography", "Dip Somatology"],
+          "Arts & Design": ["BA Fine Art", "BDes Graphic Design", "Dip Journalism"],
+          "Management Sciences": ["BBA Business Administration", "Dip Human Resources", "Dip Marketing"]
+      };
 
-        let valid = true;
-        if (!fullname) { document.getElementById('fullname-error').textContent = 'Full name is required.'; valid = false; }
-        if (!degree) { document.getElementById('degree-error').textContent = 'Degree programme is required.'; valid = false; }
-        if (!year) { document.getElementById('year-error').textContent = 'Please select your year of study.'; valid = false; }
-        if (!style) { document.getElementById('style-error').textContent = 'Please select your learning style.'; valid = false; }
+      document.addEventListener("DOMContentLoaded", () => {
+          // Enforce Postgrad if staff
+          if (isStaff) {
+              document.querySelector('input[value="Postgraduate"]').checked = true;
+              document.querySelector('input[value="Undergraduate"]').disabled = true;
+              document.getElementById('label-undergrad').classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
+              document.getElementById('label-postgrad').classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-gray-800');
+              document.getElementById('label-postgrad').classList.remove('text-gray-500');
+              document.getElementById('label-undergrad').classList.remove('font-semibold', 'text-gray-800', 'bg-white', 'shadow-sm');
+          }
+      });
 
-        if (!valid) return;
+      // Handle Radio styling
+      document.querySelectorAll('input[name="study_level"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+              document.getElementById('label-undergrad').className = "flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-gray-500 hover:text-gray-800";
+              document.getElementById('label-postgrad').className = "flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-gray-500 hover:text-gray-800";
 
-        // Get signup info
-        const signup = JSON.parse(sessionStorage.getItem('ss_signup') || '{}');
+              if(e.target.value === 'Undergraduate') {
+                  document.getElementById('label-undergrad').classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-gray-800');
+                  document.getElementById('label-undergrad').classList.remove('text-gray-500');
+              } else {
+                  document.getElementById('label-postgrad').classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-gray-800');
+                  document.getElementById('label-postgrad').classList.remove('text-gray-500');
+              }
+              updateYearOptions(); // Re-render year options if level changes
+          });
+      });
 
-        const profile = { fullName: fullname, degreeProgram: degree, yearOfStudy: year, learningStyle: style, bio };
+      function updateProgrammes() {
+          const faculty = document.getElementById('faculty').value;
+          const progSelect = document.getElementById('degree');
 
-        // TODO (Backend): POST /api/users/student-profile — save profile to database
-        //   Body: { email: signup.email, ...profile }
+          progSelect.innerHTML = '';
 
-        // Store locally for demo
-        const userObj = { email: signup.email || 'new_student@dut.ac.za', role: 'student', profile };
-        setCurrentUser(userObj);
-        sessionStorage.removeItem('ss_signup');
-        sessionStorage.removeItem('ss_role');
+          if (!faculty) {
+              progSelect.disabled = true;
+              progSelect.innerHTML = '<option value="">Select a faculty first</option>';
+              updateYearOptions();
+              return;
+          }
 
-        showFlash('Profile created successfully! Welcome to StudySphere!', 'success');
-        setTimeout(() => { window.location.href = 'student_dashboard.html'; }, 1000);
-    });
-</script>
-</body>
+          progSelect.disabled = false;
+          progSelect.innerHTML = '<option value="">Select your programme</option>';
+
+          const progs = facultyProgrammes[faculty] || [];
+          progs.forEach(prog => {
+              progSelect.innerHTML += `<option value="${prog}">${prog}</option>`;
+          });
+
+          updateYearOptions(); // Reset year dropdown
+      }
+
+      function updateYearOptions() {
+          const programme = document.getElementById('degree').value;
+          const select = document.getElementById('year');
+          const level = document.querySelector('input[name="study_level"]:checked').value;
+
+          select.innerHTML = '';
+
+          if (!programme) {
+              select.disabled = true;
+              select.innerHTML = '<option value="">Select a programme first</option>';
+              return;
+          }
+
+          select.disabled = false;
+          select.innerHTML = '<option value="">Select current year</option>';
+
+          if (level === 'Undergraduate') {
+              // Extract the abbreviation (e.g. "BSc" from "BSc Mathematics")
+              const prefix = programme.split(' ')[0];
+
+              select.innerHTML += `<option value="${prefix} - 1st Year">${prefix} - 1st Year</option>`;
+              select.innerHTML += `<option value="${prefix} - 2nd Year">${prefix} - 2nd Year</option>`;
+              select.innerHTML += `<option value="${prefix} - 3rd Year">${prefix} - 3rd Year</option>`;
+              select.innerHTML += `<option value="${prefix} - 4th Year">${prefix} - 4th Year (Extended)</option>`;
+          } else {
+              select.innerHTML += `<option value="Advanced Diploma">Advanced Diploma</option>`;
+              select.innerHTML += `<option value="Honours Degree">Honours Degree</option>`;
+              select.innerHTML += `<option value="Masters Degree">Masters Degree</option>`;
+              select.innerHTML += `<option value="PhD / Doctorate">PhD / Doctorate</option>`;
+          }
+      }
+
+      document.getElementById('student-profile-form').addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const fullname = document.getElementById('fullname').value.trim();
+          const faculty = document.getElementById('faculty').value;
+          const degree = document.getElementById('degree').value;
+          const year = document.getElementById('year').value;
+          const level = document.querySelector('input[name="study_level"]:checked').value;
+          const subjects = document.getElementById('subjects').value.trim();
+          const style = document.getElementById('learning-style').value;
+          const bio = document.getElementById('bio').value.trim();
+
+          // Clear errors
+          ['fullname-error','faculty-error','degree-error','year-error', 'subjects-error'].forEach(id => {
+              document.getElementById(id).textContent = '';
+          });
+
+          let valid = true;
+          if (!fullname) { document.getElementById('fullname-error').textContent = 'Full name is required.'; valid = false; }
+          if (!faculty) { document.getElementById('faculty-error').textContent = 'Please select a faculty.'; valid = false; }
+          if (!degree) { document.getElementById('degree-error').textContent = 'Degree programme is required.'; valid = false; }
+          if (!year) { document.getElementById('year-error').textContent = 'Please select your year of study.'; valid = false; }
+          if (!subjects) { document.getElementById('subjects-error').textContent = 'Please list the subjects you need help with.'; valid = false; }
+
+          if (!valid) return;
+
+          const payload = {
+              fullname: fullname,
+              faculty: faculty,
+              degree: degree,
+              study_level: level,
+              year: year,
+              subjects: subjects,
+              style: style,
+              bio: bio
+          };
+
+          const btn = document.getElementById('submit-btn');
+          btn.disabled = true;
+          btn.innerHTML = "Saving...";
+
+          fetch("/api/register-student", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) {
+                  showToast(data.error, "error");
+                  btn.disabled = false;
+                  btn.innerHTML = "Let's Get Started!";
+              } else {
+                  showToast("Profile created successfully! Welcome to StudySphere!", "success");
+                  setTimeout(() => {
+                      window.location.href = data.redirect_url;
+                  }, 1500);
+              }
+          })
+          .catch(error => {
+              console.error("Error:", error);
+              showToast("A server error occurred.", "error");
+              btn.disabled = false;
+              btn.innerHTML = "Let's Get Started!";
+          });
+      });
+    </script>
+  </body>
 </html>
