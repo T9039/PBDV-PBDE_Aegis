@@ -42,59 +42,69 @@ def seed_database():
         if os.path.exists(upload_dir):
             shutil.rmtree(upload_dir)
 
+        # 1. Create CV Directory
         cv_dir = os.path.join(upload_dir, "documents", "cvs")
         os.makedirs(cv_dir, exist_ok=True)
-
         dummy_cv_path = "documents/cvs/mock_cv.pdf"
         with open(os.path.join(upload_dir, dummy_cv_path), "w") as f:
             f.write("Generic Mock CV")
 
+        # 2. Create Avatars Directory
+        avatar_dir = os.path.join(upload_dir, "images", "avatars")
+        os.makedirs(avatar_dir, exist_ok=True)
+
+        # Generate 5 dummy avatar files to pick from
+        avatar_filenames = [f"avatar_{i}.jpg" for i in range(1, 6)]
+        for avatar in avatar_filenames:
+            with open(os.path.join(avatar_dir, avatar), "w") as f:
+                f.write("Generic Mock Avatar Image")
+
         print("🌱 Seeding core 'Demo' accounts...")
 
         # ==========================================
-        # 1. CORE DEMO ACCOUNTS (Matches login.html)
+        # 1. CORE DEMO ACCOUNTS
         # ==========================================
         pw_student = generate_password_hash("Student1!")
         pw_mentor = generate_password_hash("Mentor1!")
         pw_admin = generate_password_hash("Admin123!")
 
-        # Demo Student 1
         student1 = User(
-            email="Student1@dut.ac.za",
+            email="Student1@dut4life.ac.za",
             password_hash=pw_student,
             full_name="Sipho Dlamini",
             campus_role=CampusRole.STUDENT,
             mentor_status=MentorStatus.NONE,
+            profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
         )
         student1.is_profile_complete = True
 
-        # Demo Student 2
         student2 = User(
-            email="Student2@dut.ac.za",
+            email="Student2@dut4life.ac.za",
             password_hash=pw_student,
             full_name="Nomsa Khumalo",
             campus_role=CampusRole.STUDENT,
             mentor_status=MentorStatus.NONE,
+            profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
         )
         student2.is_profile_complete = True
 
-        # Demo Mentor
         mentor = User(
             email="Mentor@dut.ac.za",
             password_hash=pw_mentor,
             full_name="Prof. Thabo Nkosi",
             campus_role=CampusRole.STAFF,
             mentor_status=MentorStatus.APPROVED,
+            profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
         )
         mentor.is_profile_complete = True
 
-        # Demo Admin (For future use)
         admin = User(
             email="Admin@dut.ac.za",
             password_hash=pw_admin,
             full_name="System Administrator",
             campus_role=CampusRole.STAFF,
             mentor_status=MentorStatus.NONE,
+            profile_picture="default_admin.png",
         )
 
         db.session.add_all([student1, student2, mentor, admin])
@@ -113,7 +123,6 @@ def seed_database():
                 bio="Passionate about technology.",
             )
         )
-
         db.session.add(
             StudentProfile(
                 user_id=student2.id,
@@ -125,7 +134,6 @@ def seed_database():
                 preferred_learning_style="Auditory Learner",
             )
         )
-
         db.session.add(
             MentorProfile(
                 user_id=mentor.id,
@@ -169,57 +177,55 @@ def seed_database():
             ]
         )
 
-        # --- Sessions ---
-        db.session.add_all(
-            [
-                # Upcoming Bookings
-                MentorshipSession(
-                    mentor_id=mentor.id,
-                    student_id=student1.id,
-                    date=tomorrow,
-                    time_slot="10:00",
-                    module="Mathematics",
-                    status=SessionStatus.BOOKED,
-                ),
-                MentorshipSession(
-                    mentor_id=mentor.id,
-                    student_id=student2.id,
-                    date=next_week,
-                    time_slot="11:00",
-                    module="Physics",
-                    status=SessionStatus.BOOKED,
-                ),
-                # Past Session
-                MentorshipSession(
-                    mentor_id=mentor.id,
-                    student_id=student1.id,
-                    date=yesterday,
-                    time_slot="15:00",
-                    module="Statistics",
-                    status=SessionStatus.COMPLETED,
-                ),
-                # Cancelled Session
-                MentorshipSession(
-                    mentor_id=mentor.id,
-                    student_id=student2.id,
-                    date=today,
-                    time_slot="08:00",
-                    module="Mathematics",
-                    status=SessionStatus.CANCELLED,
-                ),
-            ]
+        # --- Sessions (Created as variables so we can grab their IDs) ---
+        session1 = MentorshipSession(
+            mentor_id=mentor.id,
+            student_id=student1.id,
+            date=tomorrow,
+            time_slot="10:00",
+            module="Mathematics",
+            status=SessionStatus.BOOKED,
+        )
+        session2 = MentorshipSession(
+            mentor_id=mentor.id,
+            student_id=student2.id,
+            date=next_week,
+            time_slot="11:00",
+            module="Physics",
+            status=SessionStatus.BOOKED,
+        )
+        session3 = MentorshipSession(
+            mentor_id=mentor.id,
+            student_id=student1.id,
+            date=yesterday,
+            time_slot="15:00",
+            module="Statistics",
+            status=SessionStatus.COMPLETED,
+        )
+        session4 = MentorshipSession(
+            mentor_id=mentor.id,
+            student_id=student2.id,
+            date=today,
+            time_slot="08:00",
+            module="Mathematics",
+            status=SessionStatus.CANCELLED,
         )
 
-        # --- Messages ---
+        db.session.add_all([session1, session2, session3, session4])
+        db.session.commit()  # Commit to generate the IDs!
+
+        # --- Messages (Tied to specific sessions) ---
         db.session.add_all(
             [
                 Message(
+                    session_id=session3.id,  # Post-session feedback chat
                     sender_id=mentor.id,
                     receiver_id=student1.id,
                     content="Focus on Chapter 5 of Calculus. Complete exercises 5.1 to 5.3.",
                     performance_rating="good",
                 ),
                 Message(
+                    session_id=session2.id,  # Pre-session prep chat
                     sender_id=student2.id,
                     receiver_id=mentor.id,
                     content="Thank you for the notes! Could we go over circuits next week?",
@@ -227,9 +233,10 @@ def seed_database():
             ]
         )
 
-        # --- Reviews & Reports ---
+        # --- Reviews & Reports (Tied to the COMPLETED session) ---
         db.session.add(
             Review(
+                session_id=session3.id,
                 student_id=student1.id,
                 mentor_id=mentor.id,
                 rating=5,
@@ -238,6 +245,7 @@ def seed_database():
         )
         db.session.add(
             Report(
+                session_id=session3.id,
                 reporter_id=mentor.id,
                 reported_user_id=student1.id,
                 reason="Student was 30 minutes late to session without notice.",
@@ -275,6 +283,7 @@ def seed_database():
                 mentor_status=MentorStatus.NONE
                 if is_student
                 else MentorStatus.APPROVED,
+                profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
             )
             new_user.is_profile_complete = True
             db.session.add(new_user)
@@ -307,7 +316,7 @@ def seed_database():
 
         db.session.commit()
         print(
-            "✅ Successfully seeded complete database with interactive Dashboard content!"
+            "✅ Successfully seeded complete database with MS Teams-style Workspace architecture!"
         )
 
 

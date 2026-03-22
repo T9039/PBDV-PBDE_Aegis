@@ -1,10 +1,12 @@
 import os
 import random
 import smtplib
-import socket
 import uuid
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
+import requests
 from dotenv import load_dotenv
 from email_validator import EmailNotValidError, validate_email
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -156,38 +158,123 @@ def generate_otp():
 load_dotenv(override=True)
 
 
-def send_email(to_email, subject, body):
-    # 1. Pull credentials dynamically from the .env file
-    mailtrap_user = os.getenv("MAILTRAP_USERNAME")
-    mailtrap_pass = os.getenv("MAILTRAP_PASSWORD")
+def send_email(to_email, subject, body, sender_name="StudySphere Admin"):
+    """
+    The Triple-Threat Email Router:
+    Tier 1: SendGrid REST API (Primary)
+    Tier 2: Real SMTP (Fallback)
+    Tier 3: Mailtrap (Sandbox / Emergency Fallback)
+    """
+    # 1. Intercept Dummy Accounts immediately
+    dummy_emails = [
+        "student1@dut4life.ac.za",
+        "student2@dut4life.ac.za",
+        "mentor@dut.ac.za",
+        "admin@dut.ac.za",
+    ]
 
-    print(f"🔥 DEBUG: Sending as user -> {mailtrap_user}")
-    if not mailtrap_user or not mailtrap_pass:
-        print("Error: Mailtrap credentials missing from .env file!")
-        return False
+    if to_email.lower() in dummy_emails:
+        print(f"🧪 [SANDBOX] Routing {to_email} directly to Mailtrap.")
+        return send_via_mailtrap(to_email, subject, body, sender_name)
 
-    try:
-        socket.create_connection(("smtp.mailtrap.io", 587), timeout=5)
-    except Exception as e:
-        print("Cannot connect to Mailtrap:", e)
+    # 2. Attempt TIER 1: SendGrid REST API
+    print(f"🚀 [API] Attempting to send to {to_email} via SendGrid API...")
+    sendgrid_key = os.getenv("SENDGRID_API_KEY")
+    real_sender = os.getenv("REAL_SENDER_ADDRESS", "auth@aegis.local")
 
-    try:
-        with smtplib.SMTP("smtp.mailtrap.io", 587) as server:
-            server.starttls()
-            # 2. Authenticate using the dynamic credentials
-            server.login(mailtrap_user, mailtrap_pass)
+    if sendgrid_key:
+        try:
+            headers = {
+                "Authorization": f"Bearer {sendgrid_key}",
+                "Content-Type": "application/json",
+            }
+            payload = {
+                "personalizations": [{"to": [{"email": to_email}]}],
+                "from": {"email": real_sender, "name": sender_name},
+                "subject": subject,
+                "content": [{"type": "text/plain", "value": body}],
+            }
 
-            # 3. Format proper email headers
-            sender_email = "auth@aegis.local"
-            message = (
-                f"Subject: {subject}\nFrom: {sender_email}\nTo: {to_email}\n\n{body}"
+            # Make the web request (Timeout after 5 seconds so the user isn't kept waiting)
+            response = requests.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                json=payload,
+                headers=headers,
+                timeout=5,
             )
 
-            server.sendmail(sender_email, to_email, message)
+            if response.status_code in [200, 201, 202]:
+                print("✅ [API] Success! Email sent via SendGrid.")
+                return True
+            else:
+                print(f"⚠️ [API] SendGrid rejected the request: {response.text}")
 
+        except Exception as e:
+            print(f"⚠️ [API] Network error hitting SendGrid: {e}")
+    else:
+        print("⚠️ [API] No SENDGRID_API_KEY found in .env.")
+
+    # 3. Attempt TIER 2: Real SMTP Fallback (If API failed or key is missing)
+    print("🔄 [SMTP] Falling back to Real SMTP Server...")
+    smtp_host = os.getenv("REAL_SMTP_HOST")
+    smtp_user = os.getenv("REAL_SMTP_USER")
+    smtp_pass = os.getenv("REAL_SMTP_PASS")
+
+    if smtp_host and smtp_user and smtp_pass:
+        try:
+            msg = MIMEMultipart()
+            msg["Subject"] = subject
+            msg["To"] = to_email
+            msg["From"] = f"{sender_name} <{real_sender}>"
+            msg.attach(MIMEText(body, "plain"))
+
+            with smtplib.SMTP(
+                smtp_host, int(os.getenv("REAL_SMTP_PORT", 587)), timeout=5
+            ) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_pass)
+                server.send_message(msg)
+
+            print("✅ [SMTP] Success! Email sent via Real SMTP.")
+            return True
+
+        except Exception as e:
+            print(f"⚠️ [SMTP] Real SMTP failed: {e}")
+    else:
+        print("⚠️ [SMTP] Real SMTP credentials missing in .env.")
+
+    # 4. Attempt TIER 3: Emergency Sandbox Fallback
+    print("🚨 [EMERGENCY] All real services failed. Diverting to Mailtrap...")
+    return send_via_mailtrap(to_email, subject, body, sender_name)
+
+
+def send_via_mailtrap(to_email, subject, body, sender_name):
+    """Helper function to handle Mailtrap routing cleanly."""
+    try:
+        msg = MIMEMultipart()
+        msg["Subject"] = f"[TEST] {subject}"
+        msg["To"] = to_email
+        msg["From"] = f"{sender_name} <auth@aegis.local>"
+        msg.attach(MIMEText(body, "plain"))
+
+        # Grab the variables
+        user = os.getenv("MAILTRAP_USERNAME")
+        password = os.getenv("MAILTRAP_PASSWORD")
+
+        # The Type-Safe Guard: Tell the linter we won't proceed if they are None
+        if not user or not password:
+            print("❌ [FATAL] Mailtrap credentials missing in .env.")
+            return False
+
+        with smtplib.SMTP("smtp.mailtrap.io", 587, timeout=5) as server:
+            server.starttls()
+            server.login(user, password)  # Linter is happy now!
+            server.send_message(msg)
+
+        print("✅ [MAILTRAP] Email successfully caught in sandbox.")
         return True
     except Exception as e:
-        print("Email send failed:", e)
+        print(f"❌ [FATAL] Total system failure. Mailtrap also down: {e}")
         return False
 
 

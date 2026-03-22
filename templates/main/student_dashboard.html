@@ -101,7 +101,8 @@
           </svg>
           Search Mentors / Peers
         </button>
-        <button class="sidebar-tab" data-tab="feedback">
+
+        <button class="sidebar-tab" data-tab="sessions">
           <svg
             class="w-5 h-5"
             fill="none"
@@ -112,11 +113,12 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
             />
           </svg>
-          Feedback
+          My Sessions
         </button>
+
         <button class="sidebar-tab" data-tab="profile">
           <svg
             class="w-5 h-5"
@@ -207,29 +209,9 @@
               0
             </p>
           </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-6">
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-bold text-gray-800">Recent Messages</h3>
-              <button
-                onclick="openMessagesModal()"
-                class="text-xs font-semibold hover:underline"
-                style="color: #003087"
-              >
-                View All
-              </button>
-            </div>
-            <div id="messages-preview">
-              <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
-            </div>
-          </div>
 
           <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
           >
             <h3 class="font-bold text-gray-800 mb-4">Upcoming Sessions</h3>
             <div id="upcoming-sessions">
@@ -293,104 +275,163 @@
         <div id="search-results"></div>
       </div>
 
-      <div class="tab-panel" id="panel-feedback">
-        <div class="section-title">Feedback</div>
-        <p class="section-subtitle">
-          Rate your mentors and share your experience
+      <div class="tab-panel" id="panel-sessions">
+        <div class="section-title mb-2">My Sessions</div>
+        <p class="section-subtitle mb-4">
+          Manage your bookings, chat, and share files.
         </p>
 
-        <div class="grid md:grid-cols-2 gap-6">
+        <div
+          class="flex-1 flex gap-6 overflow-hidden"
+          style="height: calc(100vh - 180px)"
+        >
           <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+            class="w-1/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
           >
-            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <svg
-                class="w-5 h-5 text-yellow-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                />
-              </svg>
-              Rate Your Mentor
-            </h3>
-            <form id="feedback-form">
-              <div class="mb-4">
-                <label class="form-label">Select Mentor</label>
-                <select id="feedback-mentor" class="form-input">
-                  <option value="">
-                    Choose a mentor from your past sessions...
-                  </option>
-                </select>
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Rating</label>
-                <div class="flex gap-2" id="star-rating">
-                  <button
-                    type="button"
-                    onclick="setRating(1)"
-                    class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                    data-star="1"
-                  >
-                    ★
-                  </button>
-                  <button
-                    type="button"
-                    onclick="setRating(2)"
-                    class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                    data-star="2"
-                  >
-                    ★
-                  </button>
-                  <button
-                    type="button"
-                    onclick="setRating(3)"
-                    class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                    data-star="3"
-                  >
-                    ★
-                  </button>
-                  <button
-                    type="button"
-                    onclick="setRating(4)"
-                    class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                    data-star="4"
-                  >
-                    ★
-                  </button>
-                  <button
-                    type="button"
-                    onclick="setRating(5)"
-                    class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                    data-star="5"
-                  >
-                    ★
-                  </button>
-                </div>
-                <input type="hidden" id="rating-value" value="0" />
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Your Review</label>
-                <textarea
-                  id="review-text"
-                  class="form-input resize-none"
-                  rows="4"
-                  placeholder="Share your experience with this mentor..."
-                ></textarea>
-              </div>
-              <button type="submit" class="btn-primary w-full justify-center">
-                Submit Review
-              </button>
-            </form>
+            <div class="p-4 border-b border-gray-100 bg-gray-50">
+              <h3 class="font-bold text-gray-800">Session History</h3>
+            </div>
+            <div
+              id="session-roster"
+              class="flex-1 overflow-y-auto p-3 space-y-2"
+            >
+              <p class="text-center text-gray-400 text-sm mt-4">
+                Loading sessions...
+              </p>
+            </div>
           </div>
 
           <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+            class="w-2/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative"
           >
-            <h3 class="font-bold text-gray-800 mb-4">My Previous Reviews</h3>
-            <div id="my-reviews">
-              <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
+            <div
+              id="ws-empty-state"
+              class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-20"
+            >
+              <svg
+                class="w-16 h-16 text-gray-300 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <p class="text-gray-500 font-medium">
+                Select a session to open the workspace
+              </p>
+            </div>
+
+            <div id="ws-active-state" class="flex flex-col h-full hidden">
+              <div
+                class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md z-10"
+              >
+                <div class="flex items-center gap-4">
+                  <img
+                    id="ws-avatar"
+                    src=""
+                    class="w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400"
+                    alt=""
+                    onerror="
+                      this.src = '/static/default_avatar.png';
+                      this.onerror = null;
+                    "
+                  />
+                  <div>
+                    <h2 id="ws-title" class="font-bold text-base leading-tight">
+                      Session Workspace
+                    </h2>
+                    <p id="ws-subtitle" class="text-xs text-blue-200">
+                      Loading details...
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-1 overflow-hidden">
+                <div
+                  class="flex-1 flex flex-col border-r border-gray-200 bg-gray-50"
+                >
+                  <div
+                    id="ws-chat-box"
+                    class="flex-1 overflow-y-auto p-4 space-y-4"
+                  ></div>
+                  <div class="p-3 bg-white border-t border-gray-200">
+                    <form
+                      id="ws-chat-form"
+                      class="flex gap-2"
+                      onsubmit="sendWsMessage(event)"
+                    >
+                      <input
+                        type="text"
+                        id="ws-msg-input"
+                        class="form-input flex-1 bg-gray-50 text-sm py-2"
+                        placeholder="Type a message..."
+                        required
+                        autocomplete="off"
+                      />
+                      <button
+                        type="submit"
+                        class="btn-primary py-2 px-4 shadow-sm text-sm"
+                      >
+                        Send
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="w-64 flex flex-col bg-white overflow-y-auto">
+                  <div class="p-4 border-b border-gray-100">
+                    <h3
+                      class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2"
+                    >
+                      <svg
+                        class="w-4 h-4 text-blue-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                        />
+                      </svg>
+                      Shared Files
+                    </h3>
+                    <div
+                      id="ws-files-list"
+                      class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1"
+                    ></div>
+                    <div
+                      class="bg-blue-50 p-2 rounded-xl border border-blue-100"
+                    >
+                      <input
+                        type="file"
+                        id="ws-file-input"
+                        class="text-[10px] w-full mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+                      />
+                      <button
+                        onclick="uploadWsFile()"
+                        class="btn-sm btn-blue-sm w-full justify-center shadow-sm py-1 text-xs"
+                      >
+                        Upload
+                      </button>
+                    </div>
+                  </div>
+                  <div class="p-4 bg-gray-50 flex-1">
+                    <h3 class="font-bold text-sm text-gray-800 mb-3">
+                      Session Actions
+                    </h3>
+                    <div id="ws-actions-area" class="space-y-3"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -607,7 +648,7 @@
 
     <div
       id="toast-container"
-      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"
+      class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none"
     ></div>
 
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
@@ -619,8 +660,6 @@
         profile: { fullName: "{{ user.full_name }}" },
       };
       let SESSIONS = [];
-      let MESSAGES = [];
-      let REVIEWS = [];
       let SEARCH_RESULTS = [];
       let CURRENT_MENTOR_AVAIL = {};
 
@@ -632,22 +671,14 @@
         initTabs("home");
 
         try {
-          // We will build these student-specific API routes next!
-          const [sessionsRes, feedbackRes] = await Promise.all([
-            fetch("/api/student-sessions"), // We will create this API route
-            fetch("/api/student-feedback"), // We will create this API route
+          const [sessionsRes] = await Promise.all([
+            fetch("/api/student-sessions"),
           ]);
 
           if (sessionsRes.ok) SESSIONS = await sessionsRes.json();
-          if (feedbackRes.ok) {
-            const fbData = await feedbackRes.json();
-            REVIEWS = fbData.reviews;
-            MESSAGES = fbData.messages;
-          }
 
           renderHomeTab();
-          renderMyReviews();
-          // Load initial mentors
+          renderSessionRoster();
           performSearch();
         } catch (err) {
           console.error("Error loading dashboard data:", err);
@@ -678,26 +709,6 @@
         document.getElementById("upcoming-count").textContent = upcoming.length;
         document.getElementById("total-sessions").textContent = SESSIONS.length;
 
-        // Messages preview
-        const msgDiv = document.getElementById("messages-preview");
-        if (MESSAGES.length === 0) {
-          msgDiv.innerHTML =
-            '<p class="text-gray-400 text-sm text-center py-4">No messages yet</p>';
-        } else {
-          msgDiv.innerHTML = MESSAGES.map((m) => {
-            const ratingBadge = m.rating
-              ? `<span class="badge badge-${m.rating === "excellent" ? "excellent" : m.rating === "good" ? "good" : m.rating === "moderate" ? "moderate" : "attention"}">${m.rating === "attention" ? "Attention Needed" : m.rating.charAt(0).toUpperCase() + m.rating.slice(1)}</span>`
-              : "";
-            return `<div class="message-bubble from-mentor mb-3">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="font-semibold text-sm text-gray-800">${m.fromName}</span>
-                    <div class="flex items-center gap-2">${ratingBadge}<span class="text-xs text-gray-400">${m.date}</span></div>
-                </div>
-                <p class="text-sm text-gray-600 mb-2">${m.message}</p>
-            </div>`;
-          }).join("");
-        }
-
         // Upcoming sessions
         const sessDiv = document.getElementById("upcoming-sessions");
         if (upcoming.length === 0) {
@@ -718,26 +729,41 @@
                 <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
                     <span>📅 ${s.date}</span><span>⏰ ${s.time}</span>
                 </div>
-                ${s.status !== "cancelled" ? `<button onclick="cancelSession(${s.id})" class="btn-sm btn-red-sm mt-2 text-xs py-1">Cancel Session</button>` : ""}
+                
+                <div class="flex gap-2">
+                    <button onclick="switchTabAndOpenWorkspace(${s.id})" class="btn-sm btn-blue-sm mt-2 text-xs py-1">Open Workspace</button>
+                    ${s.status !== "cancelled" ? `<button onclick="cancelSession(${s.id})" class="btn-sm btn-red-sm mt-2 text-xs py-1">Cancel</button>` : ""}
+                </div>
+                
             </div>`,
             )
             .join("");
         }
-
-        // Populate Feedback Mentor Dropdown
-        const sel = document.getElementById("feedback-mentor");
-        sel.innerHTML =
-          '<option value="">Choose a mentor from your past sessions...</option>';
-        const uniqueMentors = [
-          ...new Map(SESSIONS.map((item) => [item.mentorId, item])).values(),
-        ];
-        uniqueMentors.forEach((m) => {
-          sel.innerHTML += `<option value="${m.mentorId}">${m.mentorName}</option>`;
-        });
       }
 
       function cancelSession(id) {
-        showToast("Session cancellation feature coming soon!", "info");
+        if (
+          !confirm("Are you sure you want to cancel this mentorship session?")
+        )
+          return;
+
+        fetch(`/api/sessions/${id}`, { method: "DELETE" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              return showToast(data.error, "error");
+            }
+            showToast(data.message, "success");
+
+            // Remove the cancelled session from the local array
+            SESSIONS = SESSIONS.filter((s) => s.id !== id);
+
+            // Re-render the home tab to update the UI
+            renderHomeTab();
+          })
+          .catch((err) => {
+            showToast("Failed to communicate with the server.", "error");
+          });
       }
 
       function openMessagesModal() {
@@ -806,8 +832,24 @@
                         <div class="flex-1">
                             <p class="font-bold text-gray-800">${m.name}</p>
                             <p class="text-xs text-gray-500">${m.faculty}</p>
+                            
+                            <div class="flex items-center gap-1 mt-1">
+                                <span class="text-yellow-500 text-sm">${"★".repeat(Math.round(m.rating))}${"☆".repeat(5 - Math.round(m.rating))}</span>
+                                <span class="text-xs font-semibold text-gray-700">${m.rating.toFixed(1)}</span>
+                                <span class="text-xs text-gray-400">(${m.reviewCount} reviews)</span>
+                            </div>
                         </div>
                     </div>
+                    
+                    ${
+                      m.badges && m.badges.length > 0
+                        ? `
+                    <div class="flex flex-wrap gap-1 mb-2">
+                        ${m.badges.map((b) => `<span class="badge bg-purple-100 text-purple-800 border-purple-200">🏆 ${b}</span>`).join("")}
+                    </div>`
+                        : ""
+                    }
+
                     <div class="flex flex-wrap gap-1 mb-3">
                         ${m.modules
                           .split(",")
@@ -954,70 +996,6 @@
           });
       }
 
-      // ─── FEEDBACK TAB ───────────────────────────────────────
-      function setRating(n) {
-        currentRating = n;
-        document.getElementById("rating-value").value = n;
-        document.querySelectorAll("#star-rating button").forEach((btn, i) => {
-          btn.style.color = i < n ? "#f59e0b" : "#d1d5db";
-        });
-      }
-
-      document
-        .getElementById("feedback-form")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          const mentorId = document.getElementById("feedback-mentor").value;
-          const rating = parseInt(
-            document.getElementById("rating-value").value,
-          );
-          const text = document.getElementById("review-text").value.trim();
-
-          if (!mentorId) return showToast("Please select a mentor.", "error");
-          if (rating === 0) return showToast("Please give a rating.", "error");
-          if (!text) return showToast("Please write a review.", "error");
-
-          fetch("/api/reviews", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              mentorId: mentorId,
-              rating: rating,
-              text: text,
-            }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              showToast(
-                data.message || "Review submitted successfully!",
-                "success",
-              );
-              this.reset();
-              setRating(0);
-              location.reload(); // Quick refresh to show new review
-            });
-        });
-
-      function renderMyReviews() {
-        const div = document.getElementById("my-reviews");
-        if (REVIEWS.length === 0) {
-          div.innerHTML =
-            '<p class="text-gray-400 text-sm text-center py-4">No reviews submitted yet</p>';
-          return;
-        }
-        div.innerHTML = REVIEWS.map(
-          (r) => `
-        <div class="border border-gray-100 rounded-xl p-3 mb-3">
-            <div class="flex justify-between mb-1">
-                <span class="font-semibold text-sm text-gray-800">To Mentor</span>
-                <span class="text-yellow-500">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</span>
-            </div>
-            <p class="text-sm text-gray-600">${r.text}</p>
-            <p class="text-xs text-gray-400 mt-1">${r.date}</p>
-        </div>`,
-        ).join("");
-      }
-
       // ─── PROFILE EDIT ───────────────────────────────────────
       document
         .getElementById("edit-profile-form")
@@ -1025,6 +1003,274 @@
           e.preventDefault();
           showToast("Profile update API coming soon!", "info");
         });
+
+      // ==========================================
+      // MS TEAMS WORKSPACE LOGIC
+      // ==========================================
+      let currentWorkspaceId = null;
+      let wsPollInterval = null;
+      const IS_STUDENT = currentUser.email.includes("@dut4life.ac.za"); // Detect role from email!
+
+      function renderSessionRoster() {
+        const roster = document.getElementById("session-roster");
+        if (SESSIONS.length === 0) {
+          roster.innerHTML =
+            '<p class="text-center text-gray-400 text-sm mt-4">No sessions found.</p>';
+          return;
+        }
+
+        // Sort so the newest/upcoming sessions are at the top
+        const sortedSessions = [...SESSIONS].sort(
+          (a, b) => new Date(b.date) - new Date(a.date),
+        );
+
+        roster.innerHTML = sortedSessions
+          .map((s) => {
+            const otherName = IS_STUDENT ? s.mentorName : s.studentName;
+            const isActive =
+              currentWorkspaceId === s.id
+                ? "bg-blue-50 border-blue-300 shadow-inner"
+                : "bg-white border-gray-100 hover:bg-gray-50";
+
+            return `
+            <div onclick="openWorkspace(${s.id})" class="p-3 rounded-xl border cursor-pointer transition-colors ${isActive}">
+                <div class="flex justify-between items-start mb-1">
+                    <p class="font-bold text-sm text-gray-800 truncate pr-2">${s.module}</p>
+                    <span class="badge badge-${s.status.replace(" ", "-")} text-[10px] px-1.5 py-0.5">${s.status}</span>
+                </div>
+                <p class="text-xs text-gray-500 mb-1">${otherName}</p>
+                <p class="text-[10px] text-gray-400 font-semibold">${s.date} at ${s.time}</p>
+            </div>
+            `;
+          })
+          .join("");
+      }
+
+      function switchTabAndOpenWorkspace(id) {
+        // Find and physically click the "My Sessions" tab in the sidebar
+        const tabBtn = document.querySelector(
+          '.sidebar-tab[data-tab="sessions"]',
+        );
+        if (tabBtn) tabBtn.click();
+        openWorkspace(id);
+      }
+
+      function openWorkspace(sessionId) {
+        currentWorkspaceId = sessionId;
+
+        // Hide the empty state illustration, show the active workspace
+        document.getElementById("ws-empty-state").classList.add("hidden");
+        document.getElementById("ws-active-state").classList.remove("hidden");
+
+        document.getElementById("ws-chat-box").innerHTML =
+          '<p class="text-center text-gray-400 text-sm mt-10">Loading workspace...</p>';
+        document.getElementById("ws-actions-area").innerHTML = "";
+
+        // Re-render the roster so the active session gets highlighted in blue!
+        renderSessionRoster();
+
+        fetchWorkspaceData(true);
+
+        if (wsPollInterval) clearInterval(wsPollInterval);
+        wsPollInterval = setInterval(() => fetchWorkspaceData(false), 3000);
+      }
+
+      function fetchWorkspaceData(scrollToBottom = false) {
+        if (!currentWorkspaceId) return;
+
+        fetch(`/api/workspace/${currentWorkspaceId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return; // Silently fail if modal was closed
+            renderWorkspace(data, scrollToBottom);
+          })
+          .catch((err) => console.log("Polling error ignored."));
+      }
+
+      function renderWorkspace(data, scrollToBottom) {
+        const details = data.sessionDetails;
+
+        // 1. Header
+        document.getElementById("ws-title").textContent =
+          `${details.module} Session`;
+        document.getElementById("ws-subtitle").textContent =
+          `With ${details.otherPartyName} | ${details.date} at ${details.time}`;
+        document.getElementById("ws-avatar").src =
+          `/uploads/images/avatars/${details.otherPartyAvatar}`;
+
+        // 2. Chat Box
+        const chatBox = document.getElementById("ws-chat-box");
+        const wasAtBottom =
+          chatBox.scrollHeight - chatBox.scrollTop === chatBox.clientHeight;
+
+        if (data.messages.length === 0) {
+          chatBox.innerHTML =
+            '<p class="text-center text-gray-400 text-sm mt-10">No messages yet. Say hello!</p>';
+        } else {
+          chatBox.innerHTML = data.messages
+            .map((m) => {
+              const isMe = m.senderName === currentUser.profile.fullName;
+              const bubbleClass = isMe
+                ? "bg-blue-600 text-white rounded-br-none"
+                : "bg-white border border-gray-200 text-gray-800 rounded-bl-none";
+              const alignClass = isMe ? "items-end" : "items-start";
+              const nameDisplay = isMe
+                ? ""
+                : `<span class="text-xs font-bold text-gray-500 ml-1 mb-1 block">${m.senderName}</span>`;
+
+              return `
+                <div class="flex flex-col ${alignClass} mb-4">
+                    ${nameDisplay}
+                    <div class="max-w-[80%] p-3 rounded-2xl shadow-sm ${bubbleClass}">
+                        <p class="text-sm">${m.content}</p>
+                    </div>
+                    <span class="text-[10px] text-gray-400 mt-1">${m.timestamp}</span>
+                </div>`;
+            })
+            .join("");
+        }
+
+        if (scrollToBottom || wasAtBottom) {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // 3. Shared Files
+        const filesList = document.getElementById("ws-files-list");
+        if (data.documents.length === 0) {
+          filesList.innerHTML =
+            '<p class="text-xs text-gray-400 italic">No files shared yet.</p>';
+        } else {
+          filesList.innerHTML = data.documents
+            .map(
+              (d) => `
+            <div class="flex items-center justify-between bg-white border border-gray-100 p-2 rounded-lg shadow-sm">
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-blue-700 truncate" title="${d.fileName}">${d.fileName}</p>
+                    <p class="text-[10px] text-gray-400">${d.uploaderName}</p>
+                </div>
+                <a href="/uploads/${d.filePath}" target="_blank" class="text-blue-500 hover:text-blue-800 p-1 bg-blue-50 rounded">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </a>
+            </div>`,
+            )
+            .join("");
+        }
+
+        // 4. Actions Area (Dynamic based on Role and Status)
+        let actionsHTML = "";
+
+        if (details.status === "completed") {
+          if (IS_STUDENT) {
+            if (data.review) {
+              actionsHTML += `
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
+                        <p class="text-xs font-bold text-green-800 mb-1">Your Review</p>
+                        <p class="text-yellow-500 text-lg mb-1">${"★".repeat(data.review.rating)}${"☆".repeat(5 - data.review.rating)}</p>
+                        <p class="text-sm text-green-900">${data.review.text}</p>
+                    </div>`;
+            } else {
+              actionsHTML += `
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm">
+                        <p class="text-sm font-bold text-gray-800 mb-2">Rate this Session</p>
+                        <select id="ws-rating-val" class="form-input mb-2 text-sm"><option value="5">5 Stars - Excellent</option><option value="4">4 Stars - Good</option><option value="3">3 Stars - Average</option><option value="2">2 Stars - Poor</option><option value="1">1 Star - Terrible</option></select>
+                        <textarea id="ws-review-txt" class="form-input text-sm resize-none mb-2" rows="2" placeholder="Write a quick review..."></textarea>
+                        <button onclick="submitWsReview()" class="btn-primary w-full text-sm justify-center py-2">Submit Review</button>
+                    </div>`;
+            }
+          }
+
+          // Both can report after a session
+          actionsHTML += `
+            <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Report Issue</p>
+                <textarea id="ws-report-txt" class="form-input text-sm resize-none mb-2 bg-white" rows="2" placeholder="What went wrong?"></textarea>
+                <button onclick="submitWsReport()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
+            </div>`;
+        } else {
+          actionsHTML = `<div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-center"><p class="text-xs font-semibold text-yellow-800">Reviews & Reports will unlock after the session is marked Completed.</p></div>`;
+        }
+
+        document.getElementById("ws-actions-area").innerHTML = actionsHTML;
+      }
+
+      function sendWsMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById("ws-msg-input");
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        input.value = "Sending...";
+        input.disabled = true;
+
+        fetch(`/api/workspace/${currentWorkspaceId}/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            input.value = "";
+            input.disabled = false;
+            input.focus();
+            fetchWorkspaceData(true); // Force scroll to bottom to see new message
+          });
+      }
+
+      function uploadWsFile() {
+        const fileInput = document.getElementById("ws-file-input");
+        if (fileInput.files.length === 0)
+          return showToast("Select a file first.", "error");
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        showToast("Uploading file...", "info");
+
+        fetch(`/api/workspace/${currentWorkspaceId}/upload`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+            showToast("File shared successfully!", "success");
+            fileInput.value = ""; // Clear input
+            fetchWorkspaceData(false); // Refresh file list
+          });
+      }
+
+      function submitWsReview() {
+        const rating = document.getElementById("ws-rating-val").value;
+        const text = document.getElementById("ws-review-txt").value;
+
+        fetch(`/api/workspace/${currentWorkspaceId}/review`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rating, text }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+            showToast(data.message, "success");
+            fetchWorkspaceData(false);
+          });
+      }
+
+      function submitWsReport() {
+        const reason = document.getElementById("ws-report-txt").value;
+
+        fetch(`/api/workspace/${currentWorkspaceId}/report`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+            showToast(data.message, "success");
+            document.getElementById("ws-report-txt").value = "";
+          });
+      }
     </script>
   </body>
 </html>

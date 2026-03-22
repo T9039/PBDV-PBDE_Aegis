@@ -428,13 +428,26 @@ def register_student():
         db.session.add(student_profile)
         db.session.commit()
 
-        # 3. Clean up the registration session
+        # ==========================================
+        # 3. SEND WELCOME EMAIL (NEW!)
+        # ==========================================
+        welcome_body = (
+            f"Hello {new_user.full_name},\n\n"
+            "Your account creation was successful! Welcome to StudySphere.\n"
+            "You can now log in, search for mentors, and start booking sessions.\n\n"
+            "Best,\n"
+            "The StudySphere Team"
+        )
+        send_email(new_user.email, "Welcome to StudySphere!", welcome_body)
+        # ==========================================
+
+        # 4. Clean up the registration session
         session.pop("reg_email", None)
         session.pop("reg_password_hash", None)
         session.pop("reg_role", None)
         session.pop("reg_is_staff", None)
 
-        # Redirect them to the login page (or dashboard if you auto-login)
+        # Redirect them to the login page
         return jsonify({"message": "Profile created!", "redirect_url": "/login"}), 201
 
     except Exception as e:
@@ -517,6 +530,20 @@ def register_mentor():
         # 6. If everything worked, commit the whole transaction!
         db.session.commit()
 
+        # ==========================================
+        # 7. SEND APPLICATION CONFIRMATION EMAIL (NEW!)
+        # ==========================================
+        app_body = (
+            f"Hello {new_user.full_name},\n\n"
+            "You have successfully applied for mentor consideration at StudySphere!\n\n"
+            "Our admin team will review your application and CV shortly. You will receive "
+            "a response regarding your approval status within a 24-48 hour period.\n\n"
+            "Best,\n"
+            "The StudySphere Team"
+        )
+        send_email(new_user.email, "Mentor Application Received", app_body)
+        # ==========================================
+
         # Wipe registration memory so they can't submit twice
         session.pop("reg_email", None)
         session.pop("reg_password_hash", None)
@@ -588,7 +615,8 @@ def api_login():
 
 @auth_bp.route("/logout")
 def logout():
-    user_email = session.get("email")
+    # Use the correct session key that /api/login uses!
+    user_email = session.get("user_email")
 
     session.clear()
 

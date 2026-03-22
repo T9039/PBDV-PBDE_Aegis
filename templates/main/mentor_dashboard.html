@@ -11,7 +11,6 @@
     />
   </head>
   <body class="bg-gray-50">
-    <!-- ============ SIDEBAR ============ -->
     <aside class="sidebar">
       <div class="p-5 border-b border-blue-800">
         <div class="flex items-center gap-3">
@@ -45,7 +44,6 @@
         <div class="flex items-center gap-3">
           <div
             class="avatar"
-            id="sidebar-avatar"
             style="
               background: #d97706;
               width: 36px;
@@ -102,7 +100,8 @@
           </svg>
           My Availability
         </button>
-        <button class="sidebar-tab" data-tab="messages">
+
+        <button class="sidebar-tab" data-tab="sessions">
           <svg
             class="w-5 h-5"
             fill="none"
@@ -113,27 +112,12 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
             />
           </svg>
-          Messages
+          My Sessions
         </button>
-        <button class="sidebar-tab" data-tab="feedback">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-            />
-          </svg>
-          Feedback
-        </button>
+
         <button class="sidebar-tab" data-tab="profile">
           <svg
             class="w-5 h-5"
@@ -172,9 +156,7 @@
       </div>
     </aside>
 
-    <!-- ============ MAIN CONTENT ============ -->
     <main class="main-content">
-      <!-- ===== HOME TAB ===== -->
       <div class="tab-panel" id="panel-home">
         <div class="section-title">Mentor Dashboard</div>
         <p class="section-subtitle">
@@ -184,7 +166,6 @@
           >
         </p>
 
-        <!-- Stats -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
           <div class="stat-card">
             <p
@@ -197,7 +178,7 @@
               style="color: #003087"
               id="week-count"
             >
-              2
+              0
             </p>
           </div>
           <div class="stat-card">
@@ -207,7 +188,7 @@
               Total Sessions
             </p>
             <p class="text-3xl font-extrabold text-green-600" id="total-count">
-              4
+              0
             </p>
           </div>
           <div class="stat-card">
@@ -220,7 +201,7 @@
               class="text-3xl font-extrabold text-yellow-600"
               id="upcoming-count"
             >
-              2
+              0
             </p>
           </div>
           <div class="stat-card">
@@ -233,155 +214,195 @@
               class="text-3xl font-extrabold text-purple-600"
               id="students-count"
             >
-              2
+              0
             </p>
           </div>
         </div>
 
-        <!-- Upcoming Bookings -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h3 class="font-bold text-gray-800 mb-4">Upcoming Bookings</h3>
-          <div id="upcoming-bookings"></div>
+          <div id="upcoming-bookings">
+            <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
+          </div>
         </div>
       </div>
 
-      <!-- ===== AVAILABILITY TAB ===== -->
       <div class="tab-panel" id="panel-availability">
         <div class="section-title">My Availability</div>
         <p class="section-subtitle">
           Manage your available time slots for students to book
         </p>
 
-        <div class="grid md:grid-cols-2 gap-6">
-          <!-- Calendar -->
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-4">Monthly Overview</h3>
-            <div id="avail-calendar"></div>
-            <div class="mt-4 flex flex-wrap gap-3 text-xs">
-              <span class="flex items-center gap-1.5"
-                ><span
-                  class="w-3 h-3 rounded-full inline-block"
-                  style="background: #d1fae5"
-                ></span
-                >Has Availability</span
-              >
-              <span class="flex items-center gap-1.5"
-                ><span
-                  class="w-3 h-3 rounded-full inline-block bg-yellow-200"
-                ></span
-                >Has Booking</span
-              >
-              <span class="flex items-center gap-1.5"
-                ><span
-                  class="w-3 h-3 rounded-full inline-block"
-                  style="background: #003087"
-                ></span
-                >Today</span
-              >
-            </div>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h3 class="font-bold text-gray-800 mb-4">Upcoming Sessions</h3>
+          <div id="upcoming-sessions">
+            <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
           </div>
+        </div>
+      </div>
 
-          <!-- Day Editor -->
+      <div class="tab-panel" id="panel-sessions">
+        <div class="section-title mb-2">My Sessions</div>
+        <p class="section-subtitle mb-4">
+          Manage your bookings, chat, and share files.
+        </p>
+
+        <div
+          class="flex-1 flex gap-6 overflow-hidden"
+          style="height: calc(100vh - 180px)"
+        >
           <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+            class="w-1/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
           >
-            <h3 class="font-bold text-gray-800 mb-1">Edit Day Slots</h3>
-            <p class="text-sm text-gray-500 mb-4">
-              Click a day on the calendar to edit slots
-            </p>
-            <div id="day-editor">
-              <p class="text-gray-400 text-sm text-center py-6">
-                ← Select a day from the calendar to manage slots
+            <div class="p-4 border-b border-gray-100 bg-gray-50">
+              <h3 class="font-bold text-gray-800">Session History</h3>
+            </div>
+            <div
+              id="session-roster"
+              class="flex-1 overflow-y-auto p-3 space-y-2"
+            >
+              <p class="text-center text-gray-400 text-sm mt-4">
+                Loading sessions...
               </p>
             </div>
           </div>
+
+          <div
+            class="w-2/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative"
+          >
+            <div
+              id="ws-empty-state"
+              class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-20"
+            >
+              <svg
+                class="w-16 h-16 text-gray-300 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <p class="text-gray-500 font-medium">
+                Select a session to open the workspace
+              </p>
+            </div>
+
+            <div id="ws-active-state" class="flex flex-col h-full hidden">
+              <div
+                class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md z-10"
+              >
+                <div class="flex items-center gap-4">
+                  <img
+                    id="ws-avatar"
+                    src=""
+                    class="w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400"
+                    alt=""
+                    onerror="
+                      this.src = '/static/default_avatar.png';
+                      this.onerror = null;
+                    "
+                  />
+                  <div>
+                    <h2 id="ws-title" class="font-bold text-base leading-tight">
+                      Session Workspace
+                    </h2>
+                    <p id="ws-subtitle" class="text-xs text-blue-200">
+                      Loading details...
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-1 overflow-hidden">
+                <div
+                  class="flex-1 flex flex-col border-r border-gray-200 bg-gray-50"
+                >
+                  <div
+                    id="ws-chat-box"
+                    class="flex-1 overflow-y-auto p-4 space-y-4"
+                  ></div>
+                  <div class="p-3 bg-white border-t border-gray-200">
+                    <form
+                      id="ws-chat-form"
+                      class="flex gap-2"
+                      onsubmit="sendWsMessage(event)"
+                    >
+                      <input
+                        type="text"
+                        id="ws-msg-input"
+                        class="form-input flex-1 bg-gray-50 text-sm py-2"
+                        placeholder="Type a message..."
+                        required
+                        autocomplete="off"
+                      />
+                      <button
+                        type="submit"
+                        class="btn-primary py-2 px-4 shadow-sm text-sm"
+                      >
+                        Send
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="w-64 flex flex-col bg-white overflow-y-auto">
+                  <div class="p-4 border-b border-gray-100">
+                    <h3
+                      class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2"
+                    >
+                      <svg
+                        class="w-4 h-4 text-blue-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                        />
+                      </svg>
+                      Shared Files
+                    </h3>
+                    <div
+                      id="ws-files-list"
+                      class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1"
+                    ></div>
+                    <div
+                      class="bg-blue-50 p-2 rounded-xl border border-blue-100"
+                    >
+                      <input
+                        type="file"
+                        id="ws-file-input"
+                        class="text-[10px] w-full mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+                      />
+                      <button
+                        onclick="uploadWsFile()"
+                        class="btn-sm btn-blue-sm w-full justify-center shadow-sm py-1 text-xs"
+                      >
+                        Upload
+                      </button>
+                    </div>
+                  </div>
+                  <div class="p-4 bg-gray-50 flex-1">
+                    <h3 class="font-bold text-sm text-gray-800 mb-3">
+                      Session Actions
+                    </h3>
+                    <div id="ws-actions-area" class="space-y-3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- ===== MESSAGES TAB ===== -->
-      <div class="tab-panel" id="panel-messages">
-        <div class="section-title">Messages to Students</div>
-        <p class="section-subtitle">
-          Send feedback and notes to your students after sessions
-        </p>
-
-        <div class="grid md:grid-cols-2 gap-6">
-          <!-- Recent Sessions -->
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-4">Recent Sessions</h3>
-            <div id="recent-sessions-list"></div>
-          </div>
-
-          <!-- Send Message Form -->
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-4">Add Message to Student</h3>
-            <form id="message-form">
-              <div class="mb-4">
-                <label class="form-label">Select Student</label>
-                <select id="msg-student" class="form-input">
-                  <option value="">Choose a student...</option>
-                  <option value="Student1@dut.ac.za">Sipho Dlamini</option>
-                  <option value="Student2@dut.ac.za">Nomsa Khumalo</option>
-                </select>
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Performance Rating</label>
-                <select id="msg-rating" class="form-input">
-                  <option value="">Select rating...</option>
-                  <option value="excellent">Excellent</option>
-                  <option value="good">Good</option>
-                  <option value="moderate">Moderate</option>
-                  <option value="attention">Attention Needed</option>
-                </select>
-              </div>
-              <div class="mb-5">
-                <label class="form-label">Message / Focus Areas</label>
-                <textarea
-                  id="msg-text"
-                  class="form-input resize-none"
-                  rows="4"
-                  placeholder="e.g. Focus on Chapter 5 integration. Complete exercises 5.1-5.3 before next session. Study the test from 2024..."
-                ></textarea>
-              </div>
-              <!-- TODO (Backend): POST /api/messages — save message in database, display on student dashboard -->
-              <button type="submit" class="btn-primary w-full justify-center">
-                Send Message to Student
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== FEEDBACK TAB ===== -->
-      <div class="tab-panel" id="panel-feedback">
-        <div class="section-title">Student Feedback</div>
-        <p class="section-subtitle">Reviews and messages from your students</p>
-
-        <div class="grid md:grid-cols-2 gap-6">
-          <!-- Reviews -->
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-4">Student Reviews</h3>
-            <div id="student-reviews"></div>
-          </div>
-          <!-- Messages from students -->
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-4">Messages from Students</h3>
-            <div id="student-messages-list"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== PROFILE TAB ===== -->
       <div class="tab-panel" id="panel-profile">
         <div class="section-title">My Profile</div>
         <p class="section-subtitle">Update your mentor profile information</p>
@@ -393,23 +414,17 @@
             <div class="flex items-center gap-4 mb-7 p-4 bg-gray-50 rounded-xl">
               <div
                 class="avatar text-xl"
-                id="profile-avatar"
                 style="background: #d97706; width: 60px; height: 60px"
               >
                 {{ user.full_name[:2].upper() if user.full_name else 'MT' }}
               </div>
               <div>
-                <p
-                  class="font-bold text-gray-800 text-lg"
-                  id="profile-display-name"
-                >
+                <p class="font-bold text-gray-800 text-lg">
                   {{ user.full_name }}
                 </p>
-                <p class="text-gray-500 text-sm" id="profile-display-email">
-                  {{ user.email }}
-                </p>
+                <p class="text-gray-500 text-sm">{{ user.email }}</p>
                 <span class="badge badge-in-progress mt-1"
-                  >{{ user.mentor_status.value.title() }}</span
+                  >{{ user.mentor_status.name.title() }}</span
                 >
               </div>
             </div>
@@ -478,7 +493,6 @@
       </div>
     </main>
 
-    <!-- ===== STUDENT DETAIL MODAL ===== -->
     <div class="modal-overlay" id="student-detail-modal">
       <div class="modal-box max-w-md">
         <button
@@ -514,7 +528,6 @@
       </div>
     </div>
 
-    <!-- ===== REPORT MODAL ===== -->
     <div class="modal-overlay" id="report-modal">
       <div class="modal-box max-w-md">
         <button
@@ -547,38 +560,35 @@
           id="report-message"
           class="form-input resize-none mb-4"
           rows="4"
-          placeholder="Describe the issue or conduct concern in detail..."
+          placeholder="Describe the issue..."
         ></textarea>
-        <!-- TODO (Backend): POST /api/reports — save report in database, notify admin -->
         <button
           onclick="submitReport()"
           class="btn-primary w-full justify-center"
           style="background: #dc2626"
         >
-          Submit Report to Admin
+          Submit Report
         </button>
       </div>
     </div>
 
     <div
       id="toast-container"
-      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"
+      class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none"
     ></div>
 
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
     <script>
       // --- Global Data Stores ---
+
       const currentUser = {
         email: "{{ user.email }}",
         profile: { fullName: "{{ user.full_name }}" },
       };
-      let MOCK_SESSIONS = [];
-      let MENTOR_AVAILABILITY = {};
-      let MOCK_MESSAGES = [];
-      let MOCK_REVIEWS = [];
+
+      let SESSIONS = [];
+      let AVAILABILITY = {};
 
       let reportTargetEmail = "";
       let reportTargetName = "";
@@ -596,9 +606,7 @@
         "17:00",
       ];
 
-      // --- 1. Fetch Data on Load ---
       window.addEventListener("DOMContentLoaded", async () => {
-        // Pre-select the faculty dropdown
         const facEl = document.getElementById("edit-faculty");
         const currentFac = facEl.getAttribute("data-current") || "";
         for (let i = 0; i < facEl.options.length; i++) {
@@ -608,31 +616,22 @@
           }
         }
 
+        initTabs("home");
+
         try {
-          // Fetch all data concurrently for speed
-          const [sessionsRes, availRes, feedbackRes] = await Promise.all([
+          const [sessionsRes, availRes] = await Promise.all([
             fetch("/api/sessions"),
             fetch("/api/availability"),
-            fetch("/api/feedback"),
           ]);
 
-          if (sessionsRes.ok) MOCK_SESSIONS = await sessionsRes.json();
-          if (availRes.ok) MENTOR_AVAILABILITY = await availRes.json();
-          if (feedbackRes.ok) {
-            const fbData = await feedbackRes.json();
-            MOCK_REVIEWS = fbData.reviews;
-            MOCK_MESSAGES = fbData.messages;
-          }
+          if (sessionsRes.ok) SESSIONS = await sessionsRes.json();
+          if (availRes.ok) AVAILABILITY = await availRes.json();
 
-          // Now that we have data, render everything!
-          initTabs("home");
           renderHomeTab();
+          renderSessionRoster();
           renderAvailability();
-          renderRecentSessions();
-          renderFeedbackTab();
         } catch (err) {
-          console.error("Error loading dashboard data:", err);
-          showToast("Failed to load some dashboard data.", "error");
+          showToast("Failed to load dashboard data.", "error");
         }
       });
 
@@ -640,27 +639,24 @@
         window.location.href = "/logout";
       }
 
-      // --- 2. Render Functions (Updated to use fetched globals) ---
+      // ─── HOME TAB ───────────────────────────────────────────
       function renderHomeTab() {
         const today = new Date();
         const weekEnd = new Date(today);
         weekEnd.setDate(today.getDate() + 7);
 
-        const weekSessions = MOCK_SESSIONS.filter((s) => {
+        const weekSessions = SESSIONS.filter((s) => {
           const d = new Date(s.date);
           return d >= today && d <= weekEnd && s.status !== "cancelled";
         });
 
-        const upcoming = MOCK_SESSIONS.filter(
+        const upcoming = SESSIONS.filter(
           (s) => s.status === "booked" || s.status === "in-progress",
         );
-        const studentEmails = [
-          ...new Set(MOCK_SESSIONS.map((s) => s.studentEmail)),
-        ];
+        const studentEmails = [...new Set(SESSIONS.map((s) => s.studentEmail))];
 
         document.getElementById("week-count").textContent = weekSessions.length;
-        document.getElementById("total-count").textContent =
-          MOCK_SESSIONS.length;
+        document.getElementById("total-count").textContent = SESSIONS.length;
         document.getElementById("upcoming-count").textContent = upcoming.length;
         document.getElementById("students-count").textContent =
           studentEmails.length;
@@ -671,6 +667,7 @@
             '<p class="text-gray-400 text-sm text-center py-4">No upcoming bookings</p>';
           return;
         }
+
         div.innerHTML = upcoming
           .map(
             (s) => `
@@ -688,19 +685,34 @@
             <div class="text-sm text-gray-600 mb-2">
                 <span class="font-medium text-gray-700">Module:</span> ${s.module} &nbsp;|&nbsp; <span class="font-medium text-gray-700">Date:</span> ${s.date} &nbsp;|&nbsp; <span class="font-medium text-gray-700">Time:</span> ${s.time}
             </div>
+            
             <div class="flex gap-2">
-                <button onclick="viewStudentDetail('${s.studentEmail}', '${s.studentName}', '${s.program}')" class="btn-sm btn-blue-sm py-1">View Details</button>
+                <button onclick="switchTabAndOpenWorkspace(${s.id})" class="btn-sm btn-blue-sm py-1">Open Workspace</button>
+                ${s.status !== "cancelled" ? `<button onclick="cancelSession(${s.id})" class="btn-sm btn-red-sm py-1">Cancel</button>` : ""}
             </div>
+            
         </div>`,
           )
           .join("");
       }
 
-      function viewStudentDetail(email, name, program) {
-        const prevSessions = MOCK_SESSIONS.filter(
-          (s) => s.studentEmail === email,
-        );
+      function cancelSession(id) {
+        if (
+          !confirm("Cancel this session? The slot will become available again.")
+        )
+          return;
+        fetch(`/api/sessions/${id}`, { method: "DELETE" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+            showToast(data.message, "success");
+            SESSIONS = SESSIONS.filter((s) => s.id !== id);
+            renderHomeTab();
+          });
+      }
 
+      function viewStudentDetail(email, name, program) {
+        const prevSessions = SESSIONS.filter((s) => s.studentEmail === email);
         document.getElementById("student-detail-content").innerHTML = `
         <div class="flex items-center gap-4 mb-5">
             <div class="avatar text-xl" style="background:#94a3b8;width:56px;height:56px;">ST</div>
@@ -726,13 +738,14 @@
         openModal("student-detail-modal");
       }
 
+      // ─── AVAILABILITY ───────────────────────────────────────
       function renderAvailability() {
         const today = new Date();
         renderCalendar(
           "avail-calendar",
           today.getFullYear(),
           today.getMonth(),
-          MENTOR_AVAILABILITY,
+          AVAILABILITY,
           (dateStr) => {
             openDayEditor(dateStr);
           },
@@ -741,13 +754,12 @@
 
       function openDayEditor(dateStr) {
         selectedEditDate = dateStr;
-        const slots = MENTOR_AVAILABILITY[dateStr] || [];
-        const bookedSlots = MOCK_SESSIONS.filter(
+        const slots = AVAILABILITY[dateStr] || [];
+        const bookedSlots = SESSIONS.filter(
           (s) => s.date === dateStr && s.status !== "cancelled",
         ).map((s) => s.time);
 
-        const div = document.getElementById("day-editor");
-        div.innerHTML = `
+        document.getElementById("day-editor").innerHTML = `
         <div class="flex items-center justify-between mb-4">
             <h4 class="font-bold text-gray-800">Slots for ${dateStr}</h4>
             <button onclick="clearDaySlots('${dateStr}')" class="btn-sm btn-red-sm py-1 text-xs">Clear All</button>
@@ -772,34 +784,33 @@
       }
 
       function toggleSlot(dateStr, time) {
-        if (!MENTOR_AVAILABILITY[dateStr]) MENTOR_AVAILABILITY[dateStr] = [];
-        const idx = MENTOR_AVAILABILITY[dateStr].indexOf(time);
+        if (!AVAILABILITY[dateStr]) AVAILABILITY[dateStr] = [];
+        const idx = AVAILABILITY[dateStr].indexOf(time);
         if (idx === -1) {
-          MENTOR_AVAILABILITY[dateStr].push(time);
-          MENTOR_AVAILABILITY[dateStr].sort();
+          AVAILABILITY[dateStr].push(time);
+          AVAILABILITY[dateStr].sort();
         } else {
-          MENTOR_AVAILABILITY[dateStr].splice(idx, 1);
+          AVAILABILITY[dateStr].splice(idx, 1);
         }
         openDayEditor(dateStr);
         renderAvailability();
       }
 
       function clearDaySlots(dateStr) {
-        const bookedSlots = MOCK_SESSIONS.filter(
+        const bookedSlots = SESSIONS.filter(
           (s) => s.date === dateStr && s.status !== "cancelled",
         ).map((s) => s.time);
-        MENTOR_AVAILABILITY[dateStr] = bookedSlots;
+        AVAILABILITY[dateStr] = bookedSlots; // Ensure booked slots aren't accidentally wiped locally
         openDayEditor(dateStr);
         renderAvailability();
       }
 
       function makeAllAvailable(dateStr) {
-        MENTOR_AVAILABILITY[dateStr] = [...ALL_TIME_SLOTS];
+        AVAILABILITY[dateStr] = [...ALL_TIME_SLOTS];
         openDayEditor(dateStr);
         renderAvailability();
       }
 
-      // --- 3. API POST/PUT Actions ---
       function saveAvailability() {
         if (!selectedEditDate) return;
         const btn = document.getElementById("save-avail-btn");
@@ -810,7 +821,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             date: selectedEditDate,
-            slots: MENTOR_AVAILABILITY[selectedEditDate] || [],
+            slots: AVAILABILITY[selectedEditDate] || [],
           }),
         })
           .then((res) => res.json())
@@ -820,126 +831,302 @@
           });
       }
 
-      function renderRecentSessions() {
-        const div = document.getElementById("recent-sessions-list");
-        if (MOCK_SESSIONS.length === 0) {
-          div.innerHTML =
-            '<p class="text-gray-400 text-sm">No sessions yet</p>';
-          return;
-        }
-
-        // Populate the dropdown at the same time
-        const sel = document.getElementById("msg-student");
-        sel.innerHTML = '<option value="">Choose a student...</option>';
-        const uniqueStudents = [
-          ...new Map(
-            MOCK_SESSIONS.map((item) => [item.studentEmail, item]),
-          ).values(),
-        ];
-        uniqueStudents.forEach((s) => {
-          sel.innerHTML += `<option value="${s.studentEmail}">${s.studentName}</option>`;
-        });
-
-        div.innerHTML = MOCK_SESSIONS.map(
-          (s) => `
-        <div class="border border-gray-100 rounded-xl p-3 mb-3 hover:bg-gray-50 cursor-pointer" onclick="prefillMessage('${s.studentEmail}')">
-            <div class="flex justify-between mb-1">
-                <span class="font-semibold text-sm text-gray-800">${s.studentName}</span>
-                <span class="badge badge-${s.status.replace(" ", "-")} text-xs">${s.status.toUpperCase()}</span>
-            </div>
-            <p class="text-xs text-gray-500">${s.module} — ${s.date} at ${s.time}</p>
-        </div>`,
-        ).join("");
-      }
-
-      function prefillMessage(email) {
-        const sel = document.getElementById("msg-student");
-        sel.value = email;
-      }
-
+      // ─── PROFILE EDIT ───────────────────────────────────────
       document
-        .getElementById("message-form")
+        .getElementById("edit-profile-form")
         .addEventListener("submit", function (e) {
           e.preventDefault();
+          const btn = this.querySelector("button");
+          btn.innerHTML = "Saving...";
+
           const payload = {
-            toEmail: document.getElementById("msg-student").value,
-            rating: document.getElementById("msg-rating").value,
-            message: document.getElementById("msg-text").value.trim(),
+            full_name: document.getElementById("edit-name").value,
+            modules: document.getElementById("edit-modules").value,
+            faculty: document.getElementById("edit-faculty").value,
+            awards: document.getElementById("edit-awards").value,
           };
 
-          if (!payload.toEmail || !payload.rating || !payload.message) {
-            return showToast("Please fill all fields.", "error");
-          }
-
-          const btn = this.querySelector("button");
-          btn.innerHTML = "Sending...";
-
-          fetch("/api/messages", {
-            method: "POST",
+          fetch("/api/mentor-profile", {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           })
             .then((res) => res.json())
             .then((data) => {
-              showToast(data.message || "Message sent!", "success");
-              this.reset();
-              btn.innerHTML = "Send Message to Student";
+              showToast(data.message, "success");
+              document.getElementById("profile-display-name").textContent =
+                payload.full_name;
+              document.getElementById("sidebar-name").textContent =
+                payload.full_name;
+              btn.innerHTML = "Save Changes";
             });
         });
 
-      function renderFeedbackTab() {
-        const reviewDiv = document.getElementById("student-reviews");
-        if (MOCK_REVIEWS.length === 0) {
-          reviewDiv.innerHTML =
-            '<p class="text-gray-400 text-sm text-center py-4">No reviews received yet</p>';
-        } else {
-          reviewDiv.innerHTML = MOCK_REVIEWS.map(
-            (r) => `
-            <div class="border border-gray-100 rounded-xl p-3 mb-3">
-                <div class="flex justify-between mb-1">
-                    <span class="text-yellow-500 text-lg">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</span>
-                    <span class="text-xs text-gray-400">${r.date}</span>
-                </div>
-                <p class="text-sm text-gray-700">${r.text}</p>
-            </div>`,
-          ).join("");
+      // ==========================================
+      // MS TEAMS WORKSPACE LOGIC
+      // ==========================================
+      let currentWorkspaceId = null;
+      let wsPollInterval = null;
+      const IS_STUDENT = currentUser.email.includes("@dut4life.ac.za"); // Detect role from email!
+
+      function renderSessionRoster() {
+        const roster = document.getElementById("session-roster");
+        if (SESSIONS.length === 0) {
+          roster.innerHTML =
+            '<p class="text-center text-gray-400 text-sm mt-4">No sessions found.</p>';
+          return;
         }
 
-        const msgDiv = document.getElementById("student-messages-list");
-        if (MOCK_MESSAGES.length === 0) {
-          msgDiv.innerHTML =
-            '<p class="text-gray-400 text-sm text-center py-4">No messages from students yet</p>';
-        } else {
-          msgDiv.innerHTML = MOCK_MESSAGES.map(
-            (m) => `
-            <div class="message-bubble from-student mb-3">
-                <div class="flex justify-between mb-1">
-                    <span class="font-semibold text-sm text-gray-800">${m.fromName}</span>
-                    <span class="text-xs text-gray-400">${m.date}</span>
+        // Sort so the newest/upcoming sessions are at the top
+        const sortedSessions = [...SESSIONS].sort(
+          (a, b) => new Date(b.date) - new Date(a.date),
+        );
+
+        roster.innerHTML = sortedSessions
+          .map((s) => {
+            const otherName = IS_STUDENT ? s.mentorName : s.studentName;
+            const isActive =
+              currentWorkspaceId === s.id
+                ? "bg-blue-50 border-blue-300 shadow-inner"
+                : "bg-white border-gray-100 hover:bg-gray-50";
+
+            return `
+            <div onclick="openWorkspace(${s.id})" class="p-3 rounded-xl border cursor-pointer transition-colors ${isActive}">
+                <div class="flex justify-between items-start mb-1">
+                    <p class="font-bold text-sm text-gray-800 truncate pr-2">${s.module}</p>
+                    <span class="badge badge-${s.status.replace(" ", "-")} text-[10px] px-1.5 py-0.5">${s.status}</span>
                 </div>
-                <p class="text-sm text-gray-700">${m.message}</p>
-            </div>`,
-          ).join("");
-        }
+                <p class="text-xs text-gray-500 mb-1">${otherName}</p>
+                <p class="text-[10px] text-gray-400 font-semibold">${s.date} at ${s.time}</p>
+            </div>
+            `;
+          })
+          .join("");
       }
 
-      function submitReport() {
-        const msg = document.getElementById("report-message").value.trim();
-        if (!msg) return showToast("Please describe the issue.", "error");
+      function switchTabAndOpenWorkspace(id) {
+        // Find and physically click the "My Sessions" tab in the sidebar
+        const tabBtn = document.querySelector(
+          '.sidebar-tab[data-tab="sessions"]',
+        );
+        if (tabBtn) tabBtn.click();
+        openWorkspace(id);
+      }
 
-        fetch("/api/reports", {
+      function openWorkspace(sessionId) {
+        currentWorkspaceId = sessionId;
+
+        // Hide the empty state illustration, show the active workspace
+        document.getElementById("ws-empty-state").classList.add("hidden");
+        document.getElementById("ws-active-state").classList.remove("hidden");
+
+        document.getElementById("ws-chat-box").innerHTML =
+          '<p class="text-center text-gray-400 text-sm mt-10">Loading workspace...</p>';
+        document.getElementById("ws-actions-area").innerHTML = "";
+
+        // Re-render the roster so the active session gets highlighted in blue!
+        renderSessionRoster();
+
+        fetchWorkspaceData(true);
+
+        if (wsPollInterval) clearInterval(wsPollInterval);
+        wsPollInterval = setInterval(() => fetchWorkspaceData(false), 3000);
+      }
+
+      function fetchWorkspaceData(scrollToBottom = false) {
+        if (!currentWorkspaceId) return;
+
+        fetch(`/api/workspace/${currentWorkspaceId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return; // Silently fail if modal was closed
+            renderWorkspace(data, scrollToBottom);
+          })
+          .catch((err) => console.log("Polling error ignored."));
+      }
+
+      function renderWorkspace(data, scrollToBottom) {
+        const details = data.sessionDetails;
+
+        // 1. Header
+        document.getElementById("ws-title").textContent =
+          `${details.module} Session`;
+        document.getElementById("ws-subtitle").textContent =
+          `With ${details.otherPartyName} | ${details.date} at ${details.time}`;
+        document.getElementById("ws-avatar").src =
+          `/uploads/images/avatars/${details.otherPartyAvatar}`;
+
+        // 2. Chat Box
+        const chatBox = document.getElementById("ws-chat-box");
+        const wasAtBottom =
+          chatBox.scrollHeight - chatBox.scrollTop === chatBox.clientHeight;
+
+        if (data.messages.length === 0) {
+          chatBox.innerHTML =
+            '<p class="text-center text-gray-400 text-sm mt-10">No messages yet. Say hello!</p>';
+        } else {
+          chatBox.innerHTML = data.messages
+            .map((m) => {
+              const isMe = m.senderName === currentUser.profile.fullName;
+              const bubbleClass = isMe
+                ? "bg-blue-600 text-white rounded-br-none"
+                : "bg-white border border-gray-200 text-gray-800 rounded-bl-none";
+              const alignClass = isMe ? "items-end" : "items-start";
+              const nameDisplay = isMe
+                ? ""
+                : `<span class="text-xs font-bold text-gray-500 ml-1 mb-1 block">${m.senderName}</span>`;
+
+              return `
+                <div class="flex flex-col ${alignClass} mb-4">
+                    ${nameDisplay}
+                    <div class="max-w-[80%] p-3 rounded-2xl shadow-sm ${bubbleClass}">
+                        <p class="text-sm">${m.content}</p>
+                    </div>
+                    <span class="text-[10px] text-gray-400 mt-1">${m.timestamp}</span>
+                </div>`;
+            })
+            .join("");
+        }
+
+        if (scrollToBottom || wasAtBottom) {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // 3. Shared Files
+        const filesList = document.getElementById("ws-files-list");
+        if (data.documents.length === 0) {
+          filesList.innerHTML =
+            '<p class="text-xs text-gray-400 italic">No files shared yet.</p>';
+        } else {
+          filesList.innerHTML = data.documents
+            .map(
+              (d) => `
+            <div class="flex items-center justify-between bg-white border border-gray-100 p-2 rounded-lg shadow-sm">
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-blue-700 truncate" title="${d.fileName}">${d.fileName}</p>
+                    <p class="text-[10px] text-gray-400">${d.uploaderName}</p>
+                </div>
+                <a href="/uploads/${d.filePath}" target="_blank" class="text-blue-500 hover:text-blue-800 p-1 bg-blue-50 rounded">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </a>
+            </div>`,
+            )
+            .join("");
+        }
+
+        // 4. Actions Area (Dynamic based on Role and Status)
+        let actionsHTML = "";
+
+        if (details.status === "completed") {
+          if (IS_STUDENT) {
+            if (data.review) {
+              actionsHTML += `
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
+                        <p class="text-xs font-bold text-green-800 mb-1">Your Review</p>
+                        <p class="text-yellow-500 text-lg mb-1">${"★".repeat(data.review.rating)}${"☆".repeat(5 - data.review.rating)}</p>
+                        <p class="text-sm text-green-900">${data.review.text}</p>
+                    </div>`;
+            } else {
+              actionsHTML += `
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm">
+                        <p class="text-sm font-bold text-gray-800 mb-2">Rate this Session</p>
+                        <select id="ws-rating-val" class="form-input mb-2 text-sm"><option value="5">5 Stars - Excellent</option><option value="4">4 Stars - Good</option><option value="3">3 Stars - Average</option><option value="2">2 Stars - Poor</option><option value="1">1 Star - Terrible</option></select>
+                        <textarea id="ws-review-txt" class="form-input text-sm resize-none mb-2" rows="2" placeholder="Write a quick review..."></textarea>
+                        <button onclick="submitWsReview()" class="btn-primary w-full text-sm justify-center py-2">Submit Review</button>
+                    </div>`;
+            }
+          }
+
+          // Both can report after a session
+          actionsHTML += `
+            <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Report Issue</p>
+                <textarea id="ws-report-txt" class="form-input text-sm resize-none mb-2 bg-white" rows="2" placeholder="What went wrong?"></textarea>
+                <button onclick="submitWsReport()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
+            </div>`;
+        } else {
+          actionsHTML = `<div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-center"><p class="text-xs font-semibold text-yellow-800">Reviews & Reports will unlock after the session is marked Completed.</p></div>`;
+        }
+
+        document.getElementById("ws-actions-area").innerHTML = actionsHTML;
+      }
+
+      function sendWsMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById("ws-msg-input");
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        input.value = "Sending...";
+        input.disabled = true;
+
+        fetch(`/api/workspace/${currentWorkspaceId}/messages`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            targetEmail: reportTargetEmail,
-            message: msg,
-          }),
+          body: JSON.stringify({ message: msg }),
         })
           .then((res) => res.json())
           .then((data) => {
+            input.value = "";
+            input.disabled = false;
+            input.focus();
+            fetchWorkspaceData(true); // Force scroll to bottom to see new message
+          });
+      }
+
+      function uploadWsFile() {
+        const fileInput = document.getElementById("ws-file-input");
+        if (fileInput.files.length === 0)
+          return showToast("Select a file first.", "error");
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        showToast("Uploading file...", "info");
+
+        fetch(`/api/workspace/${currentWorkspaceId}/upload`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+            showToast("File shared successfully!", "success");
+            fileInput.value = ""; // Clear input
+            fetchWorkspaceData(false); // Refresh file list
+          });
+      }
+
+      function submitWsReview() {
+        const rating = document.getElementById("ws-rating-val").value;
+        const text = document.getElementById("ws-review-txt").value;
+
+        fetch(`/api/workspace/${currentWorkspaceId}/review`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rating, text }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
             showToast(data.message, "success");
-            closeModal("report-modal");
-            document.getElementById("report-message").value = "";
+            fetchWorkspaceData(false);
+          });
+      }
+
+      function submitWsReport() {
+        const reason = document.getElementById("ws-report-txt").value;
+
+        fetch(`/api/workspace/${currentWorkspaceId}/report`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+            showToast(data.message, "success");
+            document.getElementById("ws-report-txt").value = "";
           });
       }
     </script>

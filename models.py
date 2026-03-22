@@ -45,6 +45,11 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     full_name = db.Column(db.String(100), nullable=True)
 
+    # --- NEW: Neutral Profile Picture for all users ---
+    profile_picture = db.Column(
+        db.String(255), nullable=True, default="default_avatar.png"
+    )
+
     # Identity: Are they a student or staff member?
     campus_role = db.Column(db.Enum(CampusRole), nullable=False)
 
@@ -62,13 +67,20 @@ class User(db.Model):
     )
 
     def __init__(
-        self, email, password_hash, campus_role, mentor_status, full_name=None
+        self,
+        email,
+        password_hash,
+        campus_role,
+        mentor_status,
+        full_name=None,
+        profile_picture="default_avatar.png",
     ):
         self.email = email
         self.password_hash = password_hash
         self.campus_role = campus_role
         self.mentor_status = mentor_status
         self.full_name = full_name
+        self.profile_picture = profile_picture
 
     def __repr__(self):
         return f"<User {self.email} | Role: {self.campus_role.value} | Mentor: {self.mentor_status.value}>"
@@ -97,6 +109,9 @@ class MentorProfile(db.Model):
     awards = db.Column(db.Text, nullable=True)
     linkedin_url = db.Column(db.String(255), nullable=True)
     portfolio_url = db.Column(db.String(255), nullable=True)  # GitHub, Citations, etc.
+    badges = db.Column(
+        db.String(255), nullable=True, default=""
+    )  # e.g. "Top Tutor, Python Expert"
 
     # --- Mandatory File ---
     cv_file_path = db.Column(db.String(255), nullable=False)
@@ -201,7 +216,7 @@ class Availability(db.Model):
 
 
 # ==========================================
-# TABLE 5: Mentorship Sessions (Bookings)
+# TABLE 5: Mentorship Sessions (Bookings) -> THE NEW HUB
 # ==========================================
 class MentorshipSession(db.Model):
     __tablename__ = "mentorship_sessions"
@@ -229,6 +244,20 @@ class MentorshipSession(db.Model):
         "User", foreign_keys=[student_id], backref="sessions_as_student"
     )
 
+    # --- NEW: Workspace Relationships ---
+    messages = db.relationship(
+        "Message", backref="session", cascade="all, delete-orphan", lazy=True
+    )
+    review = db.relationship(
+        "Review", backref="session", uselist=False, cascade="all, delete-orphan"
+    )
+    documents = db.relationship(
+        "SessionDocument", backref="session", cascade="all, delete-orphan", lazy=True
+    )
+    reports = db.relationship(
+        "Report", backref="session", cascade="all, delete-orphan", lazy=True
+    )
+
     def __init__(
         self,
         mentor_id,
@@ -247,12 +276,43 @@ class MentorshipSession(db.Model):
 
 
 # ==========================================
+# NEW TABLE: Session Documents
+# ==========================================
+class SessionDocument(db.Model):
+    __tablename__ = "session_documents"
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(
+        db.Integer, db.ForeignKey("mentorship_sessions.id"), nullable=False
+    )
+    uploader_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    file_name = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(255), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    uploader = db.relationship("User", foreign_keys=[uploader_id])
+
+    def __init__(self, session_id, uploader_id, file_name, file_path):
+        self.session_id = session_id
+        self.uploader_id = uploader_id
+        self.file_name = file_name
+        self.file_path = file_path
+
+
+# ==========================================
 # TABLE 6: Messages & Feedback Notes
 # ==========================================
 class Message(db.Model):
     __tablename__ = "messages"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # --- NEW: Ties the message directly to a meeting ---
+    session_id = db.Column(
+        db.Integer, db.ForeignKey("mentorship_sessions.id"), nullable=False
+    )
+
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
@@ -268,7 +328,10 @@ class Message(db.Model):
         "User", foreign_keys=[receiver_id], backref="received_messages"
     )
 
-    def __init__(self, sender_id, receiver_id, content, performance_rating=None):
+    def __init__(
+        self, session_id, sender_id, receiver_id, content, performance_rating=None
+    ):
+        self.session_id = session_id
         self.sender_id = sender_id
         self.receiver_id = receiver_id
         self.content = content
@@ -282,6 +345,12 @@ class Review(db.Model):
     __tablename__ = "reviews"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # --- NEW: Forces 1 Review per Booking ---
+    session_id = db.Column(
+        db.Integer, db.ForeignKey("mentorship_sessions.id"), nullable=False, unique=True
+    )
+
     student_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     mentor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
@@ -290,7 +359,8 @@ class Review(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, student_id, mentor_id, rating, review_text=None):
+    def __init__(self, session_id, student_id, mentor_id, rating, review_text=None):
+        self.session_id = session_id
         self.student_id = student_id
         self.mentor_id = mentor_id
         self.rating = rating
@@ -304,6 +374,12 @@ class Report(db.Model):
     __tablename__ = "reports"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # --- NEW: Contextualizes the report to a specific meeting ---
+    session_id = db.Column(
+        db.Integer, db.ForeignKey("mentorship_sessions.id"), nullable=True
+    )
+
     reporter_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     reported_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
@@ -314,7 +390,8 @@ class Report(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, reporter_id, reported_user_id, reason):
+    def __init__(self, reporter_id, reported_user_id, reason, session_id=None):
         self.reporter_id = reporter_id
         self.reported_user_id = reported_user_id
         self.reason = reason
+        self.session_id = session_id

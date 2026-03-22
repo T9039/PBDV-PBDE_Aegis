@@ -17,8 +17,16 @@ app = Flask(__name__)
 # Development secret key (change for production!)
 app.secret_key = "secret_super_development_key_for_testing"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL", "sqlite:///fallback.db"
+# --- SECURITY ENHANCEMENTS ---
+# Prevents JavaScript from reading the session cookie (Stops XSS attacks)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+
+# Prevents the browser from sending your cookie to StudySphere if the request came from a different website (Stops CSRF attacks)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL", "mysql+pymysql://root:@localhost/studysphere"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 

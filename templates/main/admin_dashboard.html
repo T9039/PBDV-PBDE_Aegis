@@ -131,6 +131,23 @@
             >0</span
           >
         </button>
+        <button class="sidebar-tab" data-tab="reviews">
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+            />
+          </svg>
+          Reviews & Badges
+        </button>
+
         <button class="sidebar-tab" data-tab="manage">
           <svg
             class="w-5 h-5"
@@ -433,6 +450,16 @@
         </div>
       </div>
 
+      <div class="tab-panel" id="panel-reviews">
+        <div class="section-title">Reviews & Badges</div>
+        <p class="section-subtitle">
+          Monitor platform feedback and award mentor badges
+        </p>
+        <div id="all-reviews-list">
+          <p class="text-gray-400 text-sm py-4">Loading reviews...</p>
+        </div>
+      </div>
+
       <div class="tab-panel" id="panel-manage">
         <div class="section-title">Manage Mentors</div>
         <p class="section-subtitle">
@@ -454,6 +481,52 @@
         </div>
       </div>
     </main>
+
+    <div class="modal-overlay" id="badge-modal">
+      <div class="modal-box max-w-sm">
+        <button
+          onclick="closeModal('badge-modal')"
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <h2 class="text-lg font-bold text-gray-800 mb-1">Award Badge</h2>
+        <p class="text-sm text-gray-500 mb-4">
+          To: <strong id="badge-mentor-name" class="text-blue-800"></strong>
+        </p>
+
+        <input type="hidden" id="badge-mentor-id" />
+
+        <div class="mb-6">
+          <label class="form-label">Select Badge</label>
+          <select id="badge-select" class="form-input">
+            <option value="Top Tutor 🏆">Top Tutor 🏆</option>
+            <option value="Fast Responder ⚡">Fast Responder ⚡</option>
+            <option value="Subject Expert 🧠">Subject Expert 🧠</option>
+            <option value="Student Favorite ⭐">Student Favorite ⭐</option>
+          </select>
+        </div>
+
+        <button
+          onclick="submitBadge()"
+          class="btn-primary w-full justify-center py-3"
+        >
+          Award Badge
+        </button>
+      </div>
+    </div>
 
     <div class="modal-overlay" id="approve-modal">
       <div class="modal-box max-w-md">
@@ -547,6 +620,7 @@
       let PENDING_MENTORS = [];
       let REPORTS = [];
       let ANALYTICS = [];
+      let ALL_REVIEWS = [];
       let STATS = {};
       let userFilter = "all";
       let analyticsChartInstance = null;
@@ -555,26 +629,34 @@
         initTabs("overview");
 
         try {
-          // Fetch all admin data concurrently
-          const [statsRes, usersRes, pendingRes, reportsRes, analyticsRes] =
-            await Promise.all([
-              fetch("/api/admin/stats"),
-              fetch("/api/admin/users"),
-              fetch("/api/admin/pending-mentors"),
-              fetch("/api/admin/reports"),
-              fetch("/api/admin/analytics"),
-            ]);
+          const [
+            statsRes,
+            usersRes,
+            pendingRes,
+            reportsRes,
+            analyticsRes,
+            reviewsRes,
+          ] = await Promise.all([
+            fetch("/api/admin/stats"),
+            fetch("/api/admin/users"),
+            fetch("/api/admin/pending-mentors"),
+            fetch("/api/admin/reports"),
+            fetch("/api/admin/analytics"),
+            fetch("/api/admin/all-reviews"), // <--- NEW FETCH
+          ]);
 
           if (statsRes.ok) STATS = await statsRes.json();
           if (usersRes.ok) USERS = await usersRes.json();
           if (pendingRes.ok) PENDING_MENTORS = await pendingRes.json();
           if (reportsRes.ok) REPORTS = await reportsRes.json();
           if (analyticsRes.ok) ANALYTICS = await analyticsRes.json();
+          if (reviewsRes.ok) ALL_REVIEWS = await reviewsRes.json(); // <--- NEW ASSIGNMENT
 
           renderOverview();
           renderUsersTable();
           renderPendingApplications();
           renderQueriesTab();
+          renderReviewsTab(); // <--- NEW RENDER CALL
           updateBadges();
         } catch (err) {
           console.error("Error loading admin data:", err);
@@ -795,6 +877,55 @@
             if (report) report.status = "resolved";
             renderQueriesTab();
             updateBadges();
+          });
+      }
+
+      // ─── REVIEWS & BADGES ─────────────────────────────────────
+      function renderReviewsTab() {
+        const div = document.getElementById("all-reviews-list");
+        if (ALL_REVIEWS.length === 0) {
+          div.innerHTML =
+            '<div class="bg-white rounded-2xl p-8 text-center text-gray-400">No reviews submitted yet</div>';
+          return;
+        }
+
+        div.innerHTML = ALL_REVIEWS.map(
+          (r) => `
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <p class="text-sm text-gray-500">From <span class="font-bold text-gray-800">${r.studentName}</span> to <span class="font-bold text-blue-800">${r.mentorName}</span></p>
+                </div>
+                <span class="text-yellow-500 text-lg tracking-widest">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</span>
+            </div>
+            <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-100 mb-3">${r.text}</p>
+            <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-400">${r.date}</span>
+                ${r.mentorId ? `<button onclick="openBadgeModal(${r.mentorId}, '${r.mentorName}')" class="btn-sm btn-yellow-sm py-1 text-xs">Award Badge</button>` : ""}
+            </div>
+        </div>`,
+        ).join("");
+      }
+
+      function openBadgeModal(mentorId, mentorName) {
+        document.getElementById("badge-mentor-id").value = mentorId;
+        document.getElementById("badge-mentor-name").textContent = mentorName;
+        openModal("badge-modal");
+      }
+
+      function submitBadge() {
+        const mentorId = document.getElementById("badge-mentor-id").value;
+        const badge = document.getElementById("badge-select").value;
+
+        fetch("/api/admin/award-badge", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mentorId, badge }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            showToast(data.message, "success");
+            closeModal("badge-modal");
           });
       }
 
