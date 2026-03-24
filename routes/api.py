@@ -28,9 +28,7 @@ def get_current_user_id():
     return session.get("user_id")
 
 
-# ==========================================
 # 1. GET: Mentor Sessions
-# ==========================================
 @api_bp.route("/sessions", methods=["GET"])
 def get_sessions():
     user_id = get_current_user_id()
@@ -138,9 +136,7 @@ def submit_report():
     return jsonify({"message": "Report submitted to admin."}), 201
 
 
-# ==========================================
 # 6. GET: Student Sessions
-# ==========================================
 @api_bp.route("/student-sessions", methods=["GET"])
 def get_student_sessions():
     user_id = get_current_user_id()
@@ -156,7 +152,6 @@ def get_student_sessions():
     result = []
 
     for s in sessions:
-        # Gracefully handle if mentor gets deleted
         mentor_name = s.mentor.full_name if s.mentor else "Unknown Mentor"
         result.append(
             {
@@ -215,9 +210,7 @@ def get_student_feedback():
     return jsonify({"reviews": rev_data, "messages": msg_data}), 200
 
 
-# ==========================================
 # 8. GET: Search Mentors & Peers
-# ==========================================
 @api_bp.route("/search", methods=["GET"])
 def search_users():
     user_id = get_current_user_id()
@@ -237,7 +230,6 @@ def search_users():
                 or q in prof.modules.lower()
                 or q in prof.faculty.lower()
             ):
-                # --- NEW: Calculate the star rating for the search card ---
                 reviews = Review.query.filter_by(mentor_id=m.id).all()
                 review_count = len(reviews)
                 avg_rating = (
@@ -257,16 +249,14 @@ def search_users():
                         "faculty": prof.faculty,
                         "modules": prof.modules,
                         "awards": prof.awards,
-                        "rating": round(avg_rating, 1),  # Passed to frontend
-                        "reviewCount": review_count,  # Passed to frontend
-                        "badges": badges,  # Passed to frontend
+                        "rating": round(avg_rating, 1),
+                        "reviewCount": review_count,
+                        "badges": badges,
                     }
                 )
     else:
-        # Use filter_by to keep Pylance happy
         students = User.query.filter_by(campus_role=CampusRole.STUDENT).all()
         for s in students:
-            # Exclude the current user!
             if s.id == user_id:
                 continue
 
@@ -685,9 +675,7 @@ def admin_analytics():
     return jsonify(data), 200
 
 
-# ==========================================
 # 12. GET: Manage Users & Pending Mentors
-# ==========================================
 @api_bp.route("/admin/users", methods=["GET"])
 def admin_users():
     if not is_admin():

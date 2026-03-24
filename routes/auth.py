@@ -582,33 +582,26 @@ def api_login():
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
-    # Clean the input to remove accidental spaces
     email = email.strip()
 
-    # 1. Find the user in the database (CASE-INSENSITIVE)
     user = (
         User.query.filter(text("LOWER(email) = LOWER(:val)")).params(val=email).first()
     )
 
-    # 2. Validate user exists AND password is correct
     if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"error": "Incorrect email or password. Please try again."}), 401
 
-    # 3. Establish the persistent login session
-    session.clear()  # Clear any lingering old sessions/registration data
+    session.clear()
     session["user_id"] = user.id
     session["user_email"] = user.email
     session["campus_role"] = user.campus_role.value
     session["mentor_status"] = user.mentor_status.value
 
-    # 4. Determine their landing page based on their role
     if user.email.lower() == "admin@dut.ac.za":
         redirect_url = "/admin-dashboard"
     elif user.campus_role == CampusRole.STAFF:
         redirect_url = "/mentor-dashboard"
     elif user.campus_role == CampusRole.STUDENT:
-        # If they are an approved student-tutor, we can send them to the mentor dash,
-        # or just default all students to the student dash.
         if user.mentor_status == MentorStatus.APPROVED:
             redirect_url = "/mentor-dashboard"
         else:

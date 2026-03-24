@@ -86,9 +86,7 @@ class User(db.Model):
         return f"<User {self.email} | Role: {self.campus_role.value} | Mentor: {self.mentor_status.value}>"
 
 
-# ==========================================
 # TABLE 2: Mentor Profiles & Applications
-# ==========================================
 class MentorProfile(db.Model):
     __tablename__ = "mentor_profiles"
 
@@ -100,18 +98,14 @@ class MentorProfile(db.Model):
     # --- Academic Details ---
     modules = db.Column(db.String(255), nullable=False)
     faculty = db.Column(db.String(150), nullable=False)
-    study_level = db.Column(
-        db.String(50), nullable=False
-    )  # 'Undergraduate' or 'Postgraduate'
+    study_level = db.Column(db.String(50), nullable=False)
     year_of_study = db.Column(db.String(100), nullable=False)
 
     # --- Extras & Links ---
     awards = db.Column(db.Text, nullable=True)
     linkedin_url = db.Column(db.String(255), nullable=True)
-    portfolio_url = db.Column(db.String(255), nullable=True)  # GitHub, Citations, etc.
-    badges = db.Column(
-        db.String(255), nullable=True, default=""
-    )  # e.g. "Top Tutor, Python Expert"
+    portfolio_url = db.Column(db.String(255), nullable=True)
+    badges = db.Column(db.String(255), nullable=True, default="")
 
     # --- Mandatory File ---
     cv_file_path = db.Column(db.String(255), nullable=False)
@@ -150,12 +144,10 @@ class StudentProfile(db.Model):
     # --- Academic Context ---
     faculty = db.Column(db.String(150), nullable=False)
     degree_program = db.Column(db.String(150), nullable=False)
-    study_level = db.Column(
-        db.String(50), nullable=False
-    )  # 'Undergraduate' or 'Postgraduate'
+    study_level = db.Column(db.String(50), nullable=False)
     year_of_study = db.Column(db.String(100), nullable=False)
 
-    # --- Matchmaking Data (Crucial!) ---
+    # --- Matchmaking Data ---
     subjects_needing_help = db.Column(db.String(255), nullable=False)
     preferred_learning_style = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
