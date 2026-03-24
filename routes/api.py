@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from flask import Blueprint, jsonify, request, session
-from sqlalchemy import func
+from sqlalchemy import func, text
+from werkzeug.utils import secure_filename
 
 from models import (
     Availability,
@@ -13,6 +14,7 @@ from models import (
     ReportStatus,
     Review,
     SessionDocument,
+    SessionStatus,
     StudentProfile,
     User,
     db,
@@ -35,7 +37,12 @@ def get_sessions():
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sessions = MentorshipSession.query.filter_by(mentor_id=user_id).all()
+    sessions = (
+        MentorshipSession.query.filter_by(mentor_id=user_id)
+        .order_by(text("date ASC, time_slot ASC"))
+        .all()
+    )
+
     result = []
 
     for s in sessions:
@@ -140,7 +147,12 @@ def get_student_sessions():
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sessions = MentorshipSession.query.filter_by(student_id=user_id).all()
+    sessions = (
+        MentorshipSession.query.filter_by(student_id=user_id)
+        .order_by(text("date ASC, time_slot ASC"))
+        .all()
+    )
+
     result = []
 
     for s in sessions:
@@ -300,11 +312,13 @@ def book_session():
     time_slot = data.get("time")
 
     try:
+        proper_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
         # 1. Create the session
         new_session = MentorshipSession(
             mentor_id=mentor_id,
             student_id=user_id,
-            date=date_str,
+            date=proper_date,  # <-- Use the converted date here!
             time_slot=time_slot,
             module=data.get("module", "General Support"),
         )
@@ -314,8 +328,9 @@ def book_session():
         db.session.flush()
 
         # 2. Mark the availability slot as booked
+        # (Using proper_date here as well to keep SQLite happy)
         avail = Availability.query.filter_by(
-            mentor_id=mentor_id, date=date_str, time_slot=time_slot
+            mentor_id=mentor_id, date=proper_date, time_slot=time_slot
         ).first()
         if avail:
             avail.is_booked = True
@@ -324,7 +339,7 @@ def book_session():
         notes = data.get("notes")
         if notes:
             msg = Message(
-                session_id=new_session.id,  # <--- The missing argument!
+                session_id=new_session.id,
                 sender_id=user_id,
                 receiver_id=mentor_id,
                 content=f"Booking Notes: {notes}",
@@ -338,6 +353,42 @@ def book_session():
         db.session.rollback()
         print(f"Error booking session: {e}")
         return jsonify({"error": "Failed to book session."}), 500
+
+
+@api_bp.route("/sessions/<int:session_id>", methods=["DELETE"])
+def cancel_session(session_id):
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        # 1. Find the session
+        session = MentorshipSession.query.get(session_id)
+        if not session:
+            return jsonify({"error": "Session not found."}), 404
+
+        # Security Check: Only allow the mentor or student involved to cancel it
+        if session.student_id != user_id and session.mentor_id != user_id:
+            return jsonify({"error": "Unauthorized to cancel this session."}), 403
+
+        # 2. Update the session status to the strict Enum
+        session.status = SessionStatus.CANCELLED
+
+        # 3. Free up the mentor's availability slot!
+        avail = Availability.query.filter_by(
+            mentor_id=session.mentor_id, date=session.date, time_slot=session.time_slot
+        ).first()
+
+        if avail:
+            avail.is_booked = False
+
+        db.session.commit()
+        return jsonify({"message": "Session cancelled successfully!"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error cancelling session: {e}")
+        return jsonify({"error": "A server error occurred while cancelling."}), 500
 
 
 # ==========================================
@@ -529,7 +580,8 @@ def upload_workspace_file(session_id):
         return jsonify({"error": "No file part provided."}), 400
 
     uploaded_file = request.files["file"]
-    if uploaded_file.filename == "":
+
+    if not uploaded_file.filename:
         return jsonify({"error": "No file selected."}), 400
 
     try:
@@ -546,11 +598,13 @@ def upload_workspace_file(session_id):
         if not saved_path:
             return jsonify({"error": "Failed to save file to server."}), 500
 
+        safe_filename = secure_filename(str(uploaded_file.filename))
+
         # Save the record in the database
         new_doc = SessionDocument(
             session_id=session_id,
             uploader_id=user_id,
-            file_name=secure_filename(uploaded_file.filename),
+            file_name=safe_filename,
             file_path=saved_path,
         )
         db.session.add(new_doc)

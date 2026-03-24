@@ -25,8 +25,13 @@ app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 
+# Grab the absolute path of the current directory
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# --- SQLITE PIVOT ---
+# This creates a file called 'studysphere.db' right inside your project folder
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "DATABASE_URL", "mysql+pymysql://root:@localhost/studysphere"
+    "DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'studysphere.db')}"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 

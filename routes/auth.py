@@ -10,6 +10,7 @@ from flask import (
     session,
     url_for,
 )
+from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from models import CampusRole, MentorProfile, MentorStatus, StudentProfile, User, db
@@ -581,8 +582,13 @@ def api_login():
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
-    # 1. Find the user in the database
-    user = User.query.filter_by(email=email).first()
+    # Clean the input to remove accidental spaces
+    email = email.strip()
+
+    # 1. Find the user in the database (CASE-INSENSITIVE)
+    user = (
+        User.query.filter(text("LOWER(email) = LOWER(:val)")).params(val=email).first()
+    )
 
     # 2. Validate user exists AND password is correct
     if not user or not check_password_hash(user.password_hash, password):
@@ -596,7 +602,7 @@ def api_login():
     session["mentor_status"] = user.mentor_status.value
 
     # 4. Determine their landing page based on their role
-    if user.email == "Admin@dut.ac.za":
+    if user.email.lower() == "admin@dut.ac.za":
         redirect_url = "/admin-dashboard"
     elif user.campus_role == CampusRole.STAFF:
         redirect_url = "/mentor-dashboard"
