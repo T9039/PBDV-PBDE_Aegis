@@ -870,12 +870,18 @@
           return;
         }
 
-        grid.innerHTML = RECOMMENDED_MENTORS.map(
-          (m) => `
+        grid.innerHTML = RECOMMENDED_MENTORS.map((m) => {
+          // NEW: Smart Avatar Logic for the Recommendations Grid
+          const avatarHTML =
+            m.profilePicture && m.profilePicture !== "default_avatar.png"
+              ? `<img src="/static/${m.profilePicture}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white mb-3" onerror="this.outerHTML='<div class=\\'w-16 h-16 rounded-full bg-[#003087] text-white flex items-center justify-center text-xl font-bold mb-3 shadow-inner\\'>${m.initials}</div>'">`
+              : `<div class="w-16 h-16 rounded-full bg-[#003087] text-white flex items-center justify-center text-xl font-bold mb-3 shadow-inner">${m.initials}</div>`;
+
+          return `
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 flex flex-col items-center text-center transition-all hover:shadow-md hover:-translate-y-1">
-                <div class="w-16 h-16 rounded-full bg-[#003087] text-white flex items-center justify-center text-xl font-bold mb-3 shadow-inner">
-                    ${m.initials}
-                </div>
+                
+                ${avatarHTML}
+                
                 <h4 class="font-bold text-gray-800">${m.name}</h4>
                 <p class="text-xs text-gray-500 mb-3">${m.yearOfStudy}</p>
                 <div class="bg-green-100 text-green-800 text-[10px] font-bold px-3 py-1.5 rounded-md mb-4 w-full">
@@ -885,8 +891,8 @@
                     Book Session
                 </button>
             </div>
-        `,
-        ).join("");
+          `;
+        }).join("");
       }
 
       // ─── SESSION ACTIONS ──────────────────────────────────────────
@@ -934,6 +940,22 @@
         container.innerHTML =
           '<p class="text-gray-400 text-center py-4">Searching...</p>';
 
+        const badgeIcons = {
+          adaptive: "/static/mentorfavicons/AdaptiveMentor.svg",
+          legend: "/static/mentorfavicons/LegendMentor.svg",
+          pro: "/static/mentorfavicons/MentorPro.svg",
+          "top rated": "/static/mentorfavicons/TopRated.svg",
+          lifesaver: "/static/mentorfavicons/lifesaver.svg",
+        };
+
+        function getBadgeIcon(badgeText) {
+          const lowerBadge = badgeText.toLowerCase();
+          for (const [key, path] of Object.entries(badgeIcons)) {
+            if (lowerBadge.includes(key)) return path;
+          }
+          return badgeIcons["pro"];
+        }
+
         fetch(`/api/search?type=${searchType}&q=${q}`)
           .then((res) => res.json())
           .then((data) => {
@@ -948,7 +970,10 @@
                 (m) => `
                 <div class="profile-card">
                     <div class="flex items-start gap-3 mb-3">
-                        <div class="avatar" style="background:#003087">${m.name.charAt(0)}</div>
+                        <img src="/static/${m.profilePicture}" 
+                             class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white" 
+                             onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:#003087; min-width:48px; min-height:48px;\\'>${m.name.charAt(0)}</div>'">
+                        
                         <div class="flex-1">
                             <p class="font-bold text-gray-800">${m.name}</p>
                             <p class="text-xs text-gray-500">${m.faculty}</p>
@@ -959,14 +984,25 @@
                             </div>
                         </div>
                     </div>
+                    
                     ${
                       m.badges && m.badges.length > 0
                         ? `
-                    <div class="flex flex-wrap gap-1 mb-2">
-                        ${m.badges.map((b) => `<span class="badge bg-purple-100 text-purple-800 border-purple-200">🏆 ${b}</span>`).join("")}
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${m.badges
+                          .map(
+                            (b) => `
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-100 shadow-sm">
+                                <img src="${getBadgeIcon(b)}" class="w-3.5 h-3.5">
+                                ${b.trim()}
+                            </span>
+                        `,
+                          )
+                          .join("")}
                     </div>`
                         : ""
                     }
+                    
                     <div class="flex flex-wrap gap-1 mb-3">
                         ${m.modules
                           .split(",")
@@ -988,7 +1024,9 @@
                 (s) => `
                 <div class="profile-card">
                     <div class="flex items-start gap-3 mb-3">
-                        <div class="avatar" style="background:#f59e0b">${s.name.charAt(0)}</div>
+                        <img src="/static/${s.profilePicture}" 
+                             class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white" 
+                             onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:#f59e0b; min-width:48px; min-height:48px;\\'>${s.name.charAt(0)}</div>'">
                         <div>
                             <p class="font-bold text-gray-800">${s.name}</p>
                             <p class="text-xs text-gray-500">${s.program}</p>

@@ -248,7 +248,6 @@ def search_users():
                 badges = (
                     [b.strip() for b in prof.badges.split(",")] if prof.badges else []
                 )
-                # ----------------------------------------------------------
 
                 results.append(
                     {
@@ -260,6 +259,7 @@ def search_users():
                         "rating": round(avg_rating, 1),
                         "reviewCount": review_count,
                         "badges": badges,
+                        "profilePicture": m.profile_picture,  # <-- FIXED: Added this!
                     }
                 )
     else:
@@ -271,7 +271,12 @@ def search_users():
             prof = s.student_profile
             if prof and (q in s.full_name.lower() or q in prof.degree_program.lower()):
                 results.append(
-                    {"id": s.id, "name": s.full_name, "program": prof.degree_program}
+                    {
+                        "id": s.id,
+                        "name": s.full_name,
+                        "program": prof.degree_program,
+                        "profilePicture": s.profile_picture,  # <-- FIXED: Added this!
+                    }
                 )
 
     return jsonify(results), 200

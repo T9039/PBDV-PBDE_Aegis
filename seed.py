@@ -49,15 +49,25 @@ def seed_database():
         with open(os.path.join(upload_dir, dummy_cv_path), "w") as f:
             f.write("Generic Mock CV")
 
-        # 2. Create Avatars Directory
-        avatar_dir = os.path.join(upload_dir, "images", "avatars")
-        os.makedirs(avatar_dir, exist_ok=True)
+        # 2. LINK TO REAL AVATARS (NEW LOGIC)
+        profile_images_dir = os.path.join("static", "images", "profiles")
+        avatar_paths = []
 
-        # Generate 5 dummy avatar files to pick from
-        avatar_filenames = [f"avatar_{i}.jpg" for i in range(1, 6)]
-        for avatar in avatar_filenames:
-            with open(os.path.join(avatar_dir, avatar), "w") as f:
-                f.write("Generic Mock Avatar Image")
+        print(f"🖼️  Scanning for real profile pictures in '{profile_images_dir}'...")
+        if os.path.exists(profile_images_dir):
+            valid_exts = (".png", ".jpg", ".jpeg", ".webp")
+            # Store the relative path exactly how the frontend expects it
+            avatar_paths = [
+                f"images/profiles/{f}"
+                for f in os.listdir(profile_images_dir)
+                if f.lower().endswith(valid_exts)
+            ]
+
+        if not avatar_paths:
+            print("⚠️  No real images found. Falling back to default_avatar.png")
+            avatar_paths = ["default_avatar.png"]
+        else:
+            print(f"📸 Found {len(avatar_paths)} real profile pictures to assign!")
 
         print("🌱 Seeding core 'Demo' accounts...")
 
@@ -74,7 +84,7 @@ def seed_database():
             full_name="Sipho Dlamini",
             campus_role=CampusRole.STUDENT,
             mentor_status=MentorStatus.NONE,
-            profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
+            profile_picture=random.choice(avatar_paths),  # <-- Assigns a real picture!
         )
         student1.is_profile_complete = True
 
@@ -84,7 +94,7 @@ def seed_database():
             full_name="Nomsa Khumalo",
             campus_role=CampusRole.STUDENT,
             mentor_status=MentorStatus.NONE,
-            profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
+            profile_picture=random.choice(avatar_paths),
         )
         student2.is_profile_complete = True
 
@@ -94,7 +104,7 @@ def seed_database():
             full_name="Prof. Thabo Nkosi",
             campus_role=CampusRole.STAFF,
             mentor_status=MentorStatus.APPROVED,
-            profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
+            profile_picture=random.choice(avatar_paths),
         )
         mentor.is_profile_complete = True
 
@@ -142,6 +152,7 @@ def seed_database():
                 study_level="Postgraduate",
                 year_of_study="PhD / Doctorate",
                 awards="Best Tutor Award 2023",
+                badges="Legend Mentor, Top Rated",  # <-- Included dummy badges for your SVG test!
                 cv_file_path=dummy_cv_path,
             )
         )
@@ -273,6 +284,15 @@ def seed_database():
         ]
         prefixes = ["BSc", "BEng", "BICT"]
 
+        # Sample badges for mentors
+        dummy_badges = [
+            "Adaptive Mentor",
+            "Mentor Pro",
+            "Top Rated",
+            "Lifesaver",
+            "Legend Mentor",
+        ]
+
         for i in range(40):
             is_student = random.random() < 0.7
             new_user = User(
@@ -283,7 +303,7 @@ def seed_database():
                 mentor_status=MentorStatus.NONE
                 if is_student
                 else MentorStatus.APPROVED,
-                profile_picture=random.choice(avatar_filenames),  # <-- Random Avatar
+                profile_picture=random.choice(avatar_paths),  # <-- Assigns real picture
             )
             new_user.is_profile_complete = True
             db.session.add(new_user)
@@ -303,6 +323,10 @@ def seed_database():
                     )
                 )
             else:
+                # Give random mentors a couple of random badges
+                mentor_badges = ", ".join(
+                    random.sample(dummy_badges, k=random.randint(0, 2))
+                )
                 db.session.add(
                     MentorProfile(
                         user_id=new_user.id,
@@ -310,13 +334,14 @@ def seed_database():
                         faculty=faculties[fac_idx],
                         study_level="Postgraduate",
                         year_of_study="Masters Degree",
+                        badges=mentor_badges,  # <-- Saves the text badges
                         cv_file_path=dummy_cv_path,
                     )
                 )
 
         db.session.commit()
         print(
-            "✅ Successfully seeded complete database with MS Teams-style Workspace architecture!"
+            "✅ Successfully seeded complete database with REAL profile pictures and Badges!"
         )
 
 

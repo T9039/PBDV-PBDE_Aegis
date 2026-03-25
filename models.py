@@ -121,6 +121,7 @@ class MentorProfile(db.Model):
         awards=None,
         linkedin_url=None,
         portfolio_url=None,
+        badges=None,  # <-- ADD THIS
     ):
         self.user_id = user_id
         self.modules = modules
@@ -131,6 +132,10 @@ class MentorProfile(db.Model):
         self.awards = awards
         self.linkedin_url = linkedin_url
         self.portfolio_url = portfolio_url
+
+        # Only assign it if a value was actually passed
+        if badges is not None:
+            self.badges = badges
 
 
 class StudentProfile(db.Model):
@@ -166,7 +171,7 @@ class StudentProfile(db.Model):
         self,
         user_id,
         faculty,
-        degree_program,
+        degree_program,  # <-- This was missing!
         study_level,
         year_of_study,
         subjects_needing_help,
@@ -175,7 +180,7 @@ class StudentProfile(db.Model):
     ):
         self.user_id = user_id
         self.faculty = faculty
-        self.degree_program = degree_program
+        self.degree_program = degree_program  # <-- And this!
         self.study_level = study_level
         self.year_of_study = year_of_study
         self.subjects_needing_help = subjects_needing_help
