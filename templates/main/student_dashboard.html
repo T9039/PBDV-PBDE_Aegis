@@ -1182,7 +1182,40 @@
         .getElementById("edit-profile-form")
         .addEventListener("submit", function (e) {
           e.preventDefault();
-          showToast("Profile update API coming soon!", "info");
+
+          const btn = this.querySelector("button");
+          const originalText = btn.innerHTML;
+          btn.innerHTML = "Saving...";
+          btn.disabled = true;
+
+          const payload = {
+            full_name: document.getElementById("edit-name").value,
+            subjects: document.getElementById("edit-subjects").value,
+            bio: document.getElementById("edit-bio").value,
+          };
+
+          fetch("/api/student-profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) {
+                showToast(data.error, "error");
+              } else {
+                showToast(data.message, "success");
+                // Instantly update the UI without reloading the page!
+                document.getElementById("profile-display-name").textContent =
+                  payload.full_name;
+                document.getElementById("sidebar-name").textContent =
+                  payload.full_name;
+              }
+            })
+            .finally(() => {
+              btn.innerHTML = originalText;
+              btn.disabled = false;
+            });
         });
 
       // ==========================================

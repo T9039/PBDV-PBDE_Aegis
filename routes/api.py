@@ -70,6 +70,75 @@ def get_sessions():
 
 
 # ==========================================
+# PROFILE UPDATES
+# ==========================================
+
+
+@api_bp.route("/mentor-profile", methods=["PUT"])
+def update_mentor_profile():
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json()
+    user = User.query.get(user_id)
+
+    if not user or user.campus_role != CampusRole.STAFF:
+        return jsonify({"error": "Invalid user or role."}), 403
+
+    # Update User table
+    if "full_name" in data:
+        user.full_name = data["full_name"]
+
+    # Update MentorProfile table
+    profile = user.mentor_profile
+    if profile:
+        if "modules" in data:
+            profile.modules = data["modules"]
+        if "faculty" in data:
+            profile.faculty = data["faculty"]
+        if "awards" in data:
+            profile.awards = data["awards"]
+
+    from models import db
+
+    db.session.commit()
+
+    return jsonify({"message": "Mentor profile updated successfully!"}), 200
+
+
+@api_bp.route("/student-profile", methods=["PUT"])
+def update_student_profile():
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json()
+    user = User.query.get(user_id)
+
+    if not user or user.campus_role != CampusRole.STUDENT:
+        return jsonify({"error": "Invalid user or role."}), 403
+
+    # Update User table
+    if "full_name" in data:
+        user.full_name = data["full_name"]
+
+    # Update StudentProfile table
+    profile = user.student_profile
+    if profile:
+        if "subjects" in data:
+            profile.subjects_needing_help = data["subjects"]
+        if "bio" in data:
+            profile.bio = data["bio"]
+
+    from models import db
+
+    db.session.commit()
+
+    return jsonify({"message": "Student profile updated successfully!"}), 200
+
+
+# ==========================================
 # 2. GET & PUT: Mentor Availability
 # ==========================================
 @api_bp.route("/availability", methods=["GET", "PUT"])
