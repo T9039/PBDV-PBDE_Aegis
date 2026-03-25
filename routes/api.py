@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from flask import Blueprint, jsonify, request, session
 from sqlalchemy import func, text
@@ -19,7 +19,10 @@ from models import (
     User,
     db,
 )
-from utils import save_uploaded_file  # Ensure this is imported at the top!
+from utils import (  # Ensure this is imported at the top!
+    get_year_value,
+    save_uploaded_file,
+)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -871,3 +874,123 @@ def award_badge():
         ), 200
 
     return jsonify({"error": "Mentor not found"}), 404
+
+
+@api_bp.route("/recommended-mentors", methods=["GET"])
+def get_recommended_mentors():
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # 1. Get the current student's baseline data
+    student_profile = StudentProfile.query.filter_by(user_id=user_id).first()
+    if not student_profile:
+        return jsonify([])
+
+    student_year_val = get_year_value(student_profile.year_of_study)
+    student_subjects = [
+        s.strip().lower() for s in student_profile.subjects_needing_help.split(",")
+    ]
+    student_style = student_profile.preferred_learning_style
+
+    # 2. Get all approved mentors
+    approved_mentors = User.query.filter_by(mentor_status=MentorStatus.APPROVED).all()
+    recommendations = []
+
+    for mentor in approved_mentors:
+        # Don't recommend the student to themselves!
+        if mentor.id == user_id:
+            continue
+
+        profile = mentor.mentor_profile
+        if not profile:
+            continue
+
+        score = 0
+
+        # ==========================================
+        # LEVEL 1: The Hard Filter (Seniority)
+        # ==========================================
+        mentor_year_val = get_year_value(profile.year_of_study)
+
+        if mentor_year_val < student_year_val:
+            continue
+
+        # ==========================================
+        # LEVEL 2: Fuzzy Module Overlap
+        # ==========================================
+        mentor_modules = [m.strip().lower() for m in profile.modules.split(",")]
+        overlap = []
+
+        for s_sub in student_subjects:
+            for m_mod in mentor_modules:
+                if (
+                    s_sub in m_mod or m_mod in s_sub
+                ):  # E.g., "math" matches "mathematics"
+                    if m_mod not in overlap:
+                        overlap.append(m_mod)
+
+        if not overlap:
+            continue  # Discard if absolutely zero module overlap
+
+        score += len(overlap) * 10
+
+        # ==========================================
+        # LEVEL 3: The Collaborative Filter (Review Bonus)
+        # ==========================================
+        high_reviews = (
+            Review.query.filter(text("mentor_id = :m_id AND rating >= 4"))
+            .params(m_id=mentor.id)
+            .all()
+        )
+
+        for review in high_reviews:
+            past_student = StudentProfile.query.filter_by(
+                user_id=review.student_id
+            ).first()
+            if past_student and past_student.preferred_learning_style == student_style:
+                score += 20
+
+        # ==========================================
+        # LEVEL 4: The Availability Bonus
+        # ==========================================
+        has_slots = (
+            Availability.query.filter(
+                text("mentor_id = :m_id AND is_booked = 0 AND date >= :today")
+            )
+            .params(m_id=mentor.id, today=date.today())
+            .first()
+        )
+
+        if has_slots:
+            score += 10
+
+        # ==========================================
+        # Package the Data
+        # ==========================================
+        initials = (
+            "".join([n[0] for n in mentor.full_name.split() if n]).upper()[:2]
+            if mentor.full_name
+            else "M"
+        )
+
+        # Capitalize the overlap modules nicely for the UI
+        display_modules = ", ".join([mod.title() for mod in overlap])
+
+        recommendations.append(
+            {
+                "mentorId": mentor.id,
+                "name": mentor.full_name,
+                "initials": initials,
+                "profilePicture": mentor.profile_picture,
+                "matchedModules": display_modules,
+                "yearOfStudy": profile.year_of_study,
+                "score": score,
+            }
+        )
+
+    # 3. Sort by highest score, slice top 6
+    recommendations.sort(key=lambda x: x["score"], reverse=True)
+    top_6 = recommendations[:6]
+
+    return jsonify(top_6), 200

@@ -9,6 +9,16 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    <style>
+      /* Hide scrollbar for horizontal carousel but keep functionality */
+      .carousel-track::-webkit-scrollbar {
+        display: none;
+      }
+      .carousel-track {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+    </style>
   </head>
   <body class="bg-gray-50">
     <aside class="sidebar">
@@ -209,14 +219,60 @@
               0
             </p>
           </div>
+        </div>
 
+        <div
+          class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-7"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <button
+              id="prevDayBtn"
+              class="text-2xl px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              title="Previous Day"
+            >
+              &larr;
+            </button>
+            <h3 id="carouselDateLabel" class="font-bold text-gray-800 text-lg">
+              Today's Sessions
+            </h3>
+            <button
+              id="nextDayBtn"
+              class="text-2xl px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-200 transition-all"
+              title="Next Day"
+            >
+              &rarr;
+            </button>
+          </div>
           <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+            class="carousel-track flex gap-4 overflow-x-auto pb-4"
+            id="sessionsTrack"
+            style="scroll-snap-type: x mandatory"
           >
-            <h3 class="font-bold text-gray-800 mb-4">Upcoming Sessions</h3>
-            <div id="upcoming-sessions">
-              <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
-            </div>
+            <p class="text-gray-400 text-sm text-center py-4 w-full">
+              Loading sessions...
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-7"
+        >
+          <div class="flex items-center gap-2 mb-5">
+            <h3 class="font-bold text-gray-800 text-lg">
+              Recommended Mentors For You
+            </h3>
+            <span
+              class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full"
+              >Smart Match</span
+            >
+          </div>
+          <div
+            id="recommended-mentors-grid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            <p class="text-gray-400 text-sm text-center py-4 col-span-full">
+              Analyzing profiles...
+            </p>
           </div>
         </div>
       </div>
@@ -661,23 +717,30 @@
       };
       let SESSIONS = [];
       let SEARCH_RESULTS = [];
+      let RECOMMENDED_MENTORS = [];
       let CURRENT_MENTOR_AVAIL = {};
 
       let searchType = "mentor";
       let currentRating = 0;
       let bookingMentorId = null;
 
+      // Carousel Variables
+      let currentViewDate = new Date();
+
       window.addEventListener("DOMContentLoaded", async () => {
         initTabs("home");
 
         try {
-          const [sessionsRes] = await Promise.all([
+          const [sessionsRes, mentorsRes] = await Promise.all([
             fetch("/api/student-sessions"),
+            fetch("/api/recommended-mentors"), // Fetch the new algorithm data
           ]);
 
           if (sessionsRes.ok) SESSIONS = await sessionsRes.json();
+          if (mentorsRes.ok) RECOMMENDED_MENTORS = await mentorsRes.json();
 
           renderHomeTab();
+          renderRecommendedMentors();
           renderSessionRoster();
           performSearch();
         } catch (err) {
@@ -690,7 +753,7 @@
         window.location.href = "/logout";
       }
 
-      // ─── HOME TAB ───────────────────────────────────────────
+      // ─── HOME TAB LOGIC ───────────────────────────────────────────
       function renderHomeTab() {
         const today = new Date();
         const weekEnd = new Date(today);
@@ -709,38 +772,118 @@
         document.getElementById("upcoming-count").textContent = upcoming.length;
         document.getElementById("total-sessions").textContent = SESSIONS.length;
 
-        // Upcoming sessions
-        const sessDiv = document.getElementById("upcoming-sessions");
-        if (upcoming.length === 0) {
-          sessDiv.innerHTML =
-            '<p class="text-gray-400 text-sm text-center py-4">No upcoming sessions</p>';
-        } else {
-          sessDiv.innerHTML = upcoming
-            .map(
-              (s) => `
-            <div class="border border-gray-100 rounded-xl p-3 mb-3 hover:bg-gray-50 transition-colors">
-                <div class="flex items-start justify-between mb-1">
-                    <div>
-                        <p class="font-semibold text-gray-800 text-sm">${s.module}</p>
-                        <p class="text-xs text-gray-500">with ${s.mentorName}</p>
-                    </div>
-                    <span class="badge badge-${s.status.replace(" ", "-")}">${s.status.charAt(0).toUpperCase() + s.status.slice(1)}</span>
-                </div>
-                <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                    <span>📅 ${s.date}</span><span>⏰ ${s.time}</span>
-                </div>
-                
-                <div class="flex gap-2">
-                    <button onclick="switchTabAndOpenWorkspace(${s.id})" class="btn-sm btn-blue-sm mt-2 text-xs py-1">Open Workspace</button>
-                    ${s.status !== "cancelled" ? `<button onclick="cancelSession(${s.id})" class="btn-sm btn-red-sm mt-2 text-xs py-1">Cancel</button>` : ""}
-                </div>
-                
-            </div>`,
-            )
-            .join("");
-        }
+        // Render the new carousel
+        renderSessionCarousel();
       }
 
+      // ─── CAROUSEL LOGIC ───────────────────────────────────────────
+      function formatDateString(dateObj) {
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const dd = String(dateObj.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      function getDisplayDateLabel(dateObj) {
+        const targetDate = formatDateString(dateObj);
+        const today = formatDateString(new Date());
+
+        const tomorrowObj = new Date();
+        tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+        const tomorrow = formatDateString(tomorrowObj);
+
+        if (targetDate === today) return "Today's Sessions";
+        if (targetDate === tomorrow) return "Tomorrow's Sessions";
+
+        return dateObj.toLocaleDateString(undefined, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function renderSessionCarousel() {
+        const track = document.getElementById("sessionsTrack");
+        const dateLabel = document.getElementById("carouselDateLabel");
+        const prevBtn = document.getElementById("prevDayBtn");
+
+        const targetDateStr = formatDateString(currentViewDate);
+        const todayStr = formatDateString(new Date());
+
+        dateLabel.textContent = getDisplayDateLabel(currentViewDate);
+        prevBtn.disabled = targetDateStr === todayStr;
+
+        const daySessions = SESSIONS.filter(
+          (s) => s.date === targetDateStr && s.status === "booked",
+        );
+
+        track.innerHTML = "";
+
+        if (daySessions.length === 0) {
+          track.innerHTML = `
+            <div class="w-full text-center py-8 text-gray-400">
+              <p>No sessions booked for this day.</p>
+            </div>`;
+          return;
+        }
+
+        daySessions.forEach((s) => {
+          const card = document.createElement("div");
+          card.className =
+            "flex-none w-72 bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-3 transition-transform hover:-translate-y-1 shadow-sm";
+          card.style.scrollSnapAlign = "start";
+          card.innerHTML = `
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md font-bold text-xs w-fit">⏰ ${s.time}</div>
+            <div>
+                <h4 class="font-bold text-gray-800 text-lg leading-tight">${s.module}</h4>
+                <p class="text-sm text-gray-500 mt-1">with ${s.mentorName}</p>
+            </div>
+            <button onclick="switchTabAndOpenWorkspace(${s.id})" class="mt-auto w-full bg-white border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-2 rounded-lg transition-colors">
+                Open Workspace
+            </button>
+          `;
+          track.appendChild(card);
+        });
+      }
+
+      // Arrow Events
+      document.getElementById("prevDayBtn").addEventListener("click", () => {
+        currentViewDate.setDate(currentViewDate.getDate() - 1);
+        renderSessionCarousel();
+      });
+      document.getElementById("nextDayBtn").addEventListener("click", () => {
+        currentViewDate.setDate(currentViewDate.getDate() + 1);
+        renderSessionCarousel();
+      });
+
+      // ─── RECOMMENDED MENTORS LOGIC ────────────────────────────────
+      function renderRecommendedMentors() {
+        const grid = document.getElementById("recommended-mentors-grid");
+        if (RECOMMENDED_MENTORS.length === 0) {
+          grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400">Check back later for personalized recommendations!</div>`;
+          return;
+        }
+
+        grid.innerHTML = RECOMMENDED_MENTORS.map(
+          (m) => `
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 flex flex-col items-center text-center transition-all hover:shadow-md hover:-translate-y-1">
+                <div class="w-16 h-16 rounded-full bg-[#003087] text-white flex items-center justify-center text-xl font-bold mb-3 shadow-inner">
+                    ${m.initials}
+                </div>
+                <h4 class="font-bold text-gray-800">${m.name}</h4>
+                <p class="text-xs text-gray-500 mb-3">${m.yearOfStudy}</p>
+                <div class="bg-green-100 text-green-800 text-[10px] font-bold px-3 py-1.5 rounded-md mb-4 w-full">
+                    MATCH: <span class="font-medium">${m.matchedModules}</span>
+                </div>
+                <button onclick="openBookingFlow(${m.mentorId}, '${m.name}')" class="w-full btn-sm btn-blue-sm justify-center py-2 mt-auto">
+                    Book Session
+                </button>
+            </div>
+        `,
+        ).join("");
+      }
+
+      // ─── SESSION ACTIONS ──────────────────────────────────────────
       function cancelSession(id) {
         if (
           !confirm("Are you sure you want to cancel this mentorship session?")
@@ -750,42 +893,15 @@
         fetch(`/api/sessions/${id}`, { method: "DELETE" })
           .then((res) => res.json())
           .then((data) => {
-            if (data.error) {
-              return showToast(data.error, "error");
-            }
+            if (data.error) return showToast(data.error, "error");
             showToast(data.message, "success");
-
-            // Remove the cancelled session from the local array
             SESSIONS = SESSIONS.filter((s) => s.id !== id);
-
-            // Re-render the home tab to update the UI
             renderHomeTab();
+            renderSessionRoster();
           })
-          .catch((err) => {
-            showToast("Failed to communicate with the server.", "error");
-          });
-      }
-
-      function openMessagesModal() {
-        const div = document.getElementById("all-messages-list");
-        if (MESSAGES.length === 0) {
-          div.innerHTML =
-            '<p class="text-gray-400 text-center py-6">No messages</p>';
-        } else {
-          div.innerHTML = MESSAGES.map((m) => {
-            const ratingBadge = m.rating
-              ? `<span class="badge badge-${m.rating === "attention" ? "attention" : m.rating} ml-2">${m.rating === "attention" ? "Attention Needed" : m.rating.charAt(0).toUpperCase() + m.rating.slice(1)}</span>`
-              : "";
-            return `<div class="message-bubble from-mentor mb-3">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="font-semibold text-sm text-gray-800">${m.fromName} <span class="badge badge-booked text-xs ml-1">Mentor</span>${ratingBadge}</span>
-                    <span class="text-xs text-gray-400">${m.date}</span>
-                </div>
-                <p class="text-sm text-gray-700">${m.message}</p>
-            </div>`;
-          }).join("");
-        }
-        openModal("messages-modal");
+          .catch((err) =>
+            showToast("Failed to communicate with the server.", "error"),
+          );
       }
 
       // ─── SEARCH TAB ─────────────────────────────────────────
@@ -832,7 +948,6 @@
                         <div class="flex-1">
                             <p class="font-bold text-gray-800">${m.name}</p>
                             <p class="text-xs text-gray-500">${m.faculty}</p>
-                            
                             <div class="flex items-center gap-1 mt-1">
                                 <span class="text-yellow-500 text-sm">${"★".repeat(Math.round(m.rating))}${"☆".repeat(5 - Math.round(m.rating))}</span>
                                 <span class="text-xs font-semibold text-gray-700">${m.rating.toFixed(1)}</span>
@@ -840,7 +955,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     ${
                       m.badges && m.badges.length > 0
                         ? `
@@ -849,7 +963,6 @@
                     </div>`
                         : ""
                     }
-
                     <div class="flex flex-wrap gap-1 mb-3">
                         ${m.modules
                           .split(",")
@@ -927,7 +1040,6 @@
           .getElementById("booking-slots-section")
           .classList.add("hidden");
 
-        // Fetch the mentor's specific availability calendar
         fetch(`/api/mentor-availability/${mentorId}`)
           .then((res) => res.json())
           .then((availData) => {
@@ -955,12 +1067,10 @@
           slotsDiv.innerHTML =
             '<p class="text-gray-500 text-sm">No available slots for this date.</p>';
         } else {
-          // If a slot is in the dictionary, it's available (booked slots are not sent to students)
           slotsDiv.innerHTML = slots
             .map(
-              (slot) => `
-            <button class="time-slot available" onclick="confirmBooking('${dateStr}','${slot}')">${slot}</button>
-        `,
+              (slot) =>
+                `<button class="time-slot available" onclick="confirmBooking('${dateStr}','${slot}')">${slot}</button>`,
             )
             .join("");
         }
@@ -971,7 +1081,9 @@
 
       function confirmBooking(date, time) {
         const notes = document.getElementById("booking-notes").value;
-        const m = SEARCH_RESULTS.find((x) => x.id === bookingMentorId);
+        const m =
+          SEARCH_RESULTS.find((x) => x.id === bookingMentorId) ||
+          RECOMMENDED_MENTORS.find((x) => x.mentorId === bookingMentorId); // Support booking from both arrays
 
         fetch("/api/book-session", {
           method: "POST",
@@ -980,7 +1092,9 @@
             mentorId: bookingMentorId,
             date: date,
             time: time,
-            module: m.modules.split(",")[0].trim(),
+            module: m.modules
+              ? m.modules.split(",")[0].trim()
+              : m.matchedModules.split(",")[0].trim(), // Grab module from whichever array we found them in
             notes: notes,
           }),
         })
@@ -991,7 +1105,6 @@
               "success",
             );
             closeModal("booking-modal");
-            // Refresh dashboard data
             location.reload();
           });
       }
@@ -1009,7 +1122,7 @@
       // ==========================================
       let currentWorkspaceId = null;
       let wsPollInterval = null;
-      const IS_STUDENT = currentUser.email.includes("@dut4life.ac.za"); // Detect role from email!
+      const IS_STUDENT = currentUser.email.includes("@dut4life.ac.za");
 
       function renderSessionRoster() {
         const roster = document.getElementById("session-roster");
@@ -1019,7 +1132,6 @@
           return;
         }
 
-        // Sort so the newest/upcoming sessions are at the top
         const sortedSessions = [...SESSIONS].sort(
           (a, b) => new Date(b.date) - new Date(a.date),
         );
@@ -1033,11 +1145,12 @@
                 : "bg-white border-gray-100 hover:bg-gray-50";
 
             return `
-            <div onclick="openWorkspace(${s.id})" class="p-3 rounded-xl border cursor-pointer transition-colors ${isActive}">
-                <div class="flex justify-between items-start mb-1">
+            <div onclick="openWorkspace(${s.id})" class="p-3 rounded-xl border cursor-pointer transition-colors ${isActive} relative">
+                ${s.status !== "cancelled" ? `<button onclick="event.stopPropagation(); cancelSession(${s.id})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500" title="Cancel Session"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>` : ""}
+                <div class="flex justify-between items-start mb-1 pr-6">
                     <p class="font-bold text-sm text-gray-800 truncate pr-2">${s.module}</p>
-                    <span class="badge badge-${s.status.replace(" ", "-")} text-[10px] px-1.5 py-0.5">${s.status}</span>
                 </div>
+                <span class="badge badge-${s.status.replace(" ", "-")} text-[10px] px-1.5 py-0.5 mb-1 inline-block">${s.status.toUpperCase()}</span>
                 <p class="text-xs text-gray-500 mb-1">${otherName}</p>
                 <p class="text-[10px] text-gray-400 font-semibold">${s.date} at ${s.time}</p>
             </div>
@@ -1047,7 +1160,6 @@
       }
 
       function switchTabAndOpenWorkspace(id) {
-        // Find and physically click the "My Sessions" tab in the sidebar
         const tabBtn = document.querySelector(
           '.sidebar-tab[data-tab="sessions"]',
         );
@@ -1058,7 +1170,6 @@
       function openWorkspace(sessionId) {
         currentWorkspaceId = sessionId;
 
-        // Hide the empty state illustration, show the active workspace
         document.getElementById("ws-empty-state").classList.add("hidden");
         document.getElementById("ws-active-state").classList.remove("hidden");
 
@@ -1066,9 +1177,7 @@
           '<p class="text-center text-gray-400 text-sm mt-10">Loading workspace...</p>';
         document.getElementById("ws-actions-area").innerHTML = "";
 
-        // Re-render the roster so the active session gets highlighted in blue!
         renderSessionRoster();
-
         fetchWorkspaceData(true);
 
         if (wsPollInterval) clearInterval(wsPollInterval);
@@ -1081,7 +1190,7 @@
         fetch(`/api/workspace/${currentWorkspaceId}`)
           .then((res) => res.json())
           .then((data) => {
-            if (data.error) return; // Silently fail if modal was closed
+            if (data.error) return;
             renderWorkspace(data, scrollToBottom);
           })
           .catch((err) => console.log("Polling error ignored."));
@@ -1090,7 +1199,6 @@
       function renderWorkspace(data, scrollToBottom) {
         const details = data.sessionDetails;
 
-        // 1. Header
         document.getElementById("ws-title").textContent =
           `${details.module} Session`;
         document.getElementById("ws-subtitle").textContent =
@@ -1098,7 +1206,6 @@
         document.getElementById("ws-avatar").src =
           `/uploads/images/avatars/${details.otherPartyAvatar}`;
 
-        // 2. Chat Box
         const chatBox = document.getElementById("ws-chat-box");
         const wasAtBottom =
           chatBox.scrollHeight - chatBox.scrollTop === chatBox.clientHeight;
@@ -1134,7 +1241,6 @@
           chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // 3. Shared Files
         const filesList = document.getElementById("ws-files-list");
         if (data.documents.length === 0) {
           filesList.innerHTML =
@@ -1156,7 +1262,6 @@
             .join("");
         }
 
-        // 4. Actions Area (Dynamic based on Role and Status)
         let actionsHTML = "";
 
         if (details.status === "completed") {
@@ -1179,7 +1284,6 @@
             }
           }
 
-          // Both can report after a session
           actionsHTML += `
             <div class="bg-red-50 p-4 rounded-xl border border-red-200">
                 <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Report Issue</p>
@@ -1212,7 +1316,7 @@
             input.value = "";
             input.disabled = false;
             input.focus();
-            fetchWorkspaceData(true); // Force scroll to bottom to see new message
+            fetchWorkspaceData(true);
           });
       }
 
@@ -1234,8 +1338,8 @@
           .then((data) => {
             if (data.error) return showToast(data.error, "error");
             showToast("File shared successfully!", "success");
-            fileInput.value = ""; // Clear input
-            fetchWorkspaceData(false); // Refresh file list
+            fileInput.value = "";
+            fetchWorkspaceData(false);
           });
       }
 
