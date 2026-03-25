@@ -1267,12 +1267,40 @@
       function renderWorkspace(data, scrollToBottom) {
         const details = data.sessionDetails;
 
+        // 1. Header
         document.getElementById("ws-title").textContent =
           `${details.module} Session`;
         document.getElementById("ws-subtitle").textContent =
           `With ${details.otherPartyName} | ${details.date} at ${details.time}`;
-        document.getElementById("ws-avatar").src =
-          `/uploads/images/avatars/${details.otherPartyAvatar}`;
+
+        // --- NEW: Smart Workspace Avatar Logic ---
+        const oldAvatar = document.getElementById("ws-avatar");
+        if (oldAvatar) {
+          // Pick the right fallback color based on role and session type
+          const fallbackColor =
+            details.module === "Peer Study"
+              ? "#f59e0b"
+              : IS_STUDENT
+                ? "#003087"
+                : "#d97706";
+          const initial = details.otherPartyName
+            ? details.otherPartyName.charAt(0).toUpperCase()
+            : "U";
+
+          const newAvatar = document.createElement("img");
+          newAvatar.id = "ws-avatar";
+          newAvatar.src = `/static/${details.otherPartyAvatar}`;
+          newAvatar.className =
+            "w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400 shadow-sm";
+
+          // If the image breaks, self-heal by replacing the img tag with a colored div!
+          newAvatar.onerror = function () {
+            this.outerHTML = `<div id="ws-avatar" class="w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center text-white font-bold border-2 border-blue-400 shadow-sm" style="background:${fallbackColor}">${initial}</div>`;
+          };
+
+          oldAvatar.parentNode.replaceChild(newAvatar, oldAvatar);
+        }
+        // -----------------------------------------
 
         const chatBox = document.getElementById("ws-chat-box");
         const wasAtBottom =
