@@ -112,7 +112,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2-2v6a2 2 0 002 2h2v4l.586-.586z"
             />
           </svg>
           My Sessions
@@ -234,9 +234,11 @@
         </p>
 
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 class="font-bold text-gray-800 mb-4">Upcoming Sessions</h3>
+          <h3 class="font-bold text-gray-800 mb-4">Availability Manager</h3>
           <div id="upcoming-sessions">
-            <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
+            <p class="text-gray-400 text-sm text-center py-4">
+              Loading Calendar...
+            </p>
           </div>
         </div>
       </div>
@@ -636,7 +638,13 @@
       });
 
       function logout() {
-        window.location.href = "/logout";
+        customConfirm(
+          "Are you sure you want to log out of StudySphere?",
+          "Log Out",
+          () => {
+            window.location.href = "/logout";
+          },
+        );
       }
 
       // ─── HOME TAB ───────────────────────────────────────────
@@ -697,18 +705,21 @@
       }
 
       function cancelSession(id) {
-        if (
-          !confirm("Cancel this session? The slot will become available again.")
-        )
-          return;
-        fetch(`/api/sessions/${id}`, { method: "DELETE" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) return showToast(data.error, "error");
-            showToast(data.message, "success");
-            SESSIONS = SESSIONS.filter((s) => s.id !== id);
-            renderHomeTab();
-          });
+        // NEW: Replaced standard confirm() with custom modal
+        customConfirm(
+          "Are you sure you want to cancel this session? The slot will become available again.",
+          "Cancel Session",
+          () => {
+            fetch(`/api/sessions/${id}`, { method: "DELETE" })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.error) return showToast(data.error, "error");
+                showToast(data.message, "success");
+                SESSIONS = SESSIONS.filter((s) => s.id !== id);
+                renderHomeTab();
+              });
+          },
+        );
       }
 
       function viewStudentDetail(email, name, program) {
@@ -742,7 +753,7 @@
       function renderAvailability() {
         const today = new Date();
         renderCalendar(
-          "avail-calendar",
+          "upcoming-sessions",
           today.getFullYear(),
           today.getMonth(),
           AVAILABILITY,
@@ -759,7 +770,7 @@
           (s) => s.date === dateStr && s.status !== "cancelled",
         ).map((s) => s.time);
 
-        document.getElementById("day-editor").innerHTML = `
+        document.getElementById("upcoming-sessions").innerHTML = `
         <div class="flex items-center justify-between mb-4">
             <h4 class="font-bold text-gray-800">Slots for ${dateStr}</h4>
             <button onclick="clearDaySlots('${dateStr}')" class="btn-sm btn-red-sm py-1 text-xs">Clear All</button>
@@ -778,8 +789,9 @@
             }).join("")}
         </div>
         <div class="flex gap-2">
-            <button onclick="makeAllAvailable('${dateStr}')" class="btn-sm btn-green-sm py-1 text-xs flex-1">Make All</button>
-            <button id="save-avail-btn" onclick="saveAvailability()" class="btn-primary text-sm py-2 px-4">Save</button>
+            <button onclick="renderAvailability()" class="btn-sm bg-gray-100 hover:bg-gray-200 py-1 text-xs px-4">Back to Calendar</button>
+            <button onclick="makeAllAvailable('${dateStr}')" class="btn-sm btn-green-sm py-1 text-xs flex-1">Make All Available</button>
+            <button id="save-avail-btn" onclick="saveAvailability()" class="btn-primary text-sm py-2 px-6">Save</button>
         </div>`;
       }
 
@@ -793,22 +805,19 @@
           AVAILABILITY[dateStr].splice(idx, 1);
         }
         openDayEditor(dateStr);
-        renderAvailability();
       }
 
       function clearDaySlots(dateStr) {
         const bookedSlots = SESSIONS.filter(
           (s) => s.date === dateStr && s.status !== "cancelled",
         ).map((s) => s.time);
-        AVAILABILITY[dateStr] = bookedSlots; // Ensure booked slots aren't accidentally wiped locally
+        AVAILABILITY[dateStr] = bookedSlots;
         openDayEditor(dateStr);
-        renderAvailability();
       }
 
       function makeAllAvailable(dateStr) {
         AVAILABILITY[dateStr] = [...ALL_TIME_SLOTS];
         openDayEditor(dateStr);
-        renderAvailability();
       }
 
       function saveAvailability() {
@@ -828,6 +837,7 @@
           .then((data) => {
             showToast(data.message || "Availability saved.", "success");
             btn.innerHTML = "Save";
+            setTimeout(renderAvailability, 1000); // Return to calendar view
           });
       }
 
@@ -867,7 +877,7 @@
       // ==========================================
       let currentWorkspaceId = null;
       let wsPollInterval = null;
-      const IS_STUDENT = currentUser.email.includes("@dut4life.ac.za"); // Detect role from email!
+      const IS_STUDENT = currentUser.email.includes("@dut4life.ac.za");
 
       function renderSessionRoster() {
         const roster = document.getElementById("session-roster");
@@ -877,7 +887,6 @@
           return;
         }
 
-        // Sort so the newest/upcoming sessions are at the top
         const sortedSessions = [...SESSIONS].sort(
           (a, b) => new Date(b.date) - new Date(a.date),
         );
@@ -905,7 +914,6 @@
       }
 
       function switchTabAndOpenWorkspace(id) {
-        // Find and physically click the "My Sessions" tab in the sidebar
         const tabBtn = document.querySelector(
           '.sidebar-tab[data-tab="sessions"]',
         );
@@ -916,7 +924,6 @@
       function openWorkspace(sessionId) {
         currentWorkspaceId = sessionId;
 
-        // Hide the empty state illustration, show the active workspace
         document.getElementById("ws-empty-state").classList.add("hidden");
         document.getElementById("ws-active-state").classList.remove("hidden");
 
@@ -924,9 +931,7 @@
           '<p class="text-center text-gray-400 text-sm mt-10">Loading workspace...</p>';
         document.getElementById("ws-actions-area").innerHTML = "";
 
-        // Re-render the roster so the active session gets highlighted in blue!
         renderSessionRoster();
-
         fetchWorkspaceData(true);
 
         if (wsPollInterval) clearInterval(wsPollInterval);
@@ -939,7 +944,7 @@
         fetch(`/api/workspace/${currentWorkspaceId}`)
           .then((res) => res.json())
           .then((data) => {
-            if (data.error) return; // Silently fail if modal was closed
+            if (data.error) return;
             renderWorkspace(data, scrollToBottom);
           })
           .catch((err) => console.log("Polling error ignored."));
@@ -1014,30 +1019,10 @@
             .join("");
         }
 
-        // 4. Actions Area (Dynamic based on Role and Status)
+        // 4. Actions Area (Dynamic for Mentor View)
         let actionsHTML = "";
 
         if (details.status === "completed") {
-          if (IS_STUDENT) {
-            if (data.review) {
-              actionsHTML += `
-                    <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
-                        <p class="text-xs font-bold text-green-800 mb-1">Your Review</p>
-                        <p class="text-yellow-500 text-lg mb-1">${"★".repeat(data.review.rating)}${"☆".repeat(5 - data.review.rating)}</p>
-                        <p class="text-sm text-green-900">${data.review.text}</p>
-                    </div>`;
-            } else {
-              actionsHTML += `
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm">
-                        <p class="text-sm font-bold text-gray-800 mb-2">Rate this Session</p>
-                        <select id="ws-rating-val" class="form-input mb-2 text-sm"><option value="5">5 Stars - Excellent</option><option value="4">4 Stars - Good</option><option value="3">3 Stars - Average</option><option value="2">2 Stars - Poor</option><option value="1">1 Star - Terrible</option></select>
-                        <textarea id="ws-review-txt" class="form-input text-sm resize-none mb-2" rows="2" placeholder="Write a quick review..."></textarea>
-                        <button onclick="submitWsReview()" class="btn-primary w-full text-sm justify-center py-2">Submit Review</button>
-                    </div>`;
-            }
-          }
-
-          // Both can report after a session
           actionsHTML += `
             <div class="bg-red-50 p-4 rounded-xl border border-red-200">
                 <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Report Issue</p>
@@ -1045,10 +1030,47 @@
                 <button onclick="submitWsReport()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
             </div>`;
         } else {
-          actionsHTML = `<div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-center"><p class="text-xs font-semibold text-yellow-800">Reviews & Reports will unlock after the session is marked Completed.</p></div>`;
+          // Mentor view: ALWAYS allow marking as complete
+          actionsHTML = `
+          <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 text-center mb-3 shadow-sm">
+              <p class="text-sm font-bold text-indigo-800 mb-1">Wrap Up Session</p>
+              <p class="text-xs text-indigo-600 mb-3">Finished mentoring? Mark this session as complete to lock the workspace.</p>
+              <button onclick="markSessionComplete()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Mark as Complete</button>
+          </div>
+          <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center"><p class="text-xs text-gray-500">Reports will unlock after completion.</p></div>
+          `;
         }
 
         document.getElementById("ws-actions-area").innerHTML = actionsHTML;
+      }
+
+      // NEW: API Call to complete the session
+      function markSessionComplete() {
+        customConfirm(
+          "Are you sure you want to wrap up this session? You won't be able to undo this.",
+          "Complete Session",
+          () => {
+            fetch(`/api/workspace/${currentWorkspaceId}/complete`, {
+              method: "POST",
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.error) return showToast(data.error, "error");
+
+                showToast(data.message, "success");
+
+                // Update local array instantly
+                const sessionObj = SESSIONS.find(
+                  (x) => x.id === currentWorkspaceId,
+                );
+                if (sessionObj) sessionObj.status = "completed";
+
+                renderSessionRoster();
+                renderHomeTab();
+                fetchWorkspaceData(false); // Refresh UI to remove button
+              });
+          },
+        );
       }
 
       function sendWsMessage(e) {
@@ -1070,7 +1092,7 @@
             input.value = "";
             input.disabled = false;
             input.focus();
-            fetchWorkspaceData(true); // Force scroll to bottom to see new message
+            fetchWorkspaceData(true);
           });
       }
 
@@ -1092,24 +1114,7 @@
           .then((data) => {
             if (data.error) return showToast(data.error, "error");
             showToast("File shared successfully!", "success");
-            fileInput.value = ""; // Clear input
-            fetchWorkspaceData(false); // Refresh file list
-          });
-      }
-
-      function submitWsReview() {
-        const rating = document.getElementById("ws-rating-val").value;
-        const text = document.getElementById("ws-review-txt").value;
-
-        fetch(`/api/workspace/${currentWorkspaceId}/review`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rating, text }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) return showToast(data.error, "error");
-            showToast(data.message, "success");
+            fileInput.value = "";
             fetchWorkspaceData(false);
           });
       }

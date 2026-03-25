@@ -750,7 +750,13 @@
       });
 
       function logout() {
-        window.location.href = "/logout";
+        customConfirm(
+          "Are you sure you want to log out of StudySphere?",
+          "Log Out",
+          () => {
+            window.location.href = "/logout";
+          },
+        );
       }
 
       // ─── HOME TAB LOGIC ───────────────────────────────────────────
@@ -885,23 +891,21 @@
 
       // ─── SESSION ACTIONS ──────────────────────────────────────────
       function cancelSession(id) {
-        if (
-          !confirm("Are you sure you want to cancel this mentorship session?")
-        )
-          return;
-
-        fetch(`/api/sessions/${id}`, { method: "DELETE" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) return showToast(data.error, "error");
-            showToast(data.message, "success");
-            SESSIONS = SESSIONS.filter((s) => s.id !== id);
-            renderHomeTab();
-            renderSessionRoster();
-          })
-          .catch((err) =>
-            showToast("Failed to communicate with the server.", "error"),
-          );
+        customConfirm(
+          "Are you sure you want to cancel this mentorship session?",
+          "Cancel Session",
+          () => {
+            fetch(`/api/sessions/${id}`, { method: "DELETE" })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.error) return showToast(data.error, "error");
+                showToast(data.message, "success");
+                SESSIONS = SESSIONS.filter((s) => s.id !== id);
+                renderHomeTab();
+                renderSessionRoster();
+              });
+          },
+        );
       }
 
       // ─── SEARCH TAB ─────────────────────────────────────────
@@ -991,11 +995,37 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button class="btn-sm btn-yellow-sm flex-1 justify-center" onclick="showToast('Feature coming soon!', 'info')">Message Peer</button>
+                      <button class="btn-sm btn-yellow-sm flex-1 justify-center" onclick="connectWithPeer(${s.id}, '${s.name}')">Message Peer</button>
                     </div>
                 </div>`,
               ).join("")}</div>`;
             }
+          });
+      }
+
+      function connectWithPeer(peerId, peerName) {
+        // Show loading state
+        showToast(`Connecting with ${peerName}...`, "info");
+
+        fetch("/api/connect-peer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ peerId: peerId }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) return showToast(data.error, "error");
+
+            showToast(data.message, "success");
+
+            // Silently fetch the updated sessions array so the new workspace appears
+            fetch("/api/student-sessions")
+              .then((r) => r.json())
+              .then((updatedSessions) => {
+                SESSIONS = updatedSessions;
+                // Jump to the Sessions tab and open the specific workspace!
+                switchTabAndOpenWorkspace(data.sessionId);
+              });
           });
       }
 
@@ -1262,10 +1292,12 @@
             .join("");
         }
 
+        // 4. Actions Area (Dynamic based on Role and Status)
         let actionsHTML = "";
 
         if (details.status === "completed") {
-          if (IS_STUDENT) {
+          // --- EXISTING COMPLETED STATE (Reviews & Reports) ---
+          if (IS_STUDENT && details.module !== "Peer Study") {
             if (data.review) {
               actionsHTML += `
                     <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
@@ -1291,7 +1323,25 @@
                 <button onclick="submitWsReport()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
             </div>`;
         } else {
-          actionsHTML = `<div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-center"><p class="text-xs font-semibold text-yellow-800">Reviews & Reports will unlock after the session is marked Completed.</p></div>`;
+          // --- NEW: IN-PROGRESS STATE (Mark Complete Button) ---
+
+          // Determine if the current user has the right to complete the session
+          // (They can if it's a Peer Study, or if they are logged into the Mentor Dashboard)
+          const canComplete = details.module === "Peer Study" || !IS_STUDENT;
+
+          if (canComplete) {
+            actionsHTML = `
+              <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 text-center mb-3 shadow-sm">
+                  <p class="text-sm font-bold text-indigo-800 mb-1">Wrap Up Session</p>
+                  <p class="text-xs text-indigo-600 mb-3">Finished studying? Mark this session as complete to lock the workspace.</p>
+                  <button onclick="markSessionComplete()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Mark as Complete</button>
+              </div>
+              <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center"><p class="text-xs text-gray-500">Reviews & Reports will unlock after completion.</p></div>
+              `;
+          } else {
+            // Standard student waiting for Mentor
+            actionsHTML = `<div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-center"><p class="text-xs font-semibold text-yellow-800">Waiting for your Mentor to mark the session as Complete to unlock Reviews.</p></div>`;
+          }
         }
 
         document.getElementById("ws-actions-area").innerHTML = actionsHTML;
@@ -1374,6 +1424,33 @@
             showToast(data.message, "success");
             document.getElementById("ws-report-txt").value = "";
           });
+      }
+
+      function markSessionComplete() {
+        customConfirm(
+          "Are you sure you want to wrap up this session? You won't be able to undo this.",
+          "Complete Session",
+          () => {
+            fetch(`/api/workspace/${currentWorkspaceId}/complete`, {
+              method: "POST",
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.error) return showToast(data.error, "error");
+
+                showToast(data.message, "success");
+
+                // Update the local array so the UI badge changes instantly
+                const sessionObj = SESSIONS.find(
+                  (x) => x.id === currentWorkspaceId,
+                );
+                if (sessionObj) sessionObj.status = "completed";
+
+                renderSessionRoster();
+                fetchWorkspaceData(false); // Refresh the workspace UI to show the review box!
+              });
+          },
+        );
       }
     </script>
   </body>

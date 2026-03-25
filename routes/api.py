@@ -147,7 +147,8 @@ def get_student_sessions():
         return jsonify({"error": "Unauthorized"}), 401
 
     sessions = (
-        MentorshipSession.query.filter_by(student_id=user_id)
+        MentorshipSession.query.filter(text("student_id = :uid OR mentor_id = :uid"))
+        .params(uid=user_id)
         .order_by(text("date ASC, time_slot ASC"))
         .all()
     )
@@ -155,12 +156,16 @@ def get_student_sessions():
     result = []
 
     for s in sessions:
-        mentor_name = s.mentor.full_name if s.mentor else "Unknown Mentor"
+        # Figure out who the "other person" in the workspace is
+        is_student_role = s.student_id == user_id
+        other_user = s.mentor if is_student_role else s.student
+        other_name = other_user.full_name if other_user else "Unknown User"
+
         result.append(
             {
                 "id": s.id,
-                "mentorId": s.mentor_id,
-                "mentorName": mentor_name,
+                "mentorId": other_user.id if other_user else None,
+                "mentorName": other_name,  # We keep this key so your frontend JS doesn't break!
                 "module": s.module,
                 "date": s.date.strftime("%Y-%m-%d"),
                 "time": s.time_slot,
@@ -270,6 +275,52 @@ def search_users():
                 )
 
     return jsonify(results), 200
+
+
+@api_bp.route("/connect-peer", methods=["POST"])
+def connect_peer():
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json()
+    peer_id = data.get("peerId")
+
+    # 1. Check if a Peer Study workspace already exists between these two exact users
+    existing = (
+        MentorshipSession.query.filter(
+            text(
+                "module = 'Peer Study' AND ((student_id = :uid AND mentor_id = :pid) OR (student_id = :pid AND mentor_id = :uid))"
+            )
+        )
+        .params(uid=user_id, pid=peer_id)
+        .first()
+    )
+
+    if existing:
+        return jsonify(
+            {"message": "Workspace already exists!", "sessionId": existing.id}
+        ), 200
+
+    # 2. Create a new instant workspace!
+    now = datetime.now()
+    new_session = MentorshipSession(
+        mentor_id=peer_id,  # We temporarily store the peer in the mentor slot
+        student_id=user_id,
+        date=now.date(),
+        time_slot=now.strftime("%H:%M"),
+        module="Peer Study",
+        status=SessionStatus.BOOKED,  # Automatically open and active
+    )
+
+    from models import db
+
+    db.session.add(new_session)
+    db.session.commit()
+
+    return jsonify(
+        {"message": "Peer workspace created!", "sessionId": new_session.id}
+    ), 201
 
 
 # ==========================================
@@ -994,3 +1045,33 @@ def get_recommended_mentors():
     top_6 = recommendations[:6]
 
     return jsonify(top_6), 200
+
+
+@api_bp.route("/workspace/<int:session_id>/complete", methods=["POST"])
+def complete_session(session_id):
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    session = MentorshipSession.query.get_or_404(session_id)
+
+    # 1. Logic Check: Who is allowed to close this?
+    is_mentor = session.mentor_id == user_id
+    is_peer_study = session.module == "Peer Study" and (
+        session.student_id == user_id or session.mentor_id == user_id
+    )
+
+    if not (is_mentor or is_peer_study):
+        return jsonify(
+            {"error": "Only the Mentor can mark this session as complete."}
+        ), 403
+
+    # 2. Update the status
+    session.status = SessionStatus.COMPLETED
+    from models import db
+
+    db.session.commit()
+
+    return jsonify(
+        {"message": "Session marked as complete! Reviews are now unlocked."}
+    ), 200

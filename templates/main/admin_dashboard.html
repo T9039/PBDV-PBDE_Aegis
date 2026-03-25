@@ -672,7 +672,13 @@
       });
 
       function logout() {
-        window.location.href = "/logout";
+        customConfirm(
+          "Are you sure you want to log out of StudySphere?",
+          "Log Out",
+          () => {
+            window.location.href = "/logout";
+          },
+        );
       }
 
       function updateBadges() {
