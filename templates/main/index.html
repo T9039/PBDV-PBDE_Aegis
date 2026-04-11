@@ -1,280 +1,170 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StudySphere – Peer Learning & Mentorship Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-  </head>
-  <body class="bg-gray-50">
-    <!-- NAVBAR -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div
-        class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center"
-            style="background: #003087"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 14l9-5-9-5-9 5 9 5z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z"
-              />
-            </svg>
-          </div>
-          <span class="text-xl font-bold" style="color: #003087"
-            >StudySphere</span
-          >
-        </div>
-      </div>
-    </nav>
-
-    <!-- HERO SECTION -->
-    <section class="hero-gradient text-white py-24 px-6">
-      <div class="max-w-5xl mx-auto text-center">
-        <div
-          class="inline-flex items-center gap-2 bg-white bg-opacity-20 rounded-full px-4 py-2 text-sm font-medium mb-6"
-        >
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-            />
-          </svg>
-          Durban University of Technology
-        </div>
-        <h1 class="text-5xl md:text-6xl font-extrabold mb-5 leading-tight">
-          Welcome to StudySphere
-        </h1>
-        <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-blue-100">
-          A Peer Learning and Mentorship Platform
-        </h2>
-        <p
-          class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          Find guidance, support, and academic help from experienced mentors
-          within the Durban University of Technology community.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href="/login"
-            class="btn-gold text-base py-3 px-8 rounded-xl text-center"
-          >
-            Log In to Your Account
-          </a>
-          <a
-            href="/signup"
-            class="inline-block bg-white text-blue-900 font-bold py-3 px-8 rounded-xl text-base transition-all hover:bg-blue-50 text-center"
-          >
-            Create an Account
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- FEATURES SECTION -->
-    <section class="py-20 px-6 bg-white">
-      <div class="max-w-6xl mx-auto">
-        <h3 class="text-3xl font-bold text-center mb-3" style="color: #003087">
-          Why StudySphere?
-        </h3>
-        <p class="text-center text-gray-500 mb-12">
-          Everything you need to succeed academically at DUT
-        </p>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="stat-card text-center hover-lift">
-            <div
-              class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
-              style="background: #eff6ff"
-            >
-              <svg
-                class="w-8 h-8"
-                style="color: #003087"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>StudySphere – Peer Learning & Mentorship Platform</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/styles.css') }}" />
+        <link rel="icon"
+              type="image/svg+xml"
+              href="{{ url_for('static', filename='favicon.svg') }}">
+    </head>
+    <body class="bg-gray-50">
+        <!-- NAVBAR -->
+        <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                         style="background: #003087">
+                        <svg class="w-6 h-6 text-white"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 6.075-3.925 11-9 11S3 19.075 3 13a12.083 12.083 0 012.84-7.578L12 14z" />
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold" style="color: #003087">StudySphere</span>
+                </div>
             </div>
-            <h4 class="text-xl font-bold mb-3" style="color: #003087">
-              Find Expert Mentors
-            </h4>
-            <p class="text-gray-500 leading-relaxed">
-              Connect with qualified student mentors who excel in your modules.
-              Get personalised one-on-one guidance from peers who've been there.
-            </p>
-          </div>
-          <div class="stat-card text-center hover-lift">
-            <div
-              class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
-              style="background: #fef3c7"
-            >
-              <svg
-                class="w-8 h-8 text-yellow-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+        </nav>
+        <!-- HERO SECTION -->
+        <section class="hero-gradient text-white py-24 px-6">
+            <div class="max-w-5xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 bg-white bg-opacity-20 rounded-full px-4 py-2 text-sm font-medium mb-6">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    Durban University of Technology
+                </div>
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-5 leading-tight">Welcome to StudySphere</h1>
+                <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-blue-100">A Peer Learning and Mentorship Platform</h2>
+                <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Find guidance, support, and academic help from experienced mentors
+                    within the Durban University of Technology community.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/login"
+                       class="btn-gold text-base py-3 px-8 rounded-xl text-center">Log In to Your Account</a>
+                    <a href="/signup"
+                       class="inline-block bg-white text-blue-900 font-bold py-3 px-8 rounded-xl text-base transition-all hover:bg-blue-50 text-center">
+                        Create an Account
+                    </a>
+                </div>
             </div>
-            <h4 class="text-xl font-bold mb-3" style="color: #003087">
-              Book Sessions Easily
-            </h4>
-            <p class="text-gray-500 leading-relaxed">
-              Schedule mentorship sessions at times that work for you. View
-              real-time availability and book your slot in seconds.
-            </p>
-          </div>
-          <div class="stat-card text-center hover-lift">
-            <div
-              class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
-              style="background: #d1fae5"
-            >
-              <svg
-                class="w-8 h-8 text-green-700"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                />
-              </svg>
+        </section>
+        <!-- FEATURES SECTION -->
+        <section class="py-20 px-6 bg-white">
+            <div class="max-w-6xl mx-auto">
+                <h3 class="text-3xl font-bold text-center mb-3" style="color: #003087">Why StudySphere?</h3>
+                <p class="text-center text-gray-500 mb-12">Everything you need to succeed academically at DUT</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="stat-card text-center hover-lift">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
+                             style="background: #eff6ff">
+                            <svg class="w-8 h-8"
+                                 style="color: #003087"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3" style="color: #003087">Find Expert Mentors</h4>
+                        <p class="text-gray-500 leading-relaxed">
+                            Connect with qualified student mentors who excel in your modules.
+                            Get personalised one-on-one guidance from peers who've been there.
+                        </p>
+                    </div>
+                    <div class="stat-card text-center hover-lift">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
+                             style="background: #fef3c7">
+                            <svg class="w-8 h-8 text-yellow-600"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3" style="color: #003087">Book Sessions Easily</h4>
+                        <p class="text-gray-500 leading-relaxed">
+                            Schedule mentorship sessions at times that work for you. View
+                            real-time availability and book your slot in seconds.
+                        </p>
+                    </div>
+                    <div class="stat-card text-center hover-lift">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
+                             style="background: #d1fae5">
+                            <svg class="w-8 h-8 text-green-700"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3" style="color: #003087">Track Your Progress</h4>
+                        <p class="text-gray-500 leading-relaxed">
+                            Receive personalised feedback from mentors, track your academic
+                            growth, and celebrate milestones on your learning journey.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <h4 class="text-xl font-bold mb-3" style="color: #003087">
-              Track Your Progress
-            </h4>
-            <p class="text-gray-500 leading-relaxed">
-              Receive personalised feedback from mentors, track your academic
-              growth, and celebrate milestones on your learning journey.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section class="py-20 px-6" style="background: #f8fafc">
-      <div class="max-w-5xl mx-auto">
-        <h3 class="text-3xl font-bold text-center mb-3" style="color: #003087">
-          How It Works
-        </h3>
-        <p class="text-center text-gray-500 mb-12">
-          Get started in just a few simple steps
-        </p>
-        <div class="grid md:grid-cols-4 gap-6">
-          <div class="text-center">
-            <div
-              class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
-              style="background: #003087"
-            >
-              1
+        </section>
+        <!-- HOW IT WORKS -->
+        <section class="py-20 px-6" style="background: #f8fafc">
+            <div class="max-w-5xl mx-auto">
+                <h3 class="text-3xl font-bold text-center mb-3" style="color: #003087">How It Works</h3>
+                <p class="text-center text-gray-500 mb-12">Get started in just a few simple steps</p>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
+                             style="background: #003087">1</div>
+                        <h5 class="font-bold mb-2">Create Account</h5>
+                        <p class="text-sm text-gray-500">Sign up with your DUT email and set up your profile</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
+                             style="background: #1e5bb5">2</div>
+                        <h5 class="font-bold mb-2">Choose Your Role</h5>
+                        <p class="text-sm text-gray-500">Register as a student or apply to become a mentor</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
+                             style="background: #3b82f6">3</div>
+                        <h5 class="font-bold mb-2">Find a Mentor</h5>
+                        <p class="text-sm text-gray-500">Search for mentors by module, faculty, or name</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
+                             style="background: #d97706">4</div>
+                        <h5 class="font-bold mb-2">Book & Learn</h5>
+                        <p class="text-sm text-gray-500">Book a session, attend, and grow academically</p>
+                    </div>
+                </div>
             </div>
-            <h5 class="font-bold mb-2">Create Account</h5>
-            <p class="text-sm text-gray-500">
-              Sign up with your DUT email and set up your profile
+        </section>
+        <!-- CTA -->
+        <section class="hero-gradient text-white py-16 px-6 text-center">
+            <h3 class="text-3xl font-bold mb-4">Ready to start your journey?</h3>
+            <p class="text-blue-100 mb-8 text-lg">Join hundreds of DUT students already using StudySphere</p>
+            <a href="/signup"
+               class="inline-block bg-white font-bold py-3 px-10 rounded-xl text-base transition-all hover:bg-blue-50"
+               style="color: #003087">Get Started – It's Free</a>
+        </section>
+        <!-- FOOTER -->
+        <footer class="bg-gray-900 text-gray-400 py-8 px-6 text-center">
+            <p class="text-sm">
+                © 2026 StudySphere – Durban University of Technology. All rights
+                reserved.
             </p>
-          </div>
-          <div class="text-center">
-            <div
-              class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
-              style="background: #1e5bb5"
-            >
-              2
-            </div>
-            <h5 class="font-bold mb-2">Choose Your Role</h5>
-            <p class="text-sm text-gray-500">
-              Register as a student or apply to become a mentor
+            <p class="text-xs mt-1">
+                This platform complies with the Protection of Personal Information Act
+                (POPIA) of South Africa.
             </p>
-          </div>
-          <div class="text-center">
-            <div
-              class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
-              style="background: #3b82f6"
-            >
-              3
-            </div>
-            <h5 class="font-bold mb-2">Find a Mentor</h5>
-            <p class="text-sm text-gray-500">
-              Search for mentors by module, faculty, or name
-            </p>
-          </div>
-          <div class="text-center">
-            <div
-              class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold"
-              style="background: #d97706"
-            >
-              4
-            </div>
-            <h5 class="font-bold mb-2">Book & Learn</h5>
-            <p class="text-sm text-gray-500">
-              Book a session, attend, and grow academically
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="hero-gradient text-white py-16 px-6 text-center">
-      <h3 class="text-3xl font-bold mb-4">Ready to start your journey?</h3>
-      <p class="text-blue-100 mb-8 text-lg">
-        Join hundreds of DUT students already using StudySphere
-      </p>
-      <a
-        href="/signup"
-        class="inline-block bg-white font-bold py-3 px-10 rounded-xl text-base transition-all hover:bg-blue-50"
-        style="color: #003087"
-      >
-        Get Started – It's Free
-      </a>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="bg-gray-900 text-gray-400 py-8 px-6 text-center">
-      <p class="text-sm">
-        © 2026 StudySphere – Durban University of Technology. All rights
-        reserved.
-      </p>
-      <p class="text-xs mt-1">
-        This platform complies with the Protection of Personal Information Act
-        (POPIA) of South Africa.
-      </p>
-    </footer>
-
-    <script src="{{ url_for('static', filename='js/scripting.js') }}"></script>
-  </body>
+        </footer>
+        <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
+    </body>
 </html>

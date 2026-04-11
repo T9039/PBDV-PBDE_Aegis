@@ -1,587 +1,319 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mentor Dashboard – StudySphere</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-  </head>
-  <body class="bg-gray-50">
-    <aside class="sidebar">
-      <div class="p-5 border-b border-blue-800">
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 14l9-5-9-5-9 5 9 5z"
-              />
-            </svg>
-          </div>
-          <div>
-            <span class="text-white font-bold text-base block"
-              >StudySphere</span
-            >
-            <span class="text-blue-200 text-xs">Mentor Portal</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
-        <div class="flex items-center gap-3">
-          <div
-            class="avatar"
-            style="
-              background: #d97706;
-              width: 36px;
-              height: 36px;
-              font-size: 13px;
-            "
-          >
-            {{ user.full_name[:2].upper() if user.full_name else 'MT' }}
-          </div>
-          <div>
-            <p
-              class="text-white text-sm font-semibold leading-tight"
-              id="sidebar-name"
-            >
-              {{ user.full_name }}
-            </p>
-            <p class="text-blue-200 text-xs" id="sidebar-email">
-              {{ user.email }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <nav class="flex-1 py-2">
-        <button class="sidebar-tab" data-tab="home">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-          </svg>
-          Home
-        </button>
-        <button class="sidebar-tab" data-tab="availability">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          My Availability
-        </button>
-
-        <button class="sidebar-tab" data-tab="sessions">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2-2v6a2 2 0 002 2h2v4l.586-.586z"
-            />
-          </svg>
-          My Sessions
-        </button>
-
-        <button class="sidebar-tab" data-tab="profile">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          My Profile
-        </button>
-      </nav>
-
-      <div class="pb-4 px-0">
-        <button class="sidebar-tab logout-tab" onclick="logout()">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-            />
-          </svg>
-          Log Out
-        </button>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <div class="tab-panel" id="panel-home">
-        <div class="section-title">Mentor Dashboard</div>
-        <p class="section-subtitle">
-          Welcome back,
-          <span id="home-name"
-            >{{ user.full_name.split(' ')[-1] if user.full_name else '' }}</span
-          >
-        </p>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Sessions This Week
-            </p>
-            <p
-              class="text-3xl font-extrabold"
-              style="color: #003087"
-              id="week-count"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Total Sessions
-            </p>
-            <p class="text-3xl font-extrabold text-green-600" id="total-count">
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Upcoming
-            </p>
-            <p
-              class="text-3xl font-extrabold text-yellow-600"
-              id="upcoming-count"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Students Mentored
-            </p>
-            <p
-              class="text-3xl font-extrabold text-purple-600"
-              id="students-count"
-            >
-              0
-            </p>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 class="font-bold text-gray-800 mb-4">Upcoming Bookings</h3>
-          <div id="upcoming-bookings">
-            <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-availability">
-        <div class="section-title">My Availability</div>
-        <p class="section-subtitle">
-          Manage your available time slots for students to book
-        </p>
-
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 class="font-bold text-gray-800 mb-4">Availability Manager</h3>
-          <div id="upcoming-sessions">
-            <p class="text-gray-400 text-sm text-center py-4">
-              Loading Calendar...
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-sessions">
-        <div class="section-title mb-2">My Sessions</div>
-        <p class="section-subtitle mb-4">
-          Manage your bookings, chat, and share files.
-        </p>
-
-        <div
-          class="flex-1 flex gap-6 overflow-hidden"
-          style="height: calc(100vh - 180px)"
-        >
-          <div
-            class="w-1/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
-          >
-            <div class="p-4 border-b border-gray-100 bg-gray-50">
-              <h3 class="font-bold text-gray-800">Session History</h3>
-            </div>
-            <div
-              id="session-roster"
-              class="flex-1 overflow-y-auto p-3 space-y-2"
-            >
-              <p class="text-center text-gray-400 text-sm mt-4">
-                Loading sessions...
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="w-2/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative"
-          >
-            <div
-              id="ws-empty-state"
-              class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-20"
-            >
-              <svg
-                class="w-16 h-16 text-gray-300 mb-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-              <p class="text-gray-500 font-medium">
-                Select a session to open the workspace
-              </p>
-            </div>
-
-            <div id="ws-active-state" class="flex flex-col h-full hidden">
-              <div
-                class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md z-10"
-              >
-                <div class="flex items-center gap-4">
-                  <img
-                    id="ws-avatar"
-                    src=""
-                    class="w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400"
-                    alt=""
-                    onerror="
-                      this.src = '/static/default_avatar.png';
-                      this.onerror = null;
-                    "
-                  />
-                  <div>
-                    <h2 id="ws-title" class="font-bold text-base leading-tight">
-                      Session Workspace
-                    </h2>
-                    <p id="ws-subtitle" class="text-xs text-blue-200">
-                      Loading details...
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex flex-1 overflow-hidden">
-                <div
-                  class="flex-1 flex flex-col border-r border-gray-200 bg-gray-50"
-                >
-                  <div
-                    id="ws-chat-box"
-                    class="flex-1 overflow-y-auto p-4 space-y-4"
-                  ></div>
-                  <div class="p-3 bg-white border-t border-gray-200">
-                    <form
-                      id="ws-chat-form"
-                      class="flex gap-2"
-                      onsubmit="sendWsMessage(event)"
-                    >
-                      <input
-                        type="text"
-                        id="ws-msg-input"
-                        class="form-input flex-1 bg-gray-50 text-sm py-2"
-                        placeholder="Type a message..."
-                        required
-                        autocomplete="off"
-                      />
-                      <button
-                        type="submit"
-                        class="btn-primary py-2 px-4 shadow-sm text-sm"
-                      >
-                        Send
-                      </button>
-                    </form>
-                  </div>
-                </div>
-
-                <div class="w-64 flex flex-col bg-white overflow-y-auto">
-                  <div class="p-4 border-b border-gray-100">
-                    <h3
-                      class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2"
-                    >
-                      <svg
-                        class="w-4 h-4 text-blue-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                        />
-                      </svg>
-                      Shared Files
-                    </h3>
-                    <div
-                      id="ws-files-list"
-                      class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1"
-                    ></div>
-                    <div
-                      class="bg-blue-50 p-2 rounded-xl border border-blue-100"
-                    >
-                      <input
-                        type="file"
-                        id="ws-file-input"
-                        class="text-[10px] w-full mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-                      />
-                      <button
-                        onclick="uploadWsFile()"
-                        class="btn-sm btn-blue-sm w-full justify-center shadow-sm py-1 text-xs"
-                      >
-                        Upload
-                      </button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mentor Dashboard – StudySphere</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/styles.css') }}" />
+    </head>
+    <body class="bg-gray-50">
+        <aside class="sidebar">
+            <div class="p-5 border-b border-blue-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20">
+                        <svg class="w-6 h-6 text-white"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                        </svg>
                     </div>
-                  </div>
-                  <div class="p-4 bg-gray-50 flex-1">
-                    <h3 class="font-bold text-sm text-gray-800 mb-3">
-                      Session Actions
-                    </h3>
-                    <div id="ws-actions-area" class="space-y-3"></div>
-                  </div>
+                    <div>
+                        <span class="text-white font-bold text-base block">StudySphere</span>
+                        <span class="text-blue-200 text-xs">Mentor Portal</span>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-profile">
-        <div class="section-title">My Profile</div>
-        <p class="section-subtitle">Update your mentor profile information</p>
-
-        <div class="max-w-xl">
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8"
-          >
-            <div class="flex items-center gap-4 mb-7 p-4 bg-gray-50 rounded-xl">
-              <div
-                class="avatar text-xl"
-                style="background: #d97706; width: 60px; height: 60px"
-              >
-                {{ user.full_name[:2].upper() if user.full_name else 'MT' }}
-              </div>
-              <div>
-                <p class="font-bold text-gray-800 text-lg">
-                  {{ user.full_name }}
+            <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
+                <div class="flex items-center gap-3">
+                    <div class="avatar"
+                         style="background: #d97706;
+                                width: 36px;
+                                height: 36px;
+                                font-size: 13px">{{ user.full_name[:2].upper() if user.full_name else 'MT' }}</div>
+                    <div>
+                        <p class="text-white text-sm font-semibold leading-tight"
+                           id="sidebar-name">{{ user.full_name }}</p>
+                        <p class="text-blue-200 text-xs" id="sidebar-email">{{ user.email }}</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 py-2">
+                <button class="sidebar-tab" data-tab="home">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home
+                </button>
+                <button class="sidebar-tab" data-tab="availability">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    My Availability
+                </button>
+                <button class="sidebar-tab" data-tab="sessions">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2-2v6a2 2 0 002 2h2v4l.586-.586z" />
+                    </svg>
+                    My Sessions
+                </button>
+                <button class="sidebar-tab" data-tab="profile">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    My Profile
+                </button>
+            </nav>
+            <div class="pb-4 px-0">
+                <button class="sidebar-tab logout-tab" onclick="logout()">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Log Out
+                </button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="tab-panel" id="panel-home">
+                <div class="section-title">Mentor Dashboard</div>
+                <p class="section-subtitle">
+                    Welcome back,
+                    <span id="home-name">{{ user.full_name.split(" ")[-1] if user.full_name else '' }}</span>
                 </p>
-                <p class="text-gray-500 text-sm">{{ user.email }}</p>
-                <span class="badge badge-in-progress mt-1"
-                  >{{ user.mentor_status.name.title() }}</span
-                >
-              </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
+                    <div class="stat-card">
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Sessions This Week</p>
+                        <p class="text-3xl font-extrabold"
+                           style="color: #003087"
+                           id="week-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Total Sessions</p>
+                        <p class="text-3xl font-extrabold text-green-600" id="total-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Upcoming</p>
+                        <p class="text-3xl font-extrabold text-yellow-600" id="upcoming-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Students Mentored</p>
+                        <p class="text-3xl font-extrabold text-purple-600" id="students-count">0</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Upcoming Bookings</h3>
+                    <div id="upcoming-bookings">
+                        <p class="text-gray-400 text-sm text-center py-4">Loading...</p>
+                    </div>
+                </div>
             </div>
-
-            <form id="edit-profile-form">
-              <div class="mb-4">
-                <label class="form-label">Full Name</label>
-                <input
-                  type="text"
-                  id="edit-name"
-                  class="form-input"
-                  value="{{ user.full_name }}"
-                />
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Modules You Specialise In</label>
-                <input
-                  type="text"
-                  id="edit-modules"
-                  class="form-input"
-                  value="{{ profile.modules if profile else '' }}"
-                  placeholder="Separate with commas"
-                />
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Faculty</label>
-                <select
-                  id="edit-faculty"
-                  class="form-input"
-                  data-current="{{ profile.faculty if profile else '' }}"
-                >
-                  <option>Faculty of Applied Sciences</option>
-                  <option>Faculty of Engineering & Technology</option>
-                  <option>Faculty of Accounting & Informatics</option>
-                  <option>Faculty of Health Sciences</option>
-                  <option>Faculty of Arts & Design</option>
-                  <option>Faculty of Management Sciences</option>
-                </select>
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Year / Level</label>
-                <input
-                  type="text"
-                  id="edit-year"
-                  class="form-input bg-gray-100"
-                  value="{{ profile.year_of_study if profile else '' }}"
-                  disabled
-                />
-              </div>
-              <div class="mb-6">
-                <label class="form-label">Awards & Achievements</label>
-                <textarea
-                  id="edit-awards"
-                  class="form-input resize-none"
-                  rows="3"
-                >
-{{ profile.awards if profile and profile.awards else '' }}</textarea
-                >
-              </div>
-              <button type="submit" class="btn-primary w-full justify-center">
-                Save Changes
-              </button>
-            </form>
-          </div>
+            <div class="tab-panel" id="panel-availability">
+                <div class="section-title">My Availability</div>
+                <p class="section-subtitle">Manage your available time slots for students to book</p>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Availability Manager</h3>
+                    <div id="upcoming-sessions">
+                        <p class="text-gray-400 text-sm text-center py-4">Loading Calendar...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-sessions">
+                <div class="section-title mb-2">My Sessions</div>
+                <p class="section-subtitle mb-4">Manage your bookings, chat, and share files.</p>
+                <div class="flex-1 flex gap-6 overflow-hidden"
+                     style="height: calc(100vh - 180px)">
+                    <div class="w-1/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50">
+                            <h3 class="font-bold text-gray-800">Session History</h3>
+                        </div>
+                        <div id="session-roster" class="flex-1 overflow-y-auto p-3 space-y-2">
+                            <p class="text-center text-gray-400 text-sm mt-4">Loading sessions...</p>
+                        </div>
+                    </div>
+                    <div class="w-2/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative">
+                        <div id="ws-empty-state"
+                             class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-20">
+                            <svg class="w-16 h-16 text-gray-300 mb-4"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <p class="text-gray-500 font-medium">Select a session to open the workspace</p>
+                        </div>
+                        <div id="ws-active-state" class="flex flex-col h-full hidden">
+                            <div class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md z-10">
+                                <div class="flex items-center gap-4">
+                                    <img id="ws-avatar"
+                                         src=""
+                                         class="w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400"
+                                         alt=""
+                                         onerror=" this.src = '/static/default_avatar.png'; this.onerror = null; " />
+                                    <div>
+                                        <h2 id="ws-title" class="font-bold text-base leading-tight">Session Workspace</h2>
+                                        <p id="ws-subtitle" class="text-xs text-blue-200">Loading details...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-1 overflow-hidden">
+                                <div class="flex-1 flex flex-col border-r border-gray-200 bg-gray-50">
+                                    <div id="ws-chat-box" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                                    <div class="p-3 bg-white border-t border-gray-200">
+                                        <form id="ws-chat-form" class="flex gap-2" onsubmit="sendWsMessage(event)">
+                                            <input type="text"
+                                                   id="ws-msg-input"
+                                                   class="form-input flex-1 bg-gray-50 text-sm py-2"
+                                                   placeholder="Type a message..."
+                                                   required
+                                                   autocomplete="off" />
+                                            <button type="submit" class="btn-primary py-2 px-4 shadow-sm text-sm">Send</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="w-64 flex flex-col bg-white overflow-y-auto">
+                                    <div class="p-4 border-b border-gray-100">
+                                        <h3 class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-blue-600"
+                                                 fill="none"
+                                                 viewBox="0 0 24 24"
+                                                 stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                            </svg>
+                                            Shared Files
+                                        </h3>
+                                        <div id="ws-files-list"
+                                             class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1"></div>
+                                        <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                                            <input type="file"
+                                                   id="ws-file-input"
+                                                   class="text-[10px] w-full mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200" />
+                                            <button onclick="uploadWsFile()"
+                                                    class="btn-sm btn-blue-sm w-full justify-center shadow-sm py-1 text-xs">
+                                                Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 bg-gray-50 flex-1">
+                                        <h3 class="font-bold text-sm text-gray-800 mb-3">Session Actions</h3>
+                                        <div id="ws-actions-area" class="space-y-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-profile">
+                <div class="section-title">My Profile</div>
+                <p class="section-subtitle">Update your mentor profile information</p>
+                <div class="max-w-xl">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+                        <div class="flex items-center gap-4 mb-7 p-4 bg-gray-50 rounded-xl">
+                            <div class="avatar text-xl"
+                                 style="background: #d97706;
+                                        width: 60px;
+                                        height: 60px">
+                                {{ user.full_name[:2].upper() if user.full_name else 'MT' }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-800 text-lg">{{ user.full_name }}</p>
+                                <p class="text-gray-500 text-sm">{{ user.email }}</p>
+                                <span class="badge badge-in-progress mt-1">{{ user.mentor_status.name.title() }}</span>
+                            </div>
+                        </div>
+                        <form id="edit-profile-form">
+                            <div class="mb-4">
+                                <label class="form-label">Full Name</label>
+                                <input type="text"
+                                       id="edit-name"
+                                       class="form-input"
+                                       value="{{ user.full_name }}" />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Modules You Specialise In</label>
+                                <input type="text"
+                                       id="edit-modules"
+                                       class="form-input"
+                                       value="{{ profile.modules if profile else '' }}"
+                                       placeholder="Separate with commas" />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Faculty</label>
+                                <select id="edit-faculty"
+                                        class="form-input"
+                                        data-current="{{ profile.faculty if profile else '' }}">
+                                    <option>Faculty of Applied Sciences</option>
+                                    <option>Faculty of Engineering & Technology</option>
+                                    <option>Faculty of Accounting & Informatics</option>
+                                    <option>Faculty of Health Sciences</option>
+                                    <option>Faculty of Arts & Design</option>
+                                    <option>Faculty of Management Sciences</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Year / Level</label>
+                                <input type="text"
+                                       id="edit-year"
+                                       class="form-input bg-gray-100"
+                                       value="{{ profile.year_of_study if profile else '' }}"
+                                       disabled />
+                            </div>
+                            <div class="mb-6">
+                                <label class="form-label">Awards & Achievements</label>
+                                <textarea id="edit-awards" class="form-input resize-none" rows="3">
+{{ profile.awards if profile and profile.awards else '' }}</textarea>
+                            </div>
+                            <button type="submit" class="btn-primary w-full justify-center">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="modal-overlay" id="student-detail-modal">
+            <div class="modal-box max-w-md">
+                <button onclick="closeModal('student-detail-modal')"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="student-detail-content"></div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+                    <button onclick="closeModal('student-detail-modal')"
+                            class="btn-sm btn-blue-sm px-4 py-2">Close</button>
+                    <button id="report-student-btn" class="btn-sm btn-red-sm px-4 py-2">Report Student</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </main>
-
-    <div class="modal-overlay" id="student-detail-modal">
-      <div class="modal-box max-w-md">
-        <button
-          onclick="closeModal('student-detail-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div id="student-detail-content"></div>
-        <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
-          <button
-            onclick="closeModal('student-detail-modal')"
-            class="btn-sm btn-blue-sm px-4 py-2"
-          >
-            Close
-          </button>
-          <button id="report-student-btn" class="btn-sm btn-red-sm px-4 py-2">
-            Report Student
-          </button>
+        <div class="modal-overlay" id="report-modal">
+            <div class="modal-box max-w-md">
+                <button onclick="closeModal('report-modal')"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <h2 class="text-lg font-bold mb-1 text-red-700">Report Student</h2>
+                <p class="text-sm text-gray-500 mb-4">
+                    Reporting:
+                    <span id="report-target-name" class="font-semibold text-gray-700"></span>
+                </p>
+                <textarea id="report-message"
+                          class="form-input resize-none mb-4"
+                          rows="4"
+                          placeholder="Describe the issue..."></textarea>
+                <button onclick="submitReport()"
+                        class="btn-primary w-full justify-center"
+                        style="background: #dc2626">Submit Report</button>
+            </div>
         </div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="report-modal">
-      <div class="modal-box max-w-md">
-        <button
-          onclick="closeModal('report-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-lg font-bold mb-1 text-red-700">Report Student</h2>
-        <p class="text-sm text-gray-500 mb-4">
-          Reporting:
-          <span
-            id="report-target-name"
-            class="font-semibold text-gray-700"
-          ></span>
-        </p>
-        <textarea
-          id="report-message"
-          class="form-input resize-none mb-4"
-          rows="4"
-          placeholder="Describe the issue..."
-        ></textarea>
-        <button
-          onclick="submitReport()"
-          class="btn-primary w-full justify-center"
-          style="background: #dc2626"
-        >
-          Submit Report
-        </button>
-      </div>
-    </div>
-
-    <div
-      id="toast-container"
-      class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none"
-    ></div>
-
-    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
-    <script>
+        <div id="toast-container"
+             class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+        <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+        <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
+        <script>
       // --- Global Data Stores ---
 
       const currentUser = {
@@ -953,16 +685,30 @@
       function renderWorkspace(data, scrollToBottom) {
         const details = data.sessionDetails;
 
+        // --- BULLETPROOF STATUS CHECK ---
+        // Grab the status from the API, or fallback to our local array if the API missed it.
+        // Force it to lowercase and trim spaces to ensure it always matches.
+        const localSession = SESSIONS.find((x) => x.id === currentWorkspaceId);
+        const currentStatus = (details.status || (localSession ? localSession.status : "")).toLowerCase().trim();
+
+        // 1. Stop polling if session is over
+        if (currentStatus === "completed" || currentStatus === "cancelled") {
+            if (wsPollInterval) {
+                clearInterval(wsPollInterval);
+                wsPollInterval = null; 
+            }
+        }
+        // ---------------------------------
+
         // 1. Header
         document.getElementById("ws-title").textContent =
           `${details.module} Session`;
         document.getElementById("ws-subtitle").textContent =
           `With ${details.otherPartyName} | ${details.date} at ${details.time}`;
 
-        // --- NEW: Smart Workspace Avatar Logic ---
+        // --- Smart Workspace Avatar Logic ---
         const oldAvatar = document.getElementById("ws-avatar");
         if (oldAvatar) {
-          // Pick the right fallback color based on role and session type
           const fallbackColor =
             details.module === "Peer Study"
               ? "#f59e0b"
@@ -979,14 +725,12 @@
           newAvatar.className =
             "w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400 shadow-sm";
 
-          // If the image breaks, self-heal by replacing the img tag with a colored div!
           newAvatar.onerror = function () {
             this.outerHTML = `<div id="ws-avatar" class="w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center text-white font-bold border-2 border-blue-400 shadow-sm" style="background:${fallbackColor}">${initial}</div>`;
           };
 
           oldAvatar.parentNode.replaceChild(newAvatar, oldAvatar);
         }
-        // -----------------------------------------
 
         // 2. Chat Box
         const chatBox = document.getElementById("ws-chat-box");
@@ -1038,37 +782,51 @@
                     <p class="text-xs font-bold text-blue-700 truncate" title="${d.fileName}">${d.fileName}</p>
                     <p class="text-[10px] text-gray-400">${d.uploaderName}</p>
                 </div>
-                <a href="/uploads/${d.filePath}" target="_blank" class="text-blue-500 hover:text-blue-800 p-1 bg-blue-50 rounded">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <a href="/api/uploads/${d.filePath}" target="_blank" class="text-blue-500 hover:text-blue-800 p-1 bg-blue-50 rounded">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 </a>
             </div>`,
             )
             .join("");
         }
 
-        // 4. Actions Area (Dynamic for Mentor View)
-        let actionsHTML = "";
+        // 4. Actions Area (Dynamic & Protected)
+        if (currentStatus === "completed") {
+            let actionsHTML = "";
 
-        if (details.status === "completed") {
-          actionsHTML += `
-            <div class="bg-red-50 p-4 rounded-xl border border-red-200">
-                <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Report Issue</p>
-                <textarea id="ws-report-txt" class="form-input text-sm resize-none mb-2 bg-white" rows="2" placeholder="What went wrong?"></textarea>
-                <button onclick="submitWsReport()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
-            </div>`;
+            // --- Locked Report Logic ---
+            if (data.hasReported) {
+                actionsHTML += `
+                  <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                      <p class="text-sm font-bold text-red-800 flex items-center gap-1">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                          Report Submitted
+                      </p>
+                      <p class="text-xs text-red-700 mt-1">Your report has been sent to the admin team for review.</p>
+                  </div>`;
+            } else {
+                actionsHTML += `
+                  <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                      <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg> Report Issue</p>
+                      <textarea id="ws-report-txt" class="form-input text-sm resize-none mb-2 bg-white" rows="2" placeholder="What went wrong?"></textarea>
+                      <button onclick="submitWsReport(this)" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
+                  </div>`;
+            }
+
+            document.getElementById("ws-actions-area").innerHTML = actionsHTML;
+
         } else {
-          // Mentor view: ALWAYS allow marking as complete
-          actionsHTML = `
-          <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 text-center mb-3 shadow-sm">
-              <p class="text-sm font-bold text-indigo-800 mb-1">Wrap Up Session</p>
-              <p class="text-xs text-indigo-600 mb-3">Finished mentoring? Mark this session as complete to lock the workspace.</p>
-              <button onclick="markSessionComplete()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Mark as Complete</button>
-          </div>
-          <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center"><p class="text-xs text-gray-500">Reports will unlock after completion.</p></div>
+          // If still active, always re-render the normal actions
+          const actionsHTML = `
+              <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 text-center mb-3 shadow-sm">
+                  <p class="text-sm font-bold text-indigo-800 mb-1">Wrap Up Session</p>
+                  <p class="text-xs text-indigo-600 mb-3">Finished mentoring? Mark this session as complete to lock the workspace.</p>
+                  <button onclick="markSessionComplete()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Mark as Complete</button>
+              </div>
+              <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center"><p class="text-xs text-gray-500">Reports will unlock after completion.</p></div>
           `;
+          document.getElementById("ws-actions-area").innerHTML = actionsHTML;
         }
-
-        document.getElementById("ws-actions-area").innerHTML = actionsHTML;
       }
 
       // NEW: API Call to complete the session
@@ -1146,8 +904,13 @@
           });
       }
 
-      function submitWsReport() {
+      function submitWsReport(btn) {
         const reason = document.getElementById("ws-report-txt").value;
+
+        // 1. Disable button and show loading state
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Submitting...";
+        btn.disabled = true;
 
         fetch(`/api/workspace/${currentWorkspaceId}/report`, {
           method: "POST",
@@ -1156,11 +919,18 @@
         })
           .then((res) => res.json())
           .then((data) => {
-            if (data.error) return showToast(data.error, "error");
+            if (data.error) {
+                // If it fails, revert the button so they can try again
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return showToast(data.error, "error");
+            }
             showToast(data.message, "success");
-            document.getElementById("ws-report-txt").value = "";
+            
+            // 2. Fetch fresh data to trigger the UI lock!
+            fetchWorkspaceData(false); 
           });
       }
-    </script>
-  </body>
+        </script>
+    </body>
 </html>

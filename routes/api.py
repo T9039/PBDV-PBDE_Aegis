@@ -1,7 +1,8 @@
 from datetime import date, datetime
+from typing import Any, cast
 
-from flask import Blueprint, jsonify, request, session
-from sqlalchemy import func, text
+from flask import Blueprint, current_app, jsonify, request, send_from_directory, session
+from sqlalchemy import Column, desc, func, select, text
 from werkzeug.utils import secure_filename
 
 from models import (
@@ -22,6 +23,7 @@ from models import (
 from utils import (  # Ensure this is imported at the top!
     get_year_value,
     save_uploaded_file,
+    send_email,
 )
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -147,14 +149,19 @@ def handle_availability():
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
+    today = date.today()  # Get today's date
+
     if request.method == "GET":
-        avails = Availability.query.filter_by(mentor_id=user_id).all()
+        # ONLY fetch availability from today onwards
+        avails = Availability.query.filter(
+            Availability.mentor_id == user_id, Availability.date >= today
+        ).all()
+
         avail_dict = {}
         for a in avails:
             d_str = a.date.strftime("%Y-%m-%d")
             if d_str not in avail_dict:
                 avail_dict[d_str] = []
-            # Append to the day's array
             avail_dict[d_str].append(a.time_slot)
         return jsonify(avail_dict), 200
 
@@ -162,20 +169,25 @@ def handle_availability():
     date_str = data.get("date")
     slots = data.get("slots", [])
 
+    # Check if they are trying to save a past date
+    proper_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    if proper_date < today:
+        return jsonify({"error": "Cannot edit past availability"}), 400
+
     # 1. Get existing slots so we don't accidentally delete a booked slot!
-    existing = Availability.query.filter_by(mentor_id=user_id, date=date_str).all()
+    existing = Availability.query.filter_by(mentor_id=user_id, date=proper_date).all()
     booked_slots = [e.time_slot for e in existing if e.is_booked]
 
     # 2. Delete all UNBOOKED slots for this date
     Availability.query.filter_by(
-        mentor_id=user_id, date=date_str, is_booked=False
+        mentor_id=user_id, date=proper_date, is_booked=False
     ).delete()
 
     # 3. Add the new slots (skipping any that are already safely booked)
     for slot in set(slots):
         if slot not in booked_slots:
             new_avail = Availability(
-                mentor_id=user_id, date=date_str, time_slot=slot, is_booked=False
+                mentor_id=user_id, date=proper_date, time_slot=slot, is_booked=False
             )
             db.session.add(new_avail)
 
@@ -184,28 +196,113 @@ def handle_availability():
 
 
 # ==========================================
-# 5. POST: Submit Moderation Report
+# POST: Submit a Session Review
 # ==========================================
-@api_bp.route("/reports", methods=["POST"])
-def submit_report():
+@api_bp.route("/workspace/<int:session_id>/review", methods=["POST"])
+def submit_ws_review(session_id):
     user_id = get_current_user_id()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
+    # 1. Fetch the session context
+    session = MentorshipSession.query.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found."}), 404
+
+    # 2. Security Check: Only the student from THIS session can leave a review
+    if user_id != session.student_id:
+        return jsonify(
+            {"error": "Only the student of this session can submit a review."}
+        ), 403
+
+    # 3. Prevent duplicate reviews (since session_id is unique in the Review model)
+    if session.review:
+        return jsonify(
+            {"error": "A review has already been submitted for this session."}
+        ), 400
+
+    # 4. Extract the data from the frontend fetch request
     data = request.get_json()
-    target_email = data.get("targetEmail")
+    rating = data.get("rating")
+    text = data.get("text", "").strip()
 
-    target = User.query.filter_by(email=target_email).first()
-    if not target:
-        return jsonify({"error": "User not found"}), 404
+    if not rating:
+        return jsonify({"error": "Please provide a star rating."}), 400
 
-    report = Report(
-        reporter_id=user_id, reported_user_id=target.id, reason=data.get("message")
-    )
-    db.session.add(report)
-    db.session.commit()
+    try:
+        # 5. Create the review, mapping all the foreign keys automatically
+        new_review = Review(
+            session_id=session.id,
+            student_id=session.student_id,
+            mentor_id=session.mentor_id,
+            rating=int(rating),
+            review_text=text,
+        )
 
-    return jsonify({"message": "Report submitted to admin."}), 201
+        db.session.add(new_review)
+        db.session.commit()
+
+        return jsonify({"message": "Review submitted successfully!"}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error submitting review: {e}")
+        return jsonify(
+            {"error": "A server error occurred while submitting the review."}
+        ), 500
+
+
+# ==========================================
+# POST: Submit a Moderation Report from Workspace
+# ==========================================
+@api_bp.route("/workspace/<int:session_id>/report", methods=["POST"])
+def submit_ws_report(session_id):
+    user_id = get_current_user_id()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # 1. Fetch the session context
+    session = MentorshipSession.query.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found."}), 404
+
+    # 2. Automatically figure out who is reporting whom
+    if user_id == session.student_id:
+        reported_user_id = session.mentor_id
+    elif user_id == session.mentor_id:
+        reported_user_id = session.student_id
+    else:
+        return jsonify({"error": "You are not a participant in this session."}), 403
+
+    # 3. Extract the reason from the frontend
+    data = request.get_json()
+    reason = data.get("reason", "").strip()
+
+    if not reason:
+        return jsonify({"error": "Please provide a reason for the report."}), 400
+
+    try:
+        # 4. Create the report
+        new_report = Report(
+            reporter_id=user_id,
+            reported_user_id=reported_user_id,
+            reason=reason,
+            session_id=session_id,
+        )
+
+        db.session.add(new_report)
+        db.session.commit()
+
+        return jsonify(
+            {"message": "Report successfully submitted to the admin team."}
+        ), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error submitting report: {e}")
+        return jsonify(
+            {"error": "A server error occurred while submitting the report."}
+        ), 500
 
 
 # 6. GET: Student Sessions
@@ -243,48 +340,6 @@ def get_student_sessions():
         )
 
     return jsonify(result), 200
-
-
-# ==========================================
-# 7. GET: Student Feedback & Messages
-# ==========================================
-@api_bp.route("/student-feedback", methods=["GET"])
-def get_student_feedback():
-    user_id = get_current_user_id()
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    # Get reviews written BY this student
-    reviews = Review.query.filter_by(student_id=user_id).all()
-
-    # --- NEW: Manually look up the mentor using their ID ---
-    rev_data = []
-    for r in reviews:
-        mentor = User.query.get(r.mentor_id)
-        rev_data.append(
-            {
-                "mentorName": mentor.full_name if mentor else "Unknown",
-                "rating": r.rating,
-                "text": r.review_text,
-                "date": r.created_at.strftime("%Y-%m-%d"),
-            }
-        )
-    # -------------------------------------------------------
-
-    # Get messages sent TO this student
-    msgs = Message.query.filter_by(receiver_id=user_id).all()
-    msg_data = [
-        {
-            "id": m.id,
-            "fromName": m.sender.full_name if m.sender else "System",
-            "date": m.created_at.strftime("%Y-%m-%d"),
-            "message": m.content,
-            "rating": m.performance_rating,
-        }
-        for m in msgs
-    ]
-
-    return jsonify({"reviews": rev_data, "messages": msg_data}), 200
 
 
 # 8. GET: Search Mentors & Peers
@@ -402,8 +457,15 @@ def connect_peer():
 # ==========================================
 @api_bp.route("/mentor-availability/<int:mentor_id>", methods=["GET"])
 def get_mentor_avail(mentor_id):
-    # Only pull slots that are NOT booked yet
-    avails = Availability.query.filter_by(mentor_id=mentor_id, is_booked=False).all()
+    today = date.today()  # Get today's date
+
+    # Only pull slots that are NOT booked AND from today onwards
+    avails = Availability.query.filter(
+        Availability.mentor_id == mentor_id,
+        Availability.is_booked == False,
+        Availability.date >= today,
+    ).all()
+
     avail_dict = {}
 
     for a in avails:
@@ -563,17 +625,8 @@ def get_workspace(session_id):
             "date": session.review.created_at.strftime("%Y-%m-%d"),
         }
 
-    # 5. Check if a review exists for this session
-    review_data = None
-    if session.review:
-        review_data = {
-            "rating": session.review.rating,
-            "text": session.review.review_text,
-            "date": session.review.created_at.strftime("%Y-%m-%d"),
-        }
-
     # ==========================================
-    # --- NEW: Fetch Shared Documents ---
+    # --- Fetch Shared Documents ---
     # ==========================================
     docs = (
         SessionDocument.query.filter_by(session_id=session_id)
@@ -595,26 +648,39 @@ def get_workspace(session_id):
         )
     # ==========================================
 
+    # --- NEW: Check if the current user has filed a report ---
+    user_report = Report.query.filter_by(
+        session_id=session_id, reporter_id=user_id
+    ).first()
+    has_reported = True if user_report else False
+
     # 6. Return the entire Workspace Package
-    return jsonify(
-        {
-            "sessionDetails": {
-                "id": session.id,
-                "module": session.module,
-                "date": session.date.strftime("%Y-%m-%d")
-                if isinstance(session.date, datetime)
-                else session.date,
-                "time": session.time_slot,
-                "status": session.status.value,
-                "otherPartyName": other_user.full_name,
-                "otherPartyAvatar": other_user.profile_picture,
-                "otherPartyRole": "Mentor" if is_student else "Student",
-            },
-            "messages": msg_data,
-            "review": review_data,
-            "documents": doc_data,
-        }
-    ), 200
+    return (
+        jsonify(
+            {
+                "sessionDetails": {
+                    "id": session.id,
+                    "module": session.module,
+                    "date": session.date.strftime("%Y-%m-%d")
+                    if hasattr(session.date, "strftime")
+                    else session.date,
+                    "time": session.time_slot,
+                    # Safety wrapper: Handle Enum objects or raw strings natively
+                    "status": session.status.value
+                    if hasattr(session.status, "value")
+                    else session.status,
+                    "otherPartyName": other_user.full_name,
+                    "otherPartyAvatar": other_user.profile_picture,
+                    "otherPartyRole": "Mentor" if is_student else "Student",
+                },
+                "messages": msg_data,
+                "review": review_data,
+                "documents": doc_data,
+                "hasReported": has_reported,  # Passes our new spam-check boolean to the frontend!
+            }
+        ),
+        200,
+    )
 
 
 # ==========================================
@@ -784,23 +850,54 @@ def admin_stats():
 
 @api_bp.route("/admin/analytics", methods=["GET"])
 def admin_analytics():
-    if not is_admin():
-        return jsonify({"error": "Unauthorized"}), 403
-
-    # Group by module and count the requests to feed the Chart.js graph
-    results = (
-        db.session.query(
-            MentorshipSession.module,
-            func.count(MentorshipSession.id).label("total"),  # type: ignore
+    # 1. Top 5 Modules
+    # Using SQLAlchemy 2.0 select() statement
+    module_stmt = (
+        select(
+            MentorshipSession.module, func.count(MentorshipSession.id).label("total")
         )
-        .group_by(MentorshipSession.module)  # type: ignore
-        .order_by(db.desc("total"))
+        .group_by(MentorshipSession.module)
+        .order_by(desc("total"))
         .limit(5)
-        .all()
     )
+    # execute().all() returns a list of Row objects (which act like tuples)
+    top_modules = db.session.execute(module_stmt).all()
+    modules_data = [{"module": row[0], "count": row[1]} for row in top_modules]
 
-    data = [{"module": r.module, "count": r.total} for r in results]
-    return jsonify(data), 200
+    # 2. Session Status Breakdown (Pending, Booked, Completed, Cancelled)
+
+    # Tell the LSP to treat the Enum attribute as a queryable SQLAlchemy Column
+    status_col = cast(Column[Any], MentorshipSession.status)
+
+    status_stmt = select(status_col, func.count(MentorshipSession.id)).group_by(
+        status_col
+    )
+    statuses = db.session.execute(status_stmt).all()
+
+    # row[0] is the SessionStatus Enum, so we extract .value
+    status_data = {row[0].value: row[1] for row in statuses if row[0]}
+
+    # 3. Rating Distribution (1 to 5 Stars)
+    rating_stmt = select(Review.rating, func.count(Review.id)).group_by(Review.rating)
+    ratings = db.session.execute(rating_stmt).all()
+    rating_data = {str(row[0]): row[1] for row in ratings if row[0]}
+
+    # 4. Workspace Engagement Activity
+    # Using db.session.scalar() to get a single value directly back
+    doc_count_stmt = select(func.count(SessionDocument.id))
+    doc_count = db.session.scalar(doc_count_stmt) or 0
+
+    msg_count_stmt = select(func.count(Message.id))
+    msg_count = db.session.scalar(msg_count_stmt) or 0
+
+    return jsonify(
+        {
+            "modules": modules_data,
+            "statuses": status_data,
+            "ratings": rating_data,
+            "engagement": {"documents": doc_count, "messages": msg_count},
+        }
+    ), 200
 
 
 # 12. GET: Manage Users & Pending Mentors
@@ -851,42 +948,6 @@ def pending_mentors():
 
 
 # ==========================================
-# Cancel a Mentorship Session (Booking)
-# ==========================================
-@api_bp.route("/sessions/<int:session_id>", methods=["DELETE"])
-def cancel_mentorship_session(session_id):
-    user_id = get_current_user_id()
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    # 1. Find the booked meeting in the database
-    booking = MentorshipSession.query.get(session_id)
-
-    if not booking:
-        return jsonify({"error": "Booking not found"}), 404
-
-    # 2. Security Check: Only the student who booked it, or the mentor hosting it, can cancel it.
-    if booking.student_id != user_id and booking.mentor_id != user_id:
-        return jsonify(
-            {"error": "You do not have permission to cancel this booking."}
-        ), 403
-
-    try:
-        # 3. Change the status to cancelled instead of hard-deleting the row
-        booking.status = "cancelled"
-        db.session.commit()
-
-        # (Optional) You could import send_email here and notify the other person!
-
-        return jsonify({"message": "Booking successfully cancelled."}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error cancelling booking: {e}")
-        return jsonify({"error": "A server error occurred."}), 500
-
-
-# ==========================================
 # 14. PUT/DELETE: Admin Actions
 # ==========================================
 @api_bp.route("/admin/users/<int:user_id>", methods=["DELETE"])
@@ -914,6 +975,22 @@ def approve_mentor(user_id):
 
     user.mentor_status = MentorStatus.APPROVED
     db.session.commit()
+
+    # ==========================================
+    # SEND APPROVAL EMAIL
+    # ==========================================
+    approval_body = (
+        f"Hello {user.full_name},\n\n"
+        "Congratulations! We are thrilled to inform you that your mentor application for StudySphere has been APPROVED.\n\n"
+        "You can now log in to access your Mentor Dashboard. Please remember to update your 'Availability' tab so students can start booking sessions with you!\n\n"
+        "Welcome to the team,\n"
+        "The StudySphere Admin"
+    )
+    send_email(
+        user.email, "Congratulations! You are a StudySphere Mentor", approval_body
+    )
+    # ==========================================
+
     return jsonify({"message": "Mentor approved successfully."}), 200
 
 
@@ -928,7 +1005,48 @@ def reject_mentor(user_id):
 
     user.mentor_status = MentorStatus.REJECTED
     db.session.commit()
+
+    # ==========================================
+    # SEND REJECTION EMAIL
+    # ==========================================
+    rejection_body = (
+        f"Hello {user.full_name},\n\n"
+        "Thank you for applying to be a mentor at StudySphere. Our admin team has carefully reviewed your application and CV.\n\n"
+        "Unfortunately, we are unable to approve your application at this time. We appreciate your willingness to help your peers and encourage you to continue excelling in your studies.\n\n"
+        "Best regards,\n"
+        "The StudySphere Admin"
+    )
+    send_email(user.email, "Update on your StudySphere Application", rejection_body)
+    # ==========================================
+
     return jsonify({"message": "Mentor application rejected."}), 200
+
+
+@api_bp.route("/admin/reports", methods=["GET"])
+def get_admin_reports():
+    # Make sure to include whatever admin check you use, e.g.:
+    if not is_admin():
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Fetch all reports, ordering by newest first
+    reports = Report.query.order_by(Report.created_at.desc()).all()
+
+    report_list = []
+    for r in reports:
+        report_list.append(
+            {
+                "id": r.id,
+                "reporterName": r.reporter.full_name if r.reporter else "Unknown User",
+                "reportedName": r.reported_user.full_name
+                if r.reported_user
+                else "Unknown User",
+                "reason": r.reason,
+                "status": r.status.value,  # Convert Enum to string ('pending', 'resolved')
+                "date": r.created_at.strftime("%Y-%m-%d"),
+            }
+        )
+
+    return jsonify(report_list), 200
 
 
 @api_bp.route("/admin/resolve-report/<int:report_id>", methods=["PUT"])
@@ -1149,3 +1267,26 @@ def complete_session(session_id):
     return jsonify(
         {"message": "Session marked as complete! Reviews are now unlocked."}
     ), 200
+
+
+# ==========================================
+# GET: Serve Uploaded Files (Documents, CVs, Images)
+# ==========================================
+# Notice the <path:filename> instead of <string:filename>.
+# This allows it to handle subfolders if your file paths have them!
+@api_bp.route("/uploads/<path:db_path>", methods=["GET"])
+def serve_any_upload(db_path):
+    """
+    Serves files from the structured upload directory.
+    db_path will catch 'documents/cvs/file.pdf' or 'documents/sessions/file.pdf'
+    """
+    # Use your BASE_UPLOAD_FOLDER (e.g., 'uploads')
+    # If BASE_UPLOAD_FOLDER isn't global, fetch it from config
+    upload_base = current_app.config.get("UPLOAD_FOLDER", "uploads")
+
+    # Security: Ensure the file is actually inside the intended directory
+    # safe_join prevents "directory traversal" attacks
+    try:
+        return send_from_directory(upload_base, db_path)
+    except FileNotFoundError:
+        return jsonify({"error": "File not found"}), 404

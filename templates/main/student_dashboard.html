@@ -1,15 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Dashboard – StudySphere</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-    <style>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Student Dashboard – StudySphere</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/styles.css') }}" />
+        <style>
       /* Hide scrollbar for horizontal carousel but keep functionality */
       .carousel-track::-webkit-scrollbar {
         display: none;
@@ -18,698 +16,377 @@
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */
       }
-    </style>
-  </head>
-  <body class="bg-gray-50">
-    <aside class="sidebar">
-      <div class="p-5 border-b border-blue-800">
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 14l9-5-9-5-9 5 9 5z"
-              />
-            </svg>
-          </div>
-          <div>
-            <span class="text-white font-bold text-base block"
-              >StudySphere</span
-            >
-            <span class="text-blue-200 text-xs">Student Portal</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
-        <div class="flex items-center gap-3">
-          <div
-            class="avatar"
-            id="sidebar-avatar"
-            style="
-              background: #f59e0b;
-              width: 36px;
-              height: 36px;
-              font-size: 13px;
-            "
-          >
-            {{ user.full_name[:2].upper() if user.full_name else 'ST' }}
-          </div>
-          <div>
-            <p
-              class="text-white text-sm font-semibold leading-tight"
-              id="sidebar-name"
-            >
-              {{ user.full_name }}
-            </p>
-            <p class="text-blue-200 text-xs" id="sidebar-email">
-              {{ user.email }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <nav class="flex-1 py-2">
-        <button class="sidebar-tab" data-tab="home">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-          </svg>
-          Home
-        </button>
-        <button class="sidebar-tab" data-tab="search">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          Search Mentors / Peers
-        </button>
-
-        <button class="sidebar-tab" data-tab="sessions">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-            />
-          </svg>
-          My Sessions
-        </button>
-
-        <button class="sidebar-tab" data-tab="profile">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          My Profile
-        </button>
-      </nav>
-
-      <div class="pb-4 px-0">
-        <button class="sidebar-tab logout-tab" onclick="logout()">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-            />
-          </svg>
-          Log Out
-        </button>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <div class="tab-panel" id="panel-home">
-        <div class="section-title">
-          Welcome back,
-          <span id="home-name"
-            >{{ user.full_name.split(' ')[0] if user.full_name else 'Student'
-            }}</span
-          >!
-        </div>
-        <p class="section-subtitle">Here's what's happening this week</p>
-
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-7">
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Sessions This Week
-            </p>
-            <p
-              class="text-3xl font-extrabold"
-              style="color: #003087"
-              id="week-sessions"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Upcoming
-            </p>
-            <p
-              class="text-3xl font-extrabold text-green-600"
-              id="upcoming-count"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <p
-              class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1"
-            >
-              Total Sessions
-            </p>
-            <p
-              class="text-3xl font-extrabold text-purple-600"
-              id="total-sessions"
-            >
-              0
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-7"
-        >
-          <div class="flex justify-between items-center mb-4">
-            <button
-              id="prevDayBtn"
-              class="text-2xl px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-              title="Previous Day"
-            >
-              &larr;
-            </button>
-            <h3 id="carouselDateLabel" class="font-bold text-gray-800 text-lg">
-              Today's Sessions
-            </h3>
-            <button
-              id="nextDayBtn"
-              class="text-2xl px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-200 transition-all"
-              title="Next Day"
-            >
-              &rarr;
-            </button>
-          </div>
-          <div
-            class="carousel-track flex gap-4 overflow-x-auto pb-4"
-            id="sessionsTrack"
-            style="scroll-snap-type: x mandatory"
-          >
-            <p class="text-gray-400 text-sm text-center py-4 w-full">
-              Loading sessions...
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-7"
-        >
-          <div class="flex items-center gap-2 mb-5">
-            <h3 class="font-bold text-gray-800 text-lg">
-              Recommended Mentors For You
-            </h3>
-            <span
-              class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full"
-              >Smart Match</span
-            >
-          </div>
-          <div
-            id="recommended-mentors-grid"
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            <p class="text-gray-400 text-sm text-center py-4 col-span-full">
-              Analyzing profiles...
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-search">
-        <div class="section-title">Search Mentors & Peers</div>
-        <p class="section-subtitle">
-          Find the right mentor or connect with a fellow student
-        </p>
-
-        <div class="flex gap-3 mb-6">
-          <button
-            onclick="setSearchType('mentor')"
-            id="btn-mentor-search"
-            class="btn-sm btn-blue-sm px-5 py-2 text-sm font-semibold border-2 border-blue-400"
-          >
-            Search Mentors
-          </button>
-          <button
-            onclick="setSearchType('peer')"
-            id="btn-peer-search"
-            class="btn-sm btn-yellow-sm px-5 py-2 text-sm font-semibold"
-          >
-            Search Peers
-          </button>
-        </div>
-
-        <div class="flex gap-3 mb-6">
-          <div class="relative flex-1">
-            <svg
-              class="absolute left-3 top-3 w-5 h-5 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <input
-              type="text"
-              id="search-input"
-              class="form-input pl-10"
-              placeholder="Search by name, module, or faculty..."
-              oninput="performSearch()"
-            />
-          </div>
-          <button onclick="performSearch()" class="btn-primary px-5 py-2">
-            Search
-          </button>
-        </div>
-
-        <div id="search-results"></div>
-      </div>
-
-      <div class="tab-panel" id="panel-sessions">
-        <div class="section-title mb-2">My Sessions</div>
-        <p class="section-subtitle mb-4">
-          Manage your bookings, chat, and share files.
-        </p>
-
-        <div
-          class="flex-1 flex gap-6 overflow-hidden"
-          style="height: calc(100vh - 180px)"
-        >
-          <div
-            class="w-1/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
-          >
-            <div class="p-4 border-b border-gray-100 bg-gray-50">
-              <h3 class="font-bold text-gray-800">Session History</h3>
-            </div>
-            <div
-              id="session-roster"
-              class="flex-1 overflow-y-auto p-3 space-y-2"
-            >
-              <p class="text-center text-gray-400 text-sm mt-4">
-                Loading sessions...
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="w-2/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative"
-          >
-            <div
-              id="ws-empty-state"
-              class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-20"
-            >
-              <svg
-                class="w-16 h-16 text-gray-300 mb-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-              <p class="text-gray-500 font-medium">
-                Select a session to open the workspace
-              </p>
-            </div>
-
-            <div id="ws-active-state" class="flex flex-col h-full hidden">
-              <div
-                class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md z-10"
-              >
-                <div class="flex items-center gap-4">
-                  <img
-                    id="ws-avatar"
-                    src=""
-                    class="w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400"
-                    alt=""
-                    onerror="
-                      this.src = '/static/default_avatar.png';
-                      this.onerror = null;
-                    "
-                  />
-                  <div>
-                    <h2 id="ws-title" class="font-bold text-base leading-tight">
-                      Session Workspace
-                    </h2>
-                    <p id="ws-subtitle" class="text-xs text-blue-200">
-                      Loading details...
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex flex-1 overflow-hidden">
-                <div
-                  class="flex-1 flex flex-col border-r border-gray-200 bg-gray-50"
-                >
-                  <div
-                    id="ws-chat-box"
-                    class="flex-1 overflow-y-auto p-4 space-y-4"
-                  ></div>
-                  <div class="p-3 bg-white border-t border-gray-200">
-                    <form
-                      id="ws-chat-form"
-                      class="flex gap-2"
-                      onsubmit="sendWsMessage(event)"
-                    >
-                      <input
-                        type="text"
-                        id="ws-msg-input"
-                        class="form-input flex-1 bg-gray-50 text-sm py-2"
-                        placeholder="Type a message..."
-                        required
-                        autocomplete="off"
-                      />
-                      <button
-                        type="submit"
-                        class="btn-primary py-2 px-4 shadow-sm text-sm"
-                      >
-                        Send
-                      </button>
-                    </form>
-                  </div>
-                </div>
-
-                <div class="w-64 flex flex-col bg-white overflow-y-auto">
-                  <div class="p-4 border-b border-gray-100">
-                    <h3
-                      class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2"
-                    >
-                      <svg
-                        class="w-4 h-4 text-blue-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                        />
-                      </svg>
-                      Shared Files
-                    </h3>
-                    <div
-                      id="ws-files-list"
-                      class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1"
-                    ></div>
-                    <div
-                      class="bg-blue-50 p-2 rounded-xl border border-blue-100"
-                    >
-                      <input
-                        type="file"
-                        id="ws-file-input"
-                        class="text-[10px] w-full mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-                      />
-                      <button
-                        onclick="uploadWsFile()"
-                        class="btn-sm btn-blue-sm w-full justify-center shadow-sm py-1 text-xs"
-                      >
-                        Upload
-                      </button>
+        </style>
+    </head>
+    <body class="bg-gray-50">
+        <aside class="sidebar">
+            <div class="p-5 border-b border-blue-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20">
+                        <svg class="w-6 h-6 text-white"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                        </svg>
                     </div>
-                  </div>
-                  <div class="p-4 bg-gray-50 flex-1">
-                    <h3 class="font-bold text-sm text-gray-800 mb-3">
-                      Session Actions
-                    </h3>
-                    <div id="ws-actions-area" class="space-y-3"></div>
-                  </div>
+                    <div>
+                        <span class="text-white font-bold text-base block">StudySphere</span>
+                        <span class="text-blue-200 text-xs">Student Portal</span>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-profile">
-        <div class="section-title">My Profile</div>
-        <p class="section-subtitle">
-          Update your personal information at any time
-        </p>
-
-        <div class="max-w-xl">
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8"
-          >
-            <div class="flex items-center gap-4 mb-7 p-4 bg-gray-50 rounded-xl">
-              <div
-                class="avatar text-xl"
-                id="profile-avatar"
-                style="background: #003087; width: 60px; height: 60px"
-              >
-                {{ user.full_name[:2].upper() if user.full_name else 'ST' }}
-              </div>
-              <div>
-                <p
-                  class="font-bold text-gray-800 text-lg"
-                  id="profile-display-name"
-                >
-                  {{ user.full_name }}
-                </p>
-                <p class="text-gray-500 text-sm" id="profile-display-email">
-                  {{ user.email }}
-                </p>
-                <span class="badge badge-booked mt-1">Student</span>
-              </div>
+            <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
+                <div class="flex items-center gap-3">
+                    <div class="avatar"
+                         id="sidebar-avatar"
+                         style="background: #f59e0b;
+                                width: 36px;
+                                height: 36px;
+                                font-size: 13px">{{ user.full_name[:2].upper() if user.full_name else 'ST' }}</div>
+                    <div>
+                        <p class="text-white text-sm font-semibold leading-tight"
+                           id="sidebar-name">{{ user.full_name }}</p>
+                        <p class="text-blue-200 text-xs" id="sidebar-email">{{ user.email }}</p>
+                    </div>
+                </div>
             </div>
-
-            <form id="edit-profile-form">
-              <div class="mb-4">
-                <label class="form-label">Full Name</label>
-                <input
-                  type="text"
-                  id="edit-name"
-                  class="form-input"
-                  value="{{ user.full_name }}"
-                />
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Degree Programme</label>
-                <input
-                  type="text"
-                  id="edit-degree"
-                  class="form-input"
-                  value="{{ profile.degree_program if profile else '' }}"
-                  disabled
-                />
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Year of Study</label>
-                <input
-                  type="text"
-                  id="edit-year"
-                  class="form-input"
-                  value="{{ profile.year_of_study if profile else '' }}"
-                  disabled
-                />
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Subjects You Need Help With</label>
-                <input
-                  type="text"
-                  id="edit-subjects"
-                  class="form-input"
-                  value="{{ profile.subjects_needing_help if profile else '' }}"
-                />
-              </div>
-              <div class="mb-6">
-                <label class="form-label">Short Bio</label>
-                <textarea id="edit-bio" class="form-input resize-none" rows="3">
-{{ profile.bio if profile else '' }}</textarea
-                >
-              </div>
-              <button type="submit" class="btn-primary w-full justify-center">
-                Save Changes
-              </button>
-            </form>
-          </div>
+            <nav class="flex-1 py-2">
+                <button class="sidebar-tab" data-tab="home">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home
+                </button>
+                <button class="sidebar-tab" data-tab="search">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Search Mentors / Peers
+                </button>
+                <button class="sidebar-tab" data-tab="sessions">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                    </svg>
+                    My Sessions
+                </button>
+                <button class="sidebar-tab" data-tab="profile">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    My Profile
+                </button>
+            </nav>
+            <div class="pb-4 px-0">
+                <button class="sidebar-tab logout-tab" onclick="logout()">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Log Out
+                </button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="tab-panel" id="panel-home">
+                <div class="section-title">
+                    Welcome back,
+                    <span id="home-name">{{ user.full_name.split(" ")[0] if user.full_name else 'Student'
+                        }}</span>!
+                    </div>
+                    <p class="section-subtitle">Here's what's happening this week</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-7">
+                        <div class="stat-card">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Sessions This Week</p>
+                            <p class="text-3xl font-extrabold"
+                               style="color: #003087"
+                               id="week-sessions">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Upcoming</p>
+                            <p class="text-3xl font-extrabold text-green-600" id="upcoming-count">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Total Sessions</p>
+                            <p class="text-3xl font-extrabold text-purple-600" id="total-sessions">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-7">
+                        <div class="flex justify-between items-center mb-4">
+                            <button id="prevDayBtn"
+                                    class="text-2xl px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                    title="Previous Day">&larr;</button>
+                            <h3 id="carouselDateLabel" class="font-bold text-gray-800 text-lg">Today's Sessions</h3>
+                            <button id="nextDayBtn"
+                                    class="text-2xl px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-200 transition-all"
+                                    title="Next Day">&rarr;</button>
+                        </div>
+                        <div class="carousel-track flex gap-4 overflow-x-auto pb-4"
+                             id="sessionsTrack"
+                             style="scroll-snap-type: x mandatory">
+                            <p class="text-gray-400 text-sm text-center py-4 w-full">Loading sessions...</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-7">
+                        <div class="flex items-center gap-2 mb-5">
+                            <h3 class="font-bold text-gray-800 text-lg">Recommended Mentors For You</h3>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full">Smart Match</span>
+                        </div>
+                        <div id="recommended-mentors-grid"
+                             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <p class="text-gray-400 text-sm text-center py-4 col-span-full">Analyzing profiles...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="panel-search">
+                    <div class="section-title">Search Mentors & Peers</div>
+                    <p class="section-subtitle">Find the right mentor or connect with a fellow student</p>
+                    <div class="flex gap-3 mb-6">
+                        <button onclick="setSearchType('mentor')"
+                                id="btn-mentor-search"
+                                class="px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2 bg-blue-600 text-white border-blue-600 shadow-md">
+                            Search Mentors
+                        </button>
+                        <button onclick="setSearchType('peer')"
+                                id="btn-peer-search"
+                                class="px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2 bg-transparent text-yellow-600 border-yellow-500 hover:bg-yellow-50">
+                            Search Peers
+                        </button>
+                    </div>
+                    <div class="flex gap-3 mb-6">
+                        <div class="relative flex-1">
+                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text"
+                                   id="search-input"
+                                   class="form-input pl-10"
+                                   placeholder="Search by name, module, or faculty..."
+                                   oninput="performSearch()" />
+                        </div>
+                        <button onclick="performSearch()" class="btn-primary px-5 py-2">Search</button>
+                    </div>
+                    <div id="search-results"></div>
+                </div>
+                <div class="tab-panel" id="panel-sessions">
+                    <div class="section-title mb-2">My Sessions</div>
+                    <p class="section-subtitle mb-4">Manage your bookings, chat, and share files.</p>
+                    <div class="flex-1 flex gap-6 overflow-hidden"
+                         style="height: calc(100vh - 180px)">
+                        <div class="w-1/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
+                            <div class="p-4 border-b border-gray-100 bg-gray-50">
+                                <h3 class="font-bold text-gray-800">Session History</h3>
+                            </div>
+                            <div id="session-roster" class="flex-1 overflow-y-auto p-3 space-y-2">
+                                <p class="text-center text-gray-400 text-sm mt-4">Loading sessions...</p>
+                            </div>
+                        </div>
+                        <div class="w-2/3 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative">
+                            <div id="ws-empty-state"
+                                 class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-20">
+                                <svg class="w-16 h-16 text-gray-300 mb-4"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                                <p class="text-gray-500 font-medium">Select a session to open the workspace</p>
+                            </div>
+                            <div id="ws-active-state" class="flex flex-col h-full hidden">
+                                <div class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md z-10">
+                                    <div class="flex items-center gap-4">
+                                        <img id="ws-avatar"
+                                             src=""
+                                             class="w-10 h-10 flex-shrink-0 rounded-full bg-white object-cover border-2 border-blue-400"
+                                             alt=""
+                                             onerror=" this.src = '/static/default_avatar.png'; this.onerror = null; " />
+                                        <div>
+                                            <h2 id="ws-title" class="font-bold text-base leading-tight">Session Workspace</h2>
+                                            <p id="ws-subtitle" class="text-xs text-blue-200">Loading details...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-1 overflow-hidden">
+                                    <div class="flex-1 flex flex-col border-r border-gray-200 bg-gray-50">
+                                        <div id="ws-chat-box" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                                        <div class="p-3 bg-white border-t border-gray-200">
+                                            <form id="ws-chat-form" class="flex gap-2" onsubmit="sendWsMessage(event)">
+                                                <input type="text"
+                                                       id="ws-msg-input"
+                                                       class="form-input flex-1 bg-gray-50 text-sm py-2"
+                                                       placeholder="Type a message..."
+                                                       required
+                                                       autocomplete="off" />
+                                                <button type="submit" class="btn-primary py-2 px-4 shadow-sm text-sm">Send</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="w-64 flex flex-col bg-white overflow-y-auto">
+                                        <div class="p-4 border-b border-gray-100">
+                                            <h3 class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2">
+                                                <svg class="w-4 h-4 text-blue-600"
+                                                     fill="none"
+                                                     viewBox="0 0 24 24"
+                                                     stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                </svg>
+                                                Shared Files
+                                            </h3>
+                                            <div id="ws-files-list"
+                                                 class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1"></div>
+                                            <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                                                <input type="file"
+                                                       id="ws-file-input"
+                                                       class="text-[10px] w-full mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200" />
+                                                <button onclick="uploadWsFile()"
+                                                        class="btn-sm btn-blue-sm w-full justify-center shadow-sm py-1 text-xs">
+                                                    Upload
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 bg-gray-50 flex-1">
+                                            <h3 class="font-bold text-sm text-gray-800 mb-3">Session Actions</h3>
+                                            <div id="ws-actions-area" class="space-y-3"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="panel-profile">
+                    <div class="section-title">My Profile</div>
+                    <p class="section-subtitle">Update your personal information at any time</p>
+                    <div class="max-w-xl">
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+                            <div class="flex items-center gap-4 mb-7 p-4 bg-gray-50 rounded-xl">
+                                <div class="avatar text-xl"
+                                     id="profile-avatar"
+                                     style="background: #003087;
+                                            width: 60px;
+                                            height: 60px">
+                                    {{ user.full_name[:2].upper() if user.full_name else 'ST' }}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-800 text-lg" id="profile-display-name">{{ user.full_name }}</p>
+                                    <p class="text-gray-500 text-sm" id="profile-display-email">{{ user.email }}</p>
+                                    <span class="badge badge-booked mt-1">Student</span>
+                                </div>
+                            </div>
+                            <form id="edit-profile-form">
+                                <div class="mb-4">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text"
+                                           id="edit-name"
+                                           class="form-input"
+                                           value="{{ user.full_name }}" />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Degree Programme</label>
+                                    <input type="text"
+                                           id="edit-degree"
+                                           class="form-input"
+                                           value="{{ profile.degree_program if profile else '' }}"
+                                           disabled />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Year of Study</label>
+                                    <input type="text"
+                                           id="edit-year"
+                                           class="form-input"
+                                           value="{{ profile.year_of_study if profile else '' }}"
+                                           disabled />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Subjects You Need Help With</label>
+                                    <input type="text"
+                                           id="edit-subjects"
+                                           class="form-input"
+                                           value="{{ profile.subjects_needing_help if profile else '' }}" />
+                                </div>
+                                <div class="mb-6">
+                                    <label class="form-label">Short Bio</label>
+                                    <textarea id="edit-bio" class="form-input resize-none" rows="3">
+{{ profile.bio if profile else '' }}</textarea>
+                                </div>
+                                <button type="submit" class="btn-primary w-full justify-center">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="messages-modal">
+                <div class="modal-box max-w-lg">
+                    <button onclick="closeModal('messages-modal')"
+                            class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <h2 class="text-lg font-bold mb-4" style="color: #003087">All Messages</h2>
+                    <div id="all-messages-list"></div>
+                </div>
+            </div>
+            <div class="modal-overlay" id="mentor-profile-modal">
+                <div class="modal-box max-w-lg">
+                    <button onclick="closeModal('mentor-profile-modal')"
+                            class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <div id="mentor-profile-content"></div>
+                    <div class="flex gap-3 mt-5">
+                        <button onclick="closeModal('mentor-profile-modal')"
+                                class="btn-sm btn-blue-sm px-5 py-2">← Back</button>
+                        <button id="book-from-profile-btn" class="btn-primary px-5 py-2 text-sm">Book a Session</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-overlay" id="booking-modal">
+                <div class="modal-box max-w-lg">
+                    <button onclick="closeModal('booking-modal')"
+                            class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <h2 class="text-lg font-bold mb-1" style="color: #003087">Book a Session</h2>
+                    <p class="text-sm text-gray-500 mb-4">
+                        With:
+                        <span id="book-mentor-name" class="font-semibold text-gray-800"></span>
+                    </p>
+                    <div class="mb-4">
+                        <p class="form-label mb-3">Select a Date</p>
+                        <div id="booking-calendar" class="bg-gray-50 rounded-xl p-4"></div>
+                    </div>
+                    <div class="mb-5">
+                        <label class="form-label" for="booking-notes">Important Notes / Topics to Cover</label>
+                        <textarea id="booking-notes"
+                                  class="form-input resize-none w-full"
+                                  rows="3"
+                                  placeholder="e.g. I need help with Chapter 5 integration..."></textarea>
+                        <p class="text-xs text-gray-400 mt-1.5 italic">
+                            Please add any notes before clicking a time slot below to confirm your booking.
+                        </p>
+                    </div>
+                    <div id="booking-slots-section" class="hidden mb-2">
+                        <p class="form-label mb-3">
+                            Available Time Slots –
+                            <span id="selected-date-label" class="text-blue-700 font-bold"></span>
+                        </p>
+                        <div id="booking-slots" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </main>
-
-    <div class="modal-overlay" id="messages-modal">
-      <div class="modal-box max-w-lg">
-        <button
-          onclick="closeModal('messages-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-lg font-bold mb-4" style="color: #003087">
-          All Messages
-        </h2>
-        <div id="all-messages-list"></div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="mentor-profile-modal">
-      <div class="modal-box max-w-lg">
-        <button
-          onclick="closeModal('mentor-profile-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div id="mentor-profile-content"></div>
-        <div class="flex gap-3 mt-5">
-          <button
-            onclick="closeModal('mentor-profile-modal')"
-            class="btn-sm btn-blue-sm px-5 py-2"
-          >
-            ← Back
-          </button>
-          <button
-            id="book-from-profile-btn"
-            class="btn-primary px-5 py-2 text-sm"
-          >
-            Book a Session
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="booking-modal">
-      <div class="modal-box max-w-lg">
-        <button
-          onclick="closeModal('booking-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-lg font-bold mb-1" style="color: #003087">
-          Book a Session
-        </h2>
-        <p class="text-sm text-gray-500 mb-4">
-          With:
-          <span
-            id="book-mentor-name"
-            class="font-semibold text-gray-800"
-          ></span>
-        </p>
-
-        <div class="mb-4">
-          <p class="form-label mb-3">Select a Date</p>
-          <div id="booking-calendar" class="bg-gray-50 rounded-xl p-4"></div>
-        </div>
-
-        <div id="booking-slots-section" class="hidden mb-4">
-          <p class="form-label mb-2">
-            Available Time Slots –
-            <span id="selected-date-label" class="text-blue-700"></span>
-          </p>
-          <div id="booking-slots" class="flex flex-wrap"></div>
-        </div>
-
-        <div class="mb-4">
-          <label class="form-label" for="booking-notes"
-            >Important Notes / Topics to Cover</label
-          >
-          <textarea
-            id="booking-notes"
-            class="form-input resize-none"
-            rows="3"
-            placeholder="e.g. I need help with Chapter 5 integration..."
-          ></textarea>
-        </div>
-      </div>
-    </div>
-
-    <div
-      id="toast-container"
-      class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none"
-    ></div>
-
-    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
-    <script>
+        <div id="toast-container"
+             class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+        <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+        <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
+        <script>
       // --- Global Data Stores ---
       const currentUser = {
         email: "{{ user.email }}",
@@ -723,6 +400,24 @@
       let searchType = "mentor";
       let currentRating = 0;
       let bookingMentorId = null;
+
+
+      const badgeIcons = {
+        adaptive: "/static/mentorfavicons/AdaptiveMentor.svg",
+        legend: "/static/mentorfavicons/LegendMentor.svg",
+        pro: "/static/mentorfavicons/MentorPro.svg",
+        "top rated": "/static/mentorfavicons/TopRated.svg",
+        lifesaver: "/static/mentorfavicons/lifesaver.svg",
+      };
+
+      function getBadgeIcon(badgeText) {
+        const lowerBadge = badgeText.toLowerCase();
+        for (const [key, path] of Object.entries(badgeIcons)) {
+          if (lowerBadge.includes(key)) return path;
+        }
+        return badgeIcons["pro"];
+      }
+
 
       // Carousel Variables
       let currentViewDate = new Date();
@@ -749,21 +444,21 @@
         }
       });
 
-      function logout() {
-        customConfirm(
-          "Are you sure you want to log out of StudySphere?",
-          "Log Out",
-          () => {
-            window.location.href = "/logout";
-          },
-        );
-      }
+    function logout() {
+      customConfirm(
+        "Are you sure you want to log out of StudySphere?",
+        "Log Out",
+        () => {
+          window.location.href = "/logout";
+        },
+      );
+    }
 
-      // ─── HOME TAB LOGIC ───────────────────────────────────────────
-      function renderHomeTab() {
-        const today = new Date();
-        const weekEnd = new Date(today);
-        weekEnd.setDate(today.getDate() + 7);
+    // ─── HOME TAB LOGIC ───────────────────────────────────────────
+    function renderHomeTab() {
+      const today = new Date();
+      const weekEnd = new Date(today);
+      weekEnd.setDate(today.getDate() + 7);
 
         const weekSessions = SESSIONS.filter((s) => {
           const d = new Date(s.date);
@@ -916,21 +611,32 @@
 
       // ─── SEARCH TAB ─────────────────────────────────────────
       function setSearchType(type) {
-        searchType = type;
+        // 1. Keep your existing state update
+        searchType = type; 
+
         const btnM = document.getElementById("btn-mentor-search");
         const btnP = document.getElementById("btn-peer-search");
-        btnM.className =
-          type === "mentor"
-            ? "btn-sm btn-blue-sm px-5 py-2 text-sm font-semibold border-2 border-blue-400"
-            : "btn-sm btn-blue-sm px-5 py-2 text-sm font-semibold";
-        btnP.className =
-          type === "peer"
-            ? "btn-sm btn-yellow-sm px-5 py-2 text-sm font-semibold border-2 border-yellow-500"
-            : "btn-sm btn-yellow-sm px-5 py-2 text-sm font-semibold";
-        document.getElementById("search-input").placeholder =
-          type === "mentor"
-            ? "Search by name, module, or faculty..."
-            : "Search by student name or programme...";
+
+        // Define the base structural classes that both buttons share
+        const baseClasses = "px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2";
+
+        if (type === "mentor") {
+          // Mentor Active (Solid) | Peer Inactive (Outline)
+          btnM.className = `${baseClasses} bg-blue-600 text-white border-blue-600 shadow-md`;
+          btnP.className = `${baseClasses} bg-transparent text-yellow-600 border-yellow-500 hover:bg-yellow-50`;
+          
+          // Keep your existing placeholder logic
+          document.getElementById("search-input").placeholder = "Search by name, module, or faculty...";
+        } else if (type === "peer") {
+          // Peer Active (Solid) | Mentor Inactive (Outline)
+          btnP.className = `${baseClasses} bg-yellow-500 text-white border-yellow-500 shadow-md`;
+          btnM.className = `${baseClasses} bg-transparent text-blue-600 border-blue-600 hover:bg-blue-50`;
+          
+          // Keep your existing placeholder logic
+          document.getElementById("search-input").placeholder = "Search by student name or programme...";
+        }
+
+        // 2. Keep your existing search trigger
         performSearch();
       }
 
@@ -970,9 +676,7 @@
                 (m) => `
                 <div class="profile-card">
                     <div class="flex items-start gap-3 mb-3">
-                        <img src="/static/${m.profilePicture}" 
-                             class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white" 
-                             onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:#003087; min-width:48px; min-height:48px;\\'>${m.name.charAt(0)}</div>'">
+                        <img src="/static/${m.profilePicture}" class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white" onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:#003087; min-width:48px; min-height:48px;\\'>${m.name.charAt(0)}</div>'">
                         
                         <div class="flex-1">
                             <p class="font-bold text-gray-800">${m.name}</p>
@@ -1024,9 +728,7 @@
                 (s) => `
                 <div class="profile-card">
                     <div class="flex items-start gap-3 mb-3">
-                        <img src="/static/${s.profilePicture}" 
-                             class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white" 
-                             onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:#f59e0b; min-width:48px; min-height:48px;\\'>${s.name.charAt(0)}</div>'">
+                        <img src="/static/${s.profilePicture}" class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm bg-white" onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:#f59e0b; min-width:48px; min-height:48px;\\'>${s.name.charAt(0)}</div>'">
                         <div>
                             <p class="font-bold text-gray-800">${s.name}</p>
                             <p class="text-xs text-gray-500">${s.program}</p>
@@ -1070,34 +772,71 @@
       function viewMentorProfile(id) {
         const m = SEARCH_RESULTS.find((x) => x.id === id);
         if (!m) return;
+
+        // 1. Generate Rating Stars
+        const rating = m.rating || 0;
+        const ratingStars = "★".repeat(Math.round(rating)) + "☆".repeat(5 - Math.round(rating));
+
+        // 2. Generate Badges HTML safely
+        const badgesHtml = (m.badges && m.badges.length > 0)
+          ? `<div class="flex flex-wrap gap-2 mt-3">
+              ${m.badges.map(b => `
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200 shadow-sm">
+                      <img src="${getBadgeIcon(b)}" class="w-4 h-4" alt="badge">
+                      ${b.trim()}
+                  </span>
+              `).join("")}
+             </div>`
+          : "";
+
+        // 3. Render the Modal Content
         document.getElementById("mentor-profile-content").innerHTML = `
-        <div class="flex items-start gap-4 mb-5">
-            <div class="avatar text-2xl" style="background:#003087;width:64px;height:64px;">${m.name.charAt(0)}</div>
-            <div>
-                <h2 class="text-xl font-bold text-gray-800">${m.name}</h2>
-                <p class="text-gray-500 text-sm">${m.faculty}</p>
-            </div>
-        </div>
-        <div class="space-y-3 text-sm">
-            <div class="bg-blue-50 rounded-xl p-3">
-                <p class="font-semibold text-blue-800 mb-1">Modules Offered</p>
-                <div class="flex flex-wrap gap-1">${m.modules
-                  .split(",")
-                  .map(
-                    (mod) =>
-                      `<span class="badge badge-booked">${mod.trim()}</span>`,
-                  )
-                  .join("")}</div>
-            </div>
-            <div class="bg-yellow-50 rounded-xl p-3">
-                <p class="font-semibold text-yellow-800 mb-1">Awards & Achievements</p>
-                <p class="text-gray-600">${m.awards || "None listed"}</p>
-            </div>
-        </div>`;
+          <div class="flex items-start gap-4 mb-6">
+              <img src="/static/${m.profilePicture}" class="w-20 h-20 rounded-full object-cover border-4 border-gray-50 shadow-md bg-white" onerror="this.outerHTML='<div class=\\'avatar text-3xl shadow-md\\' style=\\'background:#003087; min-width:80px; min-height:80px;\\'>${m.name.charAt(0)}</div>'">
+              
+              <div class="flex-1">
+                  <h2 class="text-2xl font-bold text-gray-800">${m.name}</h2>
+                  <p class="text-gray-500 font-medium">${m.faculty}</p>
+                  
+                  <div class="flex items-center gap-1.5 mt-1">
+                      <span class="text-yellow-500 text-lg tracking-widest">${ratingStars}</span>
+                      <span class="text-sm font-bold text-gray-700">${rating.toFixed(1)}</span>
+                      <span class="text-xs text-gray-400">(${m.reviewCount || 0} reviews)</span>
+                  </div>
+                  
+                  ${badgesHtml}
+              </div>
+          </div>
+
+          <div class="space-y-4 text-sm">
+              <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 shadow-sm">
+                  <p class="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                      <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                      About ${m.name.split(' ')[0]}
+                  </p>
+                  <p class="text-gray-600 leading-relaxed">${m.bio || m.awards || "This mentor hasn't added a bio yet."}</p>
+              </div>
+
+              <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 shadow-sm">
+                  <p class="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                      <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                      Modules Offered
+                  </p>
+                  <div class="flex flex-wrap gap-1.5">
+                      ${(m.modules || "").split(",").map(mod => `
+                          <span class="px-2.5 py-1 bg-white text-blue-700 border border-blue-200 rounded-md shadow-sm font-medium">
+                              ${mod.trim()}
+                          </span>
+                      `).join("")}
+                  </div>
+              </div>
+          </div>`;
+
         document.getElementById("book-from-profile-btn").onclick = () => {
           closeModal("mentor-profile-modal");
           openBookingFlow(id, m.name);
         };
+        
         openModal("mentor-profile-modal");
       }
 
@@ -1247,7 +986,7 @@
 
             return `
             <div onclick="openWorkspace(${s.id})" class="p-3 rounded-xl border cursor-pointer transition-colors ${isActive} relative">
-                ${s.status !== "cancelled" ? `<button onclick="event.stopPropagation(); cancelSession(${s.id})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500" title="Cancel Session"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>` : ""}
+                ${s.status !== "cancelled" ? `<button onclick="event.stopPropagation(); cancelSession(${s.id})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500" title="Cancel Session"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>` : ""}
                 <div class="flex justify-between items-start mb-1 pr-6">
                     <p class="font-bold text-sm text-gray-800 truncate pr-2">${s.module}</p>
                 </div>
@@ -1300,13 +1039,25 @@
       function renderWorkspace(data, scrollToBottom) {
         const details = data.sessionDetails;
 
+        // --- BULLETPROOF STATUS CHECK & POLL KILLER ---
+        const localSession = SESSIONS.find((x) => x.id === currentWorkspaceId);
+        const currentStatus = (details.status || (localSession ? localSession.status : "")).toLowerCase().trim();
+
+        if (currentStatus === "completed" || currentStatus === "cancelled") {
+            if (wsPollInterval) {
+                clearInterval(wsPollInterval);
+                wsPollInterval = null; 
+            }
+        }
+        // ----------------------------------------------
+
         // 1. Header
         document.getElementById("ws-title").textContent =
           `${details.module} Session`;
         document.getElementById("ws-subtitle").textContent =
           `With ${details.otherPartyName} | ${details.date} at ${details.time}`;
 
-        // --- NEW: Smart Workspace Avatar Logic ---
+        // --- Smart Workspace Avatar Logic ---
         const oldAvatar = document.getElementById("ws-avatar");
         if (oldAvatar) {
           // Pick the right fallback color based on role and session type
@@ -1383,8 +1134,8 @@
                     <p class="text-xs font-bold text-blue-700 truncate" title="${d.fileName}">${d.fileName}</p>
                     <p class="text-[10px] text-gray-400">${d.uploaderName}</p>
                 </div>
-                <a href="/uploads/${d.filePath}" target="_blank" class="text-blue-500 hover:text-blue-800 p-1 bg-blue-50 rounded">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <a href="/api/uploads/${d.filePath}" target="_blank" class="text-blue-500 hover:text-blue-800 p-1 bg-blue-50 rounded">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 </a>
             </div>`,
             )
@@ -1392,38 +1143,54 @@
         }
 
         // 4. Actions Area (Dynamic based on Role and Status)
-        let actionsHTML = "";
-
-        if (details.status === "completed") {
-          // --- EXISTING COMPLETED STATE (Reviews & Reports) ---
-          if (IS_STUDENT && details.module !== "Peer Study") {
-            if (data.review) {
-              actionsHTML += `
-                    <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
-                        <p class="text-xs font-bold text-green-800 mb-1">Your Review</p>
-                        <p class="text-yellow-500 text-lg mb-1">${"★".repeat(data.review.rating)}${"☆".repeat(5 - data.review.rating)}</p>
-                        <p class="text-sm text-green-900">${data.review.text}</p>
-                    </div>`;
-            } else {
-              actionsHTML += `
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm">
-                        <p class="text-sm font-bold text-gray-800 mb-2">Rate this Session</p>
-                        <select id="ws-rating-val" class="form-input mb-2 text-sm"><option value="5">5 Stars - Excellent</option><option value="4">4 Stars - Good</option><option value="3">3 Stars - Average</option><option value="2">2 Stars - Poor</option><option value="1">1 Star - Terrible</option></select>
-                        <textarea id="ws-review-txt" class="form-input text-sm resize-none mb-2" rows="2" placeholder="Write a quick review..."></textarea>
-                        <button onclick="submitWsReview()" class="btn-primary w-full text-sm justify-center py-2">Submit Review</button>
-                    </div>`;
+        if (currentStatus === "completed") {
+            let actionsHTML = "";
+            
+            // --- Review Logic (Student Only) ---
+            if (IS_STUDENT && details.module !== "Peer Study") {
+                if (data.review) {
+                  actionsHTML += `
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
+                            <p class="text-xs font-bold text-green-800 mb-1">Your Review</p>
+                            <p class="text-yellow-500 text-lg mb-1">${"★".repeat(data.review.rating)}${"☆".repeat(5 - data.review.rating)}</p>
+                            <p class="text-sm text-green-900">${data.review.text}</p>
+                        </div>`;
+                } else {
+                  actionsHTML += `
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm">
+                            <p class="text-sm font-bold text-gray-800 mb-2">Rate this Session</p>
+                            <select id="ws-rating-val" class="form-input mb-2 text-sm"><option value="5">5 Stars - Excellent</option><option value="4">4 Stars - Good</option><option value="3">3 Stars - Average</option><option value="2">2 Stars - Poor</option><option value="1">1 Star - Terrible</option></select>
+                            <textarea id="ws-review-txt" class="form-input text-sm resize-none mb-2" rows="2" placeholder="Write a quick review..."></textarea>
+                            <button onclick="submitWsReview(this)" class="btn-primary w-full text-sm justify-center py-2">Submit Review</button>
+                        </div>`;
+                }
             }
-          }
 
-          actionsHTML += `
-            <div class="bg-red-50 p-4 rounded-xl border border-red-200">
-                <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Report Issue</p>
-                <textarea id="ws-report-txt" class="form-input text-sm resize-none mb-2 bg-white" rows="2" placeholder="What went wrong?"></textarea>
-                <button onclick="submitWsReport()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
-            </div>`;
+            // --- NEW: Locked Report Logic ---
+            if (data.hasReported) {
+                actionsHTML += `
+                  <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                      <p class="text-sm font-bold text-red-800 flex items-center gap-1">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                          Report Submitted
+                      </p>
+                      <p class="text-xs text-red-700 mt-1">Your report has been sent to the admin team for review.</p>
+                  </div>`;
+            } else {
+                actionsHTML += `
+                  <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                      <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg> Report Issue</p>
+                      <textarea id="ws-report-txt" class="form-input text-sm resize-none mb-2 bg-white" rows="2" placeholder="What went wrong?"></textarea>
+                      <button onclick="submitWsReport(this)" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm">Submit to Admin</button>
+                  </div>`;
+            }
+                
+            document.getElementById("ws-actions-area").innerHTML = actionsHTML;
+            
         } else {
           // --- NEW: IN-PROGRESS STATE (Mark Complete Button) ---
-
+          let actionsHTML = "";
+          
           // Determine if the current user has the right to complete the session
           // (They can if it's a Peer Study, or if they are logged into the Mentor Dashboard)
           const canComplete = details.module === "Peer Study" || !IS_STUDENT;
@@ -1441,9 +1208,9 @@
             // Standard student waiting for Mentor
             actionsHTML = `<div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-center"><p class="text-xs font-semibold text-yellow-800">Waiting for your Mentor to mark the session as Complete to unlock Reviews.</p></div>`;
           }
+          
+          document.getElementById("ws-actions-area").innerHTML = actionsHTML;
         }
-
-        document.getElementById("ws-actions-area").innerHTML = actionsHTML;
       }
 
       function sendWsMessage(e) {
@@ -1492,9 +1259,14 @@
           });
       }
 
-      function submitWsReview() {
+      function submitWsReview(btn) {
         const rating = document.getElementById("ws-rating-val").value;
         const text = document.getElementById("ws-review-txt").value;
+
+        // 1. Disable button and show loading state
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Submitting...";
+        btn.disabled = true;
 
         fetch(`/api/workspace/${currentWorkspaceId}/review`, {
           method: "POST",
@@ -1503,14 +1275,26 @@
         })
           .then((res) => res.json())
           .then((data) => {
-            if (data.error) return showToast(data.error, "error");
+            if (data.error) {
+                // If it fails, revert the button so they can try again
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return showToast(data.error, "error");
+            }
             showToast(data.message, "success");
+            
+            // 2. Fetch fresh data to trigger the UI lock!
             fetchWorkspaceData(false);
           });
       }
 
-      function submitWsReport() {
+      function submitWsReport(btn) {
         const reason = document.getElementById("ws-report-txt").value;
+
+        // 1. Disable button and show loading state
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Submitting...";
+        btn.disabled = true;
 
         fetch(`/api/workspace/${currentWorkspaceId}/report`, {
           method: "POST",
@@ -1519,9 +1303,16 @@
         })
           .then((res) => res.json())
           .then((data) => {
-            if (data.error) return showToast(data.error, "error");
+            if (data.error) {
+                // If it fails, revert the button so they can try again
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return showToast(data.error, "error");
+            }
             showToast(data.message, "success");
-            document.getElementById("ws-report-txt").value = "";
+            
+            // 2. Fetch fresh data to trigger the UI lock!
+            fetchWorkspaceData(false); 
           });
       }
 
@@ -1551,6 +1342,6 @@
           },
         );
       }
-    </script>
-  </body>
+        </script>
+    </body>
 </html>

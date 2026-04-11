@@ -65,7 +65,7 @@ def seed_database():
 
         if not avatar_paths:
             print("⚠️  No real images found. Falling back to default_avatar.png")
-            avatar_paths = ["default_avatar.png"]
+            avatar_paths = ["/static/images/avatars/default_avatar.png"]
         else:
             print(f"📸 Found {len(avatar_paths)} real profile pictures to assign!")
 
@@ -268,21 +268,81 @@ def seed_database():
         # ==========================================
         # 3. BULK GENERATION (The Crowd)
         # ==========================================
-        print("🚀 Generating 40 random bulk users...")
+        print("🚀 Generating 40 random bulk users with realistic DUT diversity...")
         default_pw = generate_password_hash("password123")
-        tech_subjects = [
-            "Python",
-            "Java",
-            "Mathematics I",
-            "Networking",
-            "Data Structures",
-        ]
-        faculties = [
-            "Applied Sciences",
-            "Engineering & Technology",
-            "Accounting & Informatics",
-        ]
-        prefixes = ["BSc", "BEng", "BICT"]
+
+        # --- NEW: Hyper-Realistic DUT Data Dictionary ---
+        DUT_DATA = {
+            "Accounting & Informatics": {
+                "degrees": [
+                    "NDip Information Technology",
+                    "BTech Information Technology",
+                    "NDip Accounting",
+                    "BCom Accounting",
+                ],
+                "modules": [
+                    "Programming 101",
+                    "Data Structures",
+                    "Web Development",
+                    "Financial Accounting",
+                    "Taxation",
+                    "Systems Analysis",
+                    "Auditing",
+                    "Java Programming",
+                    "Database Management",
+                ],
+            },
+            "Engineering & Technology": {
+                "degrees": [
+                    "BEng Electrical Engineering",
+                    "BEng Civil Engineering",
+                    "NDip Mechanical Engineering",
+                ],
+                "modules": [
+                    "Circuit Analysis",
+                    "Thermodynamics",
+                    "Fluid Mechanics",
+                    "Engineering Mathematics",
+                    "Digital Systems",
+                    "AutoCAD Design",
+                    "Structural Analysis",
+                ],
+            },
+            "Applied Sciences": {
+                "degrees": [
+                    "BSc Chemistry",
+                    "NDip Analytical Chemistry",
+                    "BSc Physics",
+                    "BSc Mathematics",
+                ],
+                "modules": [
+                    "Organic Chemistry",
+                    "Quantum Mechanics",
+                    "Statistical Physics",
+                    "Biochemistry",
+                    "Calculus I",
+                    "Linear Algebra",
+                    "Lab Safety",
+                ],
+            },
+            "Management Sciences": {
+                "degrees": [
+                    "NDip Human Resources",
+                    "BTech Business Administration",
+                    "NDip Marketing",
+                    "BCom Economics",
+                ],
+                "modules": [
+                    "Business Management",
+                    "Consumer Behaviour",
+                    "Labour Law",
+                    "Microeconomics",
+                    "Macroeconomics",
+                    "Digital Marketing",
+                    "Supply Chain Management",
+                ],
+            },
+        }
 
         # Sample badges for mentors
         dummy_badges = [
@@ -295,53 +355,88 @@ def seed_database():
 
         for i in range(40):
             is_student = random.random() < 0.7
+
+            # Generate Pending, Approved, and Rejected Mentors
+            if is_student:
+                role = CampusRole.STUDENT
+                m_status = MentorStatus.NONE
+            else:
+                role = CampusRole.STAFF
+                roll = random.random()
+                if roll < 0.50:
+                    m_status = MentorStatus.APPROVED
+                elif roll < 0.85:
+                    m_status = MentorStatus.PENDING
+                else:
+                    m_status = MentorStatus.REJECTED
+
             new_user = User(
                 email=fake.unique.email(),
                 password_hash=default_pw,
                 full_name=fake.name(),
-                campus_role=CampusRole.STUDENT if is_student else CampusRole.STAFF,
-                mentor_status=MentorStatus.NONE
-                if is_student
-                else MentorStatus.APPROVED,
-                profile_picture=random.choice(avatar_paths),  # <-- Assigns real picture
+                campus_role=role,
+                mentor_status=m_status,
+                profile_picture=random.choice(avatar_paths),
             )
             new_user.is_profile_complete = True
             db.session.add(new_user)
-            db.session.commit()
+            db.session.commit()  # Commit to get the ID
 
-            fac_idx = random.randint(0, 2)
+            # --- UPGRADED: Round-Robin Distribution Logic ---
+            # Instead of random, we use modulo math to perfectly distribute faculties!
+            faculties_list = list(DUT_DATA.keys())
+            faculty_name = faculties_list[i % len(faculties_list)]
+            faculty_info = DUT_DATA[faculty_name]
+
+            degree = random.choice(faculty_info["degrees"])
+
+            # Determine Year of Study based on the degree prefix
+            degree_prefix = degree.split(" ")[0]
+            year = random.choice(["1st Year", "2nd Year", "3rd Year", "4th Year"])
+
             if is_student:
+                # Pick 1 to 3 random modules from their faculty for them to need help with
+                needs_help_with = ", ".join(
+                    random.sample(faculty_info["modules"], k=random.randint(1, 3))
+                )
+
                 db.session.add(
                     StudentProfile(
                         user_id=new_user.id,
-                        faculty=faculties[fac_idx],
-                        degree_program=f"{prefixes[fac_idx]} in {fake.job()}",
+                        faculty=faculty_name,
+                        degree_program=degree,
                         study_level="Undergraduate",
-                        year_of_study=f"{prefixes[fac_idx]} - 2nd Year",
-                        subjects_needing_help="Networking",
+                        year_of_study=f"{degree_prefix} - {year}",
+                        subjects_needing_help=needs_help_with,  # Dynamic!
                         bio=fake.sentence(),
                     )
                 )
             else:
-                # Give random mentors a couple of random badges
+                # Pick 2 to 4 random modules from their faculty that they specialize in teaching
+                teaches_modules = ", ".join(
+                    random.sample(faculty_info["modules"], k=random.randint(2, 4))
+                )
                 mentor_badges = ", ".join(
                     random.sample(dummy_badges, k=random.randint(0, 2))
                 )
+
                 db.session.add(
                     MentorProfile(
                         user_id=new_user.id,
-                        modules="Python, Data Structures",
-                        faculty=faculties[fac_idx],
+                        modules=teaches_modules,  # Dynamic!
+                        faculty=faculty_name,
                         study_level="Postgraduate",
-                        year_of_study="Masters Degree",
-                        badges=mentor_badges,  # <-- Saves the text badges
+                        year_of_study=random.choice(
+                            ["Honours Degree", "Masters Candidate", "PhD Candidate"]
+                        ),
+                        badges=mentor_badges,
                         cv_file_path=dummy_cv_path,
                     )
                 )
 
         db.session.commit()
         print(
-            "✅ Successfully seeded complete database with REAL profile pictures and Badges!"
+            "✅ Successfully seeded complete database with REAL profile pictures, Badges, and massive Module Diversity!"
         )
 
 

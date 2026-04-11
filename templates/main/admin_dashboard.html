@@ -1,995 +1,872 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard – StudySphere</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-  </head>
-  <body class="bg-gray-50">
-    <aside class="sidebar">
-      <div class="p-5 border-b border-blue-800">
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 14l9-5-9-5-9 5 9 5z"
-              />
-            </svg>
-          </div>
-          <div>
-            <span class="text-white font-bold text-base block"
-              >StudySphere</span
-            >
-            <span class="text-blue-200 text-xs">Admin Portal</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
-        <div class="flex items-center gap-3">
-          <div
-            class="avatar"
-            style="
-              background: #dc2626;
-              width: 36px;
-              height: 36px;
-              font-size: 13px;
-            "
-          >
-            {{ user.full_name[:2].upper() if user.full_name else 'AD' }}
-          </div>
-          <div>
-            <p class="text-white text-sm font-semibold">{{ user.full_name }}</p>
-            <p class="text-blue-200 text-xs">{{ user.email }}</p>
-          </div>
-        </div>
-      </div>
-
-      <nav class="flex-1 py-2">
-        <button class="sidebar-tab" data-tab="overview">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-            />
-          </svg>
-          Overview
-        </button>
-        <button class="sidebar-tab" data-tab="users">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          User Management
-        </button>
-        <button class="sidebar-tab" data-tab="analytics">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-            />
-          </svg>
-          Course Intake Analytics
-        </button>
-        <button class="sidebar-tab" data-tab="queries">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          Queries
-          <span
-            id="queries-badge"
-            class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5"
-            >0</span
-          >
-        </button>
-        <button class="sidebar-tab" data-tab="reviews">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-            />
-          </svg>
-          Reviews & Badges
-        </button>
-
-        <button class="sidebar-tab" data-tab="manage">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          Manage Mentors
-          <span
-            id="requests-badge"
-            class="ml-auto bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5"
-            >0</span
-          >
-        </button>
-      </nav>
-
-      <div class="pb-4 px-0">
-        <button class="sidebar-tab logout-tab" onclick="logout()">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-            />
-          </svg>
-          Log Out
-        </button>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <div class="tab-panel" id="panel-overview">
-        <div class="section-title">Platform Overview</div>
-        <p class="section-subtitle">StudySphere at a glance</p>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
-          <div class="stat-card">
-            <div class="flex items-center justify-between mb-3">
-              <p
-                class="text-xs text-gray-500 font-semibold uppercase tracking-wide"
-              >
-                Total Students
-              </p>
-              <div
-                class="w-8 h-8 rounded-lg flex items-center justify-center"
-                style="background: #eff6ff"
-              >
-                <svg
-                  class="w-4 h-4"
-                  style="color: #003087"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 14l9-5-9-5-9 5 9 5z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p
-              class="text-3xl font-extrabold"
-              style="color: #003087"
-              id="stat-students"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <div class="flex items-center justify-between mb-3">
-              <p
-                class="text-xs text-gray-500 font-semibold uppercase tracking-wide"
-              >
-                Total Mentors
-              </p>
-              <div
-                class="w-8 h-8 rounded-lg flex items-center justify-center"
-                style="background: #fef3c7"
-              >
-                <svg
-                  class="w-4 h-4 text-yellow-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p
-              class="text-3xl font-extrabold text-yellow-600"
-              id="stat-mentors"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <div class="flex items-center justify-between mb-3">
-              <p
-                class="text-xs text-gray-500 font-semibold uppercase tracking-wide"
-              >
-                Total Sessions
-              </p>
-              <div
-                class="w-8 h-8 rounded-lg flex items-center justify-center"
-                style="background: #d1fae5"
-              >
-                <svg
-                  class="w-4 h-4 text-green-700"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p
-              class="text-3xl font-extrabold text-green-700"
-              id="stat-sessions"
-            >
-              0
-            </p>
-          </div>
-          <div class="stat-card">
-            <div class="flex items-center justify-between mb-3">
-              <p
-                class="text-xs text-gray-500 font-semibold uppercase tracking-wide"
-              >
-                Pending Requests
-              </p>
-              <div
-                class="w-8 h-8 rounded-lg flex items-center justify-center"
-                style="background: #fee2e2"
-              >
-                <svg
-                  class="w-4 h-4 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p class="text-3xl font-extrabold text-red-600" id="stat-pending">
-              0
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-users">
-        <div class="section-title">User Management</div>
-        <p class="section-subtitle">Search and manage all platform users</p>
-
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-          <div class="flex gap-2">
-            <button
-              onclick="setUserFilter('all')"
-              id="filter-all"
-              class="btn-sm btn-blue-sm px-4 py-2 border-2 border-blue-400"
-            >
-              All Users
-            </button>
-            <button
-              onclick="setUserFilter('student')"
-              id="filter-student"
-              class="btn-sm btn-blue-sm px-4 py-2"
-            >
-              Students
-            </button>
-            <button
-              onclick="setUserFilter('staff')"
-              id="filter-staff"
-              class="btn-sm btn-yellow-sm px-4 py-2"
-            >
-              Mentors/Staff
-            </button>
-          </div>
-          <div class="relative flex-1 md:max-w-sm">
-            <svg
-              class="absolute left-3 top-3 w-4 h-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <input
-              type="text"
-              id="user-search"
-              class="form-input pl-9 py-2 text-sm"
-              placeholder="Search by name or email..."
-              oninput="renderUsersTable()"
-            />
-          </div>
-        </div>
-
-        <div
-          class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
-        >
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Mentor Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="users-table-body">
-              <tr>
-                <td colspan="5" class="text-center text-gray-400 py-6">
-                  Loading users...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-analytics">
-        <div class="section-title">Course Intake Analytics</div>
-        <p class="section-subtitle">
-          Top subjects students are requesting mentoring for
-        </p>
-
-        <div class="grid md:grid-cols-2 gap-6">
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-5">Top 3 Subjects</h3>
-            <div style="height: 280px; position: relative">
-              <canvas id="analytics-chart"></canvas>
-            </div>
-          </div>
-
-          <div
-            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-          >
-            <h3 class="font-bold text-gray-800 mb-5">Subject Breakdown</h3>
-            <div id="analytics-list">
-              <p class="text-gray-400 text-sm">Loading analytics...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-queries">
-        <div class="section-title">Queries & Reports</div>
-        <p class="section-subtitle">
-          Conduct reports submitted by mentors and students
-        </p>
-        <div id="queries-list">
-          <p class="text-gray-400 text-sm py-4">Loading reports...</p>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-reviews">
-        <div class="section-title">Reviews & Badges</div>
-        <p class="section-subtitle">
-          Monitor platform feedback and award mentor badges
-        </p>
-        <div id="all-reviews-list">
-          <p class="text-gray-400 text-sm py-4">Loading reviews...</p>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="panel-manage">
-        <div class="section-title">Manage Mentors</div>
-        <p class="section-subtitle">
-          Approve mentor applications and manage platform membership
-        </p>
-
-        <div
-          class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6"
-        >
-          <h3 class="font-bold text-gray-800 mb-4">
-            Pending Mentor Applications
-            <span id="pending-badge" class="ml-2 badge badge-pending"
-              >0 pending</span
-            >
-          </h3>
-          <div id="pending-applications">
-            <p class="text-gray-400 text-sm py-4">Loading applications...</p>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <div class="modal-overlay" id="badge-modal">
-      <div class="modal-box max-w-sm">
-        <button
-          onclick="closeModal('badge-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-lg font-bold text-gray-800 mb-1">Award Badge</h2>
-        <p class="text-sm text-gray-500 mb-4">
-          To: <strong id="badge-mentor-name" class="text-blue-800"></strong>
-        </p>
-
-        <input type="hidden" id="badge-mentor-id" />
-
-        <div class="mb-6">
-          <label class="form-label">Select Badge</label>
-          <select id="badge-select" class="form-input">
-            <option value="Top Tutor 🏆">Top Tutor 🏆</option>
-            <option value="Fast Responder ⚡">Fast Responder ⚡</option>
-            <option value="Subject Expert 🧠">Subject Expert 🧠</option>
-            <option value="Student Favorite ⭐">Student Favorite ⭐</option>
-          </select>
-        </div>
-
-        <button
-          onclick="submitBadge()"
-          class="btn-primary w-full justify-center py-3"
-        >
-          Award Badge
-        </button>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="approve-modal">
-      <div class="modal-box max-w-md">
-        <button
-          onclick="closeModal('approve-modal')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div id="approve-content"></div>
-        <div class="flex gap-3 mt-5">
-          <button
-            id="do-approve-btn"
-            class="btn-primary flex-1 justify-center py-2 text-sm"
-          >
-            Approve
-          </button>
-          <button
-            id="do-reject-btn"
-            class="flex-1 py-2 text-sm font-semibold rounded-xl border-2 border-red-300 text-red-600 hover:bg-red-50"
-          >
-            Reject
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="remove-modal">
-      <div class="modal-box max-w-sm text-center">
-        <div
-          class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"
-        >
-          <svg
-            class="w-8 h-8 text-red-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-        </div>
-        <h2 class="text-lg font-bold text-gray-800 mb-2">Remove User?</h2>
-        <p class="text-sm text-gray-500 mb-2">
-          You are about to remove <strong id="remove-user-name"></strong>.
-        </p>
-        <div class="flex gap-3 mt-5">
-          <button
-            onclick="closeModal('remove-modal')"
-            class="flex-1 py-2 text-sm font-semibold rounded-xl border border-gray-200 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            id="confirm-remove-btn"
-            class="flex-1 py-2 text-sm font-semibold rounded-xl text-white"
-            style="background: #dc2626"
-          >
-            Remove
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div
-      id="toast-container"
-      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"
-    ></div>
-
-    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
-    <script>
-      // --- Global Data Stores ---
-      let USERS = [];
-      let PENDING_MENTORS = [];
-      let REPORTS = [];
-      let ANALYTICS = [];
-      let ALL_REVIEWS = [];
-      let STATS = {};
-      let userFilter = "all";
-      let analyticsChartInstance = null;
-
-      window.addEventListener("DOMContentLoaded", async () => {
-        initTabs("overview");
-
-        try {
-          const [
-            statsRes,
-            usersRes,
-            pendingRes,
-            reportsRes,
-            analyticsRes,
-            reviewsRes,
-          ] = await Promise.all([
-            fetch("/api/admin/stats"),
-            fetch("/api/admin/users"),
-            fetch("/api/admin/pending-mentors"),
-            fetch("/api/admin/reports"),
-            fetch("/api/admin/analytics"),
-            fetch("/api/admin/all-reviews"), // <--- NEW FETCH
-          ]);
-
-          if (statsRes.ok) STATS = await statsRes.json();
-          if (usersRes.ok) USERS = await usersRes.json();
-          if (pendingRes.ok) PENDING_MENTORS = await pendingRes.json();
-          if (reportsRes.ok) REPORTS = await reportsRes.json();
-          if (analyticsRes.ok) ANALYTICS = await analyticsRes.json();
-          if (reviewsRes.ok) ALL_REVIEWS = await reviewsRes.json(); // <--- NEW ASSIGNMENT
-
-          renderOverview();
-          renderUsersTable();
-          renderPendingApplications();
-          renderQueriesTab();
-          renderReviewsTab(); // <--- NEW RENDER CALL
-          updateBadges();
-        } catch (err) {
-          console.error("Error loading admin data:", err);
-          showToast("Failed to load dashboard data.", "error");
-        }
-
-        // Init chart only when analytics tab is clicked so it renders correctly
-        document
-          .querySelector('[data-tab="analytics"]')
-          .addEventListener("click", () => {
-            setTimeout(renderAnalyticsChart, 100);
-          });
-      });
-
-      function logout() {
-        customConfirm(
-          "Are you sure you want to log out of StudySphere?",
-          "Log Out",
-          () => {
-            window.location.href = "/logout";
-          },
-        );
-      }
-
-      function updateBadges() {
-        const pendingCount = PENDING_MENTORS.length;
-        const pendingReports = REPORTS.filter(
-          (r) => r.status === "pending",
-        ).length;
-
-        document.getElementById("requests-badge").textContent = pendingCount;
-        document.getElementById("queries-badge").textContent = pendingReports;
-        document.getElementById("pending-badge").textContent =
-          `${pendingCount} pending`;
-      }
-
-      function renderOverview() {
-        document.getElementById("stat-students").textContent =
-          STATS.students || 0;
-        document.getElementById("stat-mentors").textContent =
-          STATS.approved_mentors || 0;
-        document.getElementById("stat-sessions").textContent =
-          STATS.total_sessions || 0;
-        document.getElementById("stat-pending").textContent =
-          PENDING_MENTORS.length;
-      }
-
-      // ─── USER MANAGEMENT ────────────────────────────────────
-      function setUserFilter(filter) {
-        userFilter = filter;
-        ["all", "student", "staff"].forEach((f) => {
-          const btn = document.getElementById("filter-" + f);
-          btn.className =
-            f === "staff"
-              ? "btn-sm btn-yellow-sm px-4 py-2"
-              : "btn-sm btn-blue-sm px-4 py-2";
-          if (f === filter) btn.className += " border-2 border-blue-400";
-        });
-        renderUsersTable();
-      }
-
-      function renderUsersTable() {
-        const q = (
-          document.getElementById("user-search").value || ""
-        ).toLowerCase();
-        let filteredUsers =
-          userFilter === "all"
-            ? USERS
-            : USERS.filter((u) => u.role === userFilter);
-        if (q)
-          filteredUsers = filteredUsers.filter(
-            (u) =>
-              u.name.toLowerCase().includes(q) ||
-              u.email.toLowerCase().includes(q),
-          );
-
-        const tbody = document.getElementById("users-table-body");
-        if (filteredUsers.length === 0) {
-          tbody.innerHTML =
-            '<tr><td colspan="5" class="text-center text-gray-400 py-6">No users found</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = filteredUsers
-          .map(
-            (u) => `
-        <tr>
-            <td>
-                <div class="flex items-center gap-2">
-                    <div class="avatar" style="background:${u.role === "staff" ? "#d97706" : "#003087"};width:32px;height:32px;font-size:11px;">${u.name.charAt(0).toUpperCase()}</div>
-                    <span class="font-medium">${u.name}</span>
-                </div>
-            </td>
-            <td class="text-gray-500">${u.email}</td>
-            <td><span class="badge badge-${u.role === "staff" ? "in-progress" : "booked"}">${u.role}</span></td>
-            <td class="text-xs text-gray-500">${u.mentor_status}</td>
-            <td>
-                <button onclick="confirmRemoveUser(${u.id}, '${u.name}')" class="btn-sm btn-red-sm py-1 text-xs">Remove</button>
-            </td>
-        </tr>`,
-          )
-          .join("");
-      }
-
-      function confirmRemoveUser(id, name) {
-        document.getElementById("remove-user-name").textContent = name;
-        document.getElementById("confirm-remove-btn").onclick = () => {
-          fetch(`/api/admin/users/${id}`, { method: "DELETE" })
-            .then((res) => res.json())
-            .then((data) => {
-              closeModal("remove-modal");
-              showToast(data.message, "success");
-              // Refresh data
-              USERS = USERS.filter((u) => u.id !== id);
-              renderUsersTable();
-            });
-        };
-        openModal("remove-modal");
-      }
-
-      // ─── MANAGE MENTOR APPLICATIONS ─────────────────
-      function renderPendingApplications() {
-        const div = document.getElementById("pending-applications");
-        if (PENDING_MENTORS.length === 0) {
-          div.innerHTML =
-            '<p class="text-gray-400 text-sm text-center py-4">No pending applications</p>';
-          return;
-        }
-        div.innerHTML = PENDING_MENTORS.map(
-          (app) => `
-        <div class="border border-yellow-200 rounded-xl p-4 mb-3 bg-yellow-50">
-            <div class="flex items-start justify-between mb-2">
-                <div>
-                    <p class="font-bold text-gray-800">${app.name}</p>
-                    <p class="text-xs text-gray-500">${app.email}</p>
-                </div>
-                <span class="badge badge-pending">Pending</span>
-            </div>
-            <div class="text-sm text-gray-600 mb-1"><strong>Faculty:</strong> ${app.faculty}</div>
-            <div class="text-sm text-gray-600 mb-1"><strong>Modules:</strong> ${app.modules}</div>
-            <div class="text-xs text-gray-400 mb-3">Submitted: ${app.submittedDate}</div>
-            <div class="flex gap-2">
-                <button onclick='reviewApplication(${JSON.stringify(app).replace(/'/g, "&apos;")})' class="btn-sm btn-blue-sm py-1">Review Application</button>
-            </div>
-        </div>`,
-        ).join("");
-      }
-
-      function reviewApplication(app) {
-        document.getElementById("approve-content").innerHTML = `
-        <h2 class="text-lg font-bold mb-4" style="color:#003087">Review Mentor Application</h2>
-        <div class="space-y-2 text-sm">
-            <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Name:</span><span>${app.name}</span></div>
-            <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Email:</span><span>${app.email}</span></div>
-            <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Faculty:</span><span>${app.faculty}</span></div>
-            <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Modules:</span><span>${app.modules}</span></div>
-            <div class="flex gap-3 p-3 bg-gray-50 rounded-xl">
-                <span class="font-semibold w-24 flex-shrink-0">CV / File:</span>
-                <a href="/uploads/${app.cvPath}" target="_blank" class="text-blue-600 hover:underline">View Uploaded CV</a>
-            </div>
-        </div>`;
-
-        document.getElementById("do-approve-btn").onclick = () => {
-          const btn = document.getElementById("do-approve-btn");
-          btn.innerHTML = "Approving...";
-          fetch(`/api/admin/approve-mentor/${app.id}`, { method: "PUT" })
-            .then((res) => res.json())
-            .then((data) => {
-              closeModal("approve-modal");
-              showToast(`${app.name} approved!`, "success");
-              location.reload(); // Quick refresh to update everything
-            });
-        };
-
-        document.getElementById("do-reject-btn").onclick = () => {
-          fetch(`/api/admin/reject-mentor/${app.id}`, { method: "PUT" })
-            .then((res) => res.json())
-            .then((data) => {
-              closeModal("approve-modal");
-              showToast(`${app.name} rejected.`, "info");
-              location.reload();
-            });
-        };
-
-        openModal("approve-modal");
-      }
-
-      // ─── QUERIES ────────────────────────────────────────────
-      function renderQueriesTab() {
-        const div = document.getElementById("queries-list");
-        if (REPORTS.length === 0) {
-          div.innerHTML =
-            '<div class="bg-white rounded-2xl p-8 text-center text-gray-400">No queries or reports submitted</div>';
-          return;
-        }
-        div.innerHTML = REPORTS.map(
-          (r) => `
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-            <div class="flex items-start justify-between mb-3">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="font-bold text-gray-800">${r.reporterName}</span>
-                        <span class="text-gray-400 text-sm">reported</span>
-                        <span class="font-bold text-gray-800">${r.reportedName}</span>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Dashboard – StudySphere</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/styles.css') }}" />
+    </head>
+    <body class="bg-gray-50">
+        <aside class="sidebar">
+            <div class="p-5 border-b border-blue-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-white bg-opacity-20">
+                        <svg class="w-6 h-6 text-white"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-white font-bold text-base block">StudySphere</span>
+                        <span class="text-blue-200 text-xs">Admin Portal</span>
                     </div>
                 </div>
-                <span class="badge badge-${r.status === "pending" ? "pending" : "approved"}">${r.status}</span>
             </div>
-            <p class="text-sm text-gray-700 bg-red-50 rounded-lg p-3 border border-red-100 mb-3">${r.reason}</p>
-            <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-400">Submitted: ${r.date}</span>
-                ${r.status === "pending" ? `<button onclick="resolveReport(${r.id})" class="btn-sm btn-green-sm py-1 text-xs">Mark Resolved</button>` : ""}
-            </div>
-        </div>`,
-        ).join("");
-      }
-
-      function resolveReport(id) {
-        fetch(`/api/admin/resolve-report/${id}`, { method: "PUT" })
-          .then((res) => res.json())
-          .then((data) => {
-            showToast("Report marked as resolved.", "success");
-            const report = REPORTS.find((r) => r.id === id);
-            if (report) report.status = "resolved";
-            renderQueriesTab();
-            updateBadges();
-          });
-      }
-
-      // ─── REVIEWS & BADGES ─────────────────────────────────────
-      function renderReviewsTab() {
-        const div = document.getElementById("all-reviews-list");
-        if (ALL_REVIEWS.length === 0) {
-          div.innerHTML =
-            '<div class="bg-white rounded-2xl p-8 text-center text-gray-400">No reviews submitted yet</div>';
-          return;
-        }
-
-        div.innerHTML = ALL_REVIEWS.map(
-          (r) => `
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-            <div class="flex items-start justify-between mb-3">
-                <div>
-                    <p class="text-sm text-gray-500">From <span class="font-bold text-gray-800">${r.studentName}</span> to <span class="font-bold text-blue-800">${r.mentorName}</span></p>
+            <div class="p-4 mx-3 mt-4 mb-2 rounded-xl bg-white bg-opacity-10">
+                <div class="flex items-center gap-3">
+                    <div class="avatar"
+                         style="background: #dc2626;
+                                width: 36px;
+                                height: 36px;
+                                font-size: 13px">{{ user.full_name[:2].upper() if user.full_name else 'AD' }}</div>
+                    <div>
+                        <p class="text-white text-sm font-semibold">{{ user.full_name }}</p>
+                        <p class="text-blue-200 text-xs">{{ user.email }}</p>
+                    </div>
                 </div>
-                <span class="text-yellow-500 text-lg tracking-widest">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</span>
             </div>
-            <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-100 mb-3">${r.text}</p>
-            <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-400">${r.date}</span>
-                ${r.mentorId ? `<button onclick="openBadgeModal(${r.mentorId}, '${r.mentorName}')" class="btn-sm btn-yellow-sm py-1 text-xs">Award Badge</button>` : ""}
+            <nav class="flex-1 py-2">
+                <button class="sidebar-tab" data-tab="users">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="sidebar-tab" data-tab="analytics">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Course Intake Analytics
+                </button>
+                <button class="sidebar-tab" data-tab="queries">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Queries
+                    <span id="queries-badge"
+                          class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">0</span>
+                </button>
+                <button class="sidebar-tab" data-tab="reviews">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                    Reviews & Badges
+                </button>
+                <button class="sidebar-tab" data-tab="manage">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Manage Mentors
+                    <span id="requests-badge"
+                          class="ml-auto bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5">0</span>
+                </button>
+            </nav>
+            <div class="pb-4 px-0">
+                <button class="sidebar-tab logout-tab" onclick="logout()">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Log Out
+                </button>
             </div>
-        </div>`,
-        ).join("");
-      }
+        </aside>
+        <main class="main-content">
+            <div class="tab-panel" id="panel-users">
+                <div class="section-title">Admin Dashboard</div>
+                <p class="section-subtitle">Platform overview and user management</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Total Students</p>
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                 style="background: #eff6ff">
+                                <svg class="w-4 h-4"
+                                     style="color: #003087"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-extrabold"
+                           style="color: #003087"
+                           id="stat-students">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Total Mentors</p>
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                 style="background: #fef3c7">
+                                <svg class="w-4 h-4 text-yellow-600"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-extrabold text-yellow-600" id="stat-mentors">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Total Sessions</p>
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                 style="background: #d1fae5">
+                                <svg class="w-4 h-4 text-green-700"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-extrabold text-green-700" id="stat-sessions">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Pending Requests</p>
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                 style="background: #fee2e2">
+                                <svg class="w-4 h-4 text-red-600"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-extrabold text-red-600" id="stat-pending">0</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex gap-2">
+                        <button onclick="setUserFilter('all')"
+                                id="filter-all"
+                                class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2 bg-blue-600 text-white border-blue-600 shadow-md">
+                            All Users
+                        </button>
+                        <button onclick="setUserFilter('student')"
+                                id="filter-student"
+                                class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2 bg-transparent text-blue-600 border-blue-600 hover:bg-blue-50">
+                            Students
+                        </button>
+                        <button onclick="setUserFilter('staff')"
+                                id="filter-staff"
+                                class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2 bg-transparent text-yellow-600 border-yellow-500 hover:bg-yellow-50">
+                            Mentors/Staff
+                        </button>
+                    </div>
+                    <div class="relative flex-1 md:max-w-sm">
+                        <svg class="absolute left-3 top-3 w-4 h-4 text-gray-400"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text"
+                               id="user-search"
+                               class="form-input pl-9 py-2 text-sm"
+                               placeholder="Search by name or email..."
+                               oninput="renderUsersTable()" />
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Mentor Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="5" class="text-center text-gray-400 py-6">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-analytics">
+                <div class="section-title">Platform Analytics</div>
+                <p class="section-subtitle">Deep dive into mentoring trends, session outcomes, and user engagement.</p>
+                <div class="grid md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 col-span-2">
+                        <h3 class="font-bold text-gray-800 mb-5">Most Requested Modules</h3>
+                        <div style="height: 280px; position: relative">
+                            <canvas id="chart-modules"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                        <h3 class="font-bold text-gray-800 mb-5">Session Outcomes</h3>
+                        <div style="height: 280px; position: relative">
+                            <canvas id="chart-status"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                        <h3 class="font-bold text-gray-800 mb-5">Review Score Distribution</h3>
+                        <div style="height: 220px; position: relative">
+                            <canvas id="chart-ratings"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                        <h3 class="font-bold text-gray-800 mb-5">Workspace Engagement</h3>
+                        <div id="engagement-stats" class="space-y-4 mt-2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-queries">
+                <div class="section-title">Queries & Reports</div>
+                <p class="section-subtitle">Conduct reports submitted by mentors and students</p>
+                <div id="queries-list">
+                    <p class="text-gray-400 text-sm py-4">Loading reports...</p>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-reviews">
+                <div class="section-title">Reviews & Badges</div>
+                <p class="section-subtitle">Monitor platform feedback and award mentor badges</p>
+                <div id="all-reviews-list">
+                    <p class="text-gray-400 text-sm py-4">Loading reviews...</p>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-manage">
+                <div class="section-title">Manage Mentors</div>
+                <p class="section-subtitle">Approve mentor applications and manage platform membership</p>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">
+                        Pending Mentor Applications
+                        <span id="pending-badge" class="ml-2 badge badge-pending">0 pending</span>
+                    </h3>
+                    <div id="pending-applications">
+                        <p class="text-gray-400 text-sm py-4">Loading applications...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="modal-overlay" id="badge-modal">
+            <div class="modal-box max-w-sm">
+                <button onclick="closeModal('badge-modal')"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <h2 class="text-lg font-bold text-gray-800 mb-1">Award Badge</h2>
+                <p class="text-sm text-gray-500 mb-4">
+                    To: <strong id="badge-mentor-name" class="text-blue-800"></strong>
+                </p>
+                <input type="hidden" id="badge-mentor-id" />
+                <input type="hidden" id="badge-select-value" />
+                <div class="mb-6">
+                    <label class="form-label mb-3 block">Select Badge</label>
+                    <div id="badge-options-container"
+                         class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+                </div>
+                <button onclick="submitBadge()"
+                        class="btn-primary w-full justify-center py-3">Award Badge</button>
+            </div>
+        </div>
+        <div class="modal-overlay" id="approve-modal">
+            <div class="modal-box max-w-md">
+                <button onclick="closeModal('approve-modal')"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="approve-content"></div>
+                <div class="flex gap-3 mt-5">
+                    <button id="do-approve-btn"
+                            class="btn-primary flex-1 justify-center py-2 text-sm">Approve</button>
+                    <button id="do-reject-btn"
+                            class="flex-1 py-2 text-sm font-semibold rounded-xl border-2 border-red-300 text-red-600 hover:bg-red-50">
+                        Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-overlay" id="remove-modal">
+            <div class="modal-box max-w-sm text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h2 class="text-lg font-bold text-gray-800 mb-2">Remove User?</h2>
+                <p class="text-sm text-gray-500 mb-2">
+                    You are about to remove <strong id="remove-user-name"></strong>.
+                </p>
+                <div class="flex gap-3 mt-5">
+                    <button onclick="closeModal('remove-modal')"
+                            class="flex-1 py-2 text-sm font-semibold rounded-xl border border-gray-200 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button id="confirm-remove-btn"
+                            class="flex-1 py-2 text-sm font-semibold rounded-xl text-white"
+                            style="background: #dc2626">Remove</button>
+                </div>
+            </div>
+        </div>
+        <div id="toast-container"
+             class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+        <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+        <script src="{{ url_for('static', filename='js1/scripting.js') }}"></script>
+        <script>
+        // --- Global Data Stores ---
+        let USERS = [];
+        let PENDING_MENTORS = [];
+        let REPORTS = [];
+        let ANALYTICS = [];
+        let ALL_REVIEWS = [];
+        let STATS = {};
+        let userFilter = "all";
+        let chartInstances = {};
 
-      function openBadgeModal(mentorId, mentorName) {
-        document.getElementById("badge-mentor-id").value = mentorId;
-        document.getElementById("badge-mentor-name").textContent = mentorName;
-        openModal("badge-modal");
-      }
+        const badgeIcons = {
+            adaptive: "/static/mentorfavicons/AdaptiveMentor.svg",
+            legend: "/static/mentorfavicons/LegendMentor.svg",
+            pro: "/static/mentorfavicons/MentorPro.svg",
+            "top rated": "/static/mentorfavicons/TopRated.svg",
+            lifesaver: "/static/mentorfavicons/lifesaver.svg",
+        };
 
-      function submitBadge() {
-        const mentorId = document.getElementById("badge-mentor-id").value;
-        const badge = document.getElementById("badge-select").value;
+        window.addEventListener("DOMContentLoaded", async () => {
+            // Load users panel by default instead of overview
+            initTabs("users"); 
 
-        fetch("/api/admin/award-badge", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mentorId, badge }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            showToast(data.message, "success");
-            closeModal("badge-modal");
-          });
-      }
+            try {
+                const [
+                    statsRes,
+                    usersRes,
+                    pendingRes,
+                    reportsRes,
+                    analyticsRes,
+                    reviewsRes,
+                ] = await Promise.all([
+                    fetch("/api/admin/stats"),
+                    fetch("/api/admin/users"),
+                    fetch("/api/admin/pending-mentors"),
+                    fetch("/api/admin/reports"),
+                    fetch("/api/admin/analytics"),
+                    fetch("/api/admin/all-reviews"), 
+                ]);
 
-      // ─── ANALYTICS ──────────────────────────────────────────
-      function renderAnalyticsChart() {
-        const ctx = document.getElementById("analytics-chart");
-        if (!ctx || ANALYTICS.length === 0) {
-          document.getElementById("analytics-list").innerHTML =
-            '<p class="text-gray-400 text-sm">No session data available yet.</p>';
-          return;
-        }
-        if (analyticsChartInstance) {
-          analyticsChartInstance.destroy();
-        }
+                if (statsRes.ok) STATS = await statsRes.json();
+                if (usersRes.ok) USERS = await usersRes.json();
+                if (pendingRes.ok) PENDING_MENTORS = await pendingRes.json();
+                if (reportsRes.ok) REPORTS = await reportsRes.json();
+                if (analyticsRes.ok) ANALYTICS = await analyticsRes.json();
+                if (reviewsRes.ok) ALL_REVIEWS = await reviewsRes.json(); 
 
-        const topThree = ANALYTICS.slice(0, 3);
+                renderOverview(); // This now targets the stat cards in the users panel
+                renderUsersTable();
+                renderPendingApplications();
+                renderQueriesTab();
+                renderReviewsTab(); 
+                updateBadges();
+            } catch (err) {
+                console.error("Error loading admin data:", err);
+                showToast("Failed to load dashboard data.", "error");
+            }
 
-        analyticsChartInstance = new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: topThree.map((c) => c.module),
-            datasets: [
-              {
-                label: "Mentoring Requests",
-                data: topThree.map((c) => c.count),
-                backgroundColor: ["#003087", "#1e5bb5", "#3b82f6"],
-                borderRadius: 8,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
-              x: { grid: { display: false } },
-            },
-          },
+            // Init chart only when analytics tab is clicked so it renders correctly
+            document
+                .querySelector('[data-tab="analytics"]')
+                .addEventListener("click", () => {
+                    setTimeout(renderAnalyticsChart, 100);
+                });
         });
 
-        const listDiv = document.getElementById("analytics-list");
-        const max = Math.max(...topThree.map((c) => c.count));
-        listDiv.innerHTML = topThree
-          .map(
-            (c, i) => `
-        <div class="mb-4">
-            <div class="flex justify-between mb-1">
-                <span class="font-semibold text-gray-800">${i + 1}. ${c.module}</span>
-                <span class="font-bold text-blue-700">${c.count} requests</span>
-            </div>
-            <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-3 rounded-full transition-all" style="width:${Math.round((c.count / max) * 100)}%;background:${["#003087", "#1e5bb5", "#60a5fa"][i]}"></div>
-            </div>
-        </div>`,
-          )
-          .join("");
-      }
-    </script>
-  </body>
+        function logout() {
+            customConfirm(
+                "Are you sure you want to log out of StudySphere?",
+                "Log Out",
+                () => {
+                    window.location.href = "/logout";
+                },
+            );
+        }
+
+        function updateBadges() {
+            const pendingCount = PENDING_MENTORS.length;
+            const pendingReports = REPORTS.filter(
+                (r) => r.status === "pending",
+            ).length;
+
+            document.getElementById("requests-badge").textContent = pendingCount;
+            document.getElementById("queries-badge").textContent = pendingReports;
+            document.getElementById("pending-badge").textContent = `${pendingCount} pending`;
+        }
+
+        function renderOverview() {
+            document.getElementById("stat-students").textContent = STATS.students || 0;
+            document.getElementById("stat-mentors").textContent = STATS.approved_mentors || 0;
+            document.getElementById("stat-sessions").textContent = STATS.total_sessions || 0;
+            document.getElementById("stat-pending").textContent = PENDING_MENTORS.length;
+        }
+
+        // ─── USER MANAGEMENT ────────────────────────────────────
+        function setUserFilter(filter) {
+            userFilter = filter;
+            
+            const baseClasses = "px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 border-2";
+            
+            const btnAll = document.getElementById("filter-all");
+            const btnStudent = document.getElementById("filter-student");
+            const btnStaff = document.getElementById("filter-staff");
+
+            // 1. Reset all buttons to their transparent "outline" state
+            btnAll.className = `${baseClasses} bg-transparent text-blue-600 border-blue-600 hover:bg-blue-50`;
+            btnStudent.className = `${baseClasses} bg-transparent text-blue-600 border-blue-600 hover:bg-blue-50`;
+            btnStaff.className = `${baseClasses} bg-transparent text-yellow-600 border-yellow-500 hover:bg-yellow-50`;
+
+            // 2. Apply the solid "active" style to the selected filter
+            if (filter === "all") {
+                btnAll.className = `${baseClasses} bg-blue-600 text-white border-blue-600 shadow-md`;
+            } else if (filter === "student") {
+                btnStudent.className = `${baseClasses} bg-blue-600 text-white border-blue-600 shadow-md`;
+            } else if (filter === "staff") {
+                btnStaff.className = `${baseClasses} bg-yellow-500 text-white border-yellow-500 shadow-md`;
+            }
+
+            renderUsersTable();
+        }
+
+        function renderUsersTable() {
+            const q = (
+                document.getElementById("user-search").value || ""
+            ).toLowerCase();
+            
+            let filteredUsers =
+                userFilter === "all"
+                    ? USERS
+                    : USERS.filter((u) => u.role === userFilter);
+                    
+            if (q) {
+                filteredUsers = filteredUsers.filter(
+                    (u) =>
+                        u.name.toLowerCase().includes(q) ||
+                        u.email.toLowerCase().includes(q),
+                );
+            }
+
+            const tbody = document.getElementById("users-table-body");
+            if (filteredUsers.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="5" class="text-center text-gray-400 py-6">No users found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredUsers
+                .map(
+                    (u) => `
+            <tr>
+                <td>
+                    <div class="flex items-center gap-2">
+                        <div class="avatar" style="background:${u.role === "staff" ? "#d97706" : "#003087"};width:32px;height:32px;font-size:11px;">${u.name.charAt(0).toUpperCase()}</div>
+                        <span class="font-medium">${u.name}</span>
+                    </div>
+                </td>
+                <td class="text-gray-500">${u.email}</td>
+                <td><span class="badge badge-${u.role === "staff" ? "in-progress" : "booked"}">${u.role}</span></td>
+                <td class="text-xs text-gray-500">${u.mentor_status}</td>
+                <td>
+                    <button onclick="confirmRemoveUser(${u.id}, '${u.name}')" class="btn-sm btn-red-sm py-1 text-xs">Remove</button>
+                </td>
+            </tr>`,
+                )
+                .join("");
+        }
+
+        function confirmRemoveUser(id, name) {
+            document.getElementById("remove-user-name").textContent = name;
+            document.getElementById("confirm-remove-btn").onclick = () => {
+                fetch(`/api/admin/users/${id}`, { method: "DELETE" })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        closeModal("remove-modal");
+                        showToast(data.message, "success");
+                        // Refresh data
+                        USERS = USERS.filter((u) => u.id !== id);
+                        renderUsersTable();
+                    });
+            };
+            openModal("remove-modal");
+        }
+
+        // ─── MANAGE MENTOR APPLICATIONS ─────────────────
+        function renderPendingApplications() {
+            const div = document.getElementById("pending-applications");
+            if (PENDING_MENTORS.length === 0) {
+                div.innerHTML =
+                    '<p class="text-gray-400 text-sm text-center py-4">No pending applications</p>';
+                return;
+            }
+            div.innerHTML = PENDING_MENTORS.map(
+                (app) => `
+            <div class="border border-yellow-200 rounded-xl p-4 mb-3 bg-yellow-50">
+                <div class="flex items-start justify-between mb-2">
+                    <div>
+                        <p class="font-bold text-gray-800">${app.name}</p>
+                        <p class="text-xs text-gray-500">${app.email}</p>
+                    </div>
+                    <span class="badge badge-pending">Pending</span>
+                </div>
+                <div class="text-sm text-gray-600 mb-1"><strong>Faculty:</strong> ${app.faculty}</div>
+                <div class="text-sm text-gray-600 mb-1"><strong>Modules:</strong> ${app.modules}</div>
+                <div class="text-xs text-gray-400 mb-3">Submitted: ${app.submittedDate}</div>
+                <div class="flex gap-2">
+                    <button onclick='reviewApplication(${JSON.stringify(app).replace(/'/g, "&apos;")})' class="btn-sm btn-blue-sm py-1">Review Application</button>
+                </div>
+            </div>`,
+            ).join("");
+        }
+
+        function reviewApplication(app) {
+            document.getElementById("approve-content").innerHTML = `
+            <h2 class="text-lg font-bold mb-4" style="color:#003087">Review Mentor Application</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Name:</span><span>${app.name}</span></div>
+                <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Email:</span><span>${app.email}</span></div>
+                <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Faculty:</span><span>${app.faculty}</span></div>
+                <div class="flex gap-3 p-3 bg-gray-50 rounded-xl"><span class="font-semibold w-24 flex-shrink-0">Modules:</span><span>${app.modules}</span></div>
+                <div class="flex gap-3 p-3 bg-gray-50 rounded-xl">
+                    <span class="font-semibold w-24 flex-shrink-0">CV / File:</span>
+                <a href="/api/uploads/${app.cvPath}" target="_blank" class="text-blue-600 hover:underline">View Uploaded CV</a>
+                </div>
+            </div>`;
+
+            document.getElementById("do-approve-btn").onclick = () => {
+                const btn = document.getElementById("do-approve-btn");
+                btn.innerHTML = "Approving...";
+                fetch(`/api/admin/approve-mentor/${app.id}`, { method: "PUT" })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        closeModal("approve-modal");
+                        showToast(`${app.name} approved!`, "success");
+                        location.reload(); // Quick refresh to update everything
+                    });
+            };
+
+            document.getElementById("do-reject-btn").onclick = () => {
+                fetch(`/api/admin/reject-mentor/${app.id}`, { method: "PUT" })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        closeModal("approve-modal");
+                        showToast(`${app.name} rejected.`, "info");
+                        location.reload();
+                    });
+            };
+
+            openModal("approve-modal");
+        }
+
+        // ─── QUERIES ────────────────────────────────────────────
+        function renderQueriesTab() {
+            const div = document.getElementById("queries-list");
+            if (REPORTS.length === 0) {
+                div.innerHTML =
+                    '<div class="bg-white rounded-2xl p-8 text-center text-gray-400">No queries or reports submitted</div>';
+                return;
+            }
+            div.innerHTML = REPORTS.map(
+                (r) => `
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-gray-800">${r.reporterName}</span>
+                            <span class="text-gray-400 text-sm">reported</span>
+                            <span class="font-bold text-gray-800">${r.reportedName}</span>
+                        </div>
+                    </div>
+                    <span class="badge badge-${r.status === "pending" ? "pending" : "approved"}">${r.status}</span>
+                </div>
+                <p class="text-sm text-gray-700 bg-red-50 rounded-lg p-3 border border-red-100 mb-3">${r.reason}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-400">Submitted: ${r.date}</span>
+                    ${r.status === "pending" ? `<button onclick="resolveReport(${r.id})" class="btn-sm btn-green-sm py-1 text-xs">Mark Resolved</button>` : ""}
+                </div>
+            </div>`,
+            ).join("");
+        }
+
+        function resolveReport(id) {
+            fetch(`/api/admin/resolve-report/${id}`, { method: "PUT" })
+                .then((res) => res.json())
+                .then((data) => {
+                    showToast("Report marked as resolved.", "success");
+                    const report = REPORTS.find((r) => r.id === id);
+                    if (report) report.status = "resolved";
+                    renderQueriesTab();
+                    updateBadges();
+                });
+        }
+
+        // ─── REVIEWS & BADGES ─────────────────────────────────────
+        function renderReviewsTab() {
+            const div = document.getElementById("all-reviews-list");
+            if (ALL_REVIEWS.length === 0) {
+                div.innerHTML =
+                    '<div class="bg-white rounded-2xl p-8 text-center text-gray-400">No reviews submitted yet</div>';
+                return;
+            }
+
+            div.innerHTML = ALL_REVIEWS.map(
+                (r) => `
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <p class="text-sm text-gray-500">From <span class="font-bold text-gray-800">${r.studentName}</span> to <span class="font-bold text-blue-800">${r.mentorName}</span></p>
+                    </div>
+                    <span class="text-yellow-500 text-lg tracking-widest">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</span>
+                </div>
+                <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-100 mb-3">${r.text}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-400">${r.date}</span>
+                    ${r.mentorId ? `<button onclick="openBadgeModal(${r.mentorId}, '${r.mentorName}')" class="btn-sm btn-yellow-sm py-1 text-xs">Award Badge</button>` : ""}
+                </div>
+            </div>`,
+            ).join("");
+        }
+
+        // Helper to capitalize words (e.g., 'top rated' -> 'Top Rated')
+        function formatBadgeName(key) {
+            return key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        // Call this once when the page loads to build the list
+        function renderBadgeOptions() {
+            const container = document.getElementById('badge-options-container');
+            if (!container) return;
+            
+            let html = '';
+            for (const [key, path] of Object.entries(badgeIcons)) {
+                const name = formatBadgeName(key);
+                // Create a safe ID for the DOM
+                const safeKey = key.replace(/\s+/g, '-'); 
+                
+                html += `
+                <div onclick="selectBadge('${name}', '${safeKey}')" id="badge-option-${safeKey}" class="badge-option cursor-pointer flex items-center gap-3 p-3 rounded-lg border-2 border-gray-100 hover:bg-gray-50 transition-all">
+                    <img src="${path}" alt="${name}" class="w-8 h-8">
+                    <span class="font-semibold text-gray-700">${name}</span>
+                </div>
+                `;
+            }
+            container.innerHTML = html;
+            
+            // Default selection
+            selectBadge('Pro', 'pro'); 
+        }
+
+        // Handles clicking a badge in the list
+        function selectBadge(badgeName, safeKey) {
+            // 1. Set the hidden input value so submitBadge() can read it
+            document.getElementById('badge-select-value').value = badgeName;
+            
+            // 2. Reset styles for all options
+            document.querySelectorAll('.badge-option').forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-50');
+                el.classList.add('border-gray-100');
+            });
+            
+            // 3. Highlight the clicked option
+            const selectedEl = document.getElementById(`badge-option-${safeKey}`);
+            if (selectedEl) {
+                selectedEl.classList.remove('border-gray-100');
+                selectedEl.classList.add('border-blue-500', 'bg-blue-50');
+            }
+        }
+
+        // Initialize the badge list
+        document.addEventListener('DOMContentLoaded', renderBadgeOptions);
+
+        function openBadgeModal(mentorId, mentorName) {
+            document.getElementById("badge-mentor-id").value = mentorId;
+            document.getElementById("badge-mentor-name").textContent = mentorName;
+            openModal("badge-modal");
+        }
+
+        function submitBadge() {
+            const mentorId = document.getElementById("badge-mentor-id").value;
+            // Get the value from our new hidden input instead of the old select element
+            const badge = document.getElementById("badge-select-value").value;
+
+            fetch("/api/admin/award-badge", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mentorId, badge }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    showToast(data.message, "success");
+                    closeModal("badge-modal");
+                });
+        }
+
+        // ─── ANALYTICS ──────────────────────────────────────────
+        function renderAnalyticsChart() {
+          if (!ANALYTICS || !ANALYTICS.modules) return;
+
+          // Destroy existing charts to prevent hover glitching if the user clicks the tab multiple times
+          Object.values(chartInstances).forEach(chart => {
+              if (chart) chart.destroy();
+          });
+
+          // -----------------------------------------
+          // 1. Most Requested Modules (Bar Chart)
+          // -----------------------------------------
+          const ctxMod = document.getElementById("chart-modules");
+          if (ctxMod && ANALYTICS.modules.length > 0) {
+              chartInstances.modules = new Chart(ctxMod, {
+                  type: "bar",
+                  data: {
+                      labels: ANALYTICS.modules.map(c => c.module),
+                      datasets: [{
+                          label: "Mentoring Requests",
+                          data: ANALYTICS.modules.map(c => c.count),
+                          backgroundColor: ["#003087", "#1e5bb5", "#3b82f6", "#60a5fa", "#93c5fd"],
+                          borderRadius: 6,
+                      }],
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: { legend: { display: false } },
+                      scales: {
+                          y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
+                          x: { grid: { display: false } },
+                      },
+                  },
+              });
+          }
+
+          // -----------------------------------------
+          // 2. Session Outcomes (Doughnut Chart)
+          // -----------------------------------------
+          const ctxStatus = document.getElementById("chart-status");
+          if (ctxStatus && ANALYTICS.statuses) {
+              // Map the statuses to specific colors (Green=Completed, Red=Cancelled, etc)
+              const statusLabels = Object.keys(ANALYTICS.statuses).map(s => s.charAt(0).toUpperCase() + s.slice(1));
+              const statusData = Object.values(ANALYTICS.statuses);
+              
+              chartInstances.status = new Chart(ctxStatus, {
+                  type: "doughnut",
+                  data: {
+                      labels: statusLabels,
+                      datasets: [{
+                          data: statusData,
+                          backgroundColor: ["#10b981", "#ef4444", "#3b82f6", "#f59e0b", "#9ca3af"],
+                          borderWidth: 0,
+                          hoverOffset: 4
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      cutout: '70%',
+                      plugins: {
+                          legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }
+                      }
+                  }
+              });
+          }
+
+          // -----------------------------------------
+          // 3. Rating Distribution (Bar/Line Chart)
+          // -----------------------------------------
+          const ctxRatings = document.getElementById("chart-ratings");
+          if (ctxRatings && ANALYTICS.ratings) {
+              const stars = ["1 Star", "2 Stars", "3 Stars", "4 Stars", "5 Stars"];
+              const ratingCounts = [
+                  ANALYTICS.ratings["1"] || 0,
+                  ANALYTICS.ratings["2"] || 0,
+                  ANALYTICS.ratings["3"] || 0,
+                  ANALYTICS.ratings["4"] || 0,
+                  ANALYTICS.ratings["5"] || 0,
+              ];
+
+              chartInstances.ratings = new Chart(ctxRatings, {
+                  type: "bar", // Can change to 'line' if you prefer a curve!
+                  data: {
+                      labels: stars,
+                      datasets: [{
+                          label: "Number of Reviews",
+                          data: ratingCounts,
+                          backgroundColor: "#f59e0b", // Yellow/Gold for stars
+                          borderRadius: 4,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: { legend: { display: false } },
+                      scales: {
+                          y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: "#f1f5f9" } },
+                          x: { grid: { display: false } },
+                      }
+                  }
+              });
+          }
+
+          // -----------------------------------------
+          // 4. Workspace Engagement (HTML Details)
+          // -----------------------------------------
+          const engageDiv = document.getElementById("engagement-stats");
+          if (engageDiv && ANALYTICS.engagement) {
+              engageDiv.innerHTML = `
+                  <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div class="flex items-center gap-3">
+                          <div class="p-2 bg-blue-600 rounded-lg text-white">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                          </div>
+                          <div>
+                              <p class="text-sm font-bold text-gray-800">Messages Sent</p>
+                              <p class="text-xs text-gray-500">Across all session workspaces</p>
+                          </div>
+                      </div>
+                      <span class="text-xl font-extrabold text-blue-700">${ANALYTICS.engagement.messages}</span>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-100">
+                      <div class="flex items-center gap-3">
+                          <div class="p-2 bg-green-600 rounded-lg text-white">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                          </div>
+                          <div>
+                              <p class="text-sm font-bold text-gray-800">Files Shared</p>
+                              <p class="text-xs text-gray-500">Notes & assignments uploaded</p>
+                          </div>
+                      </div>
+                      <span class="text-xl font-extrabold text-green-700">${ANALYTICS.engagement.documents}</span>
+                  </div>
+              `;
+          }
+        }
+        </script>
+    </body>
 </html>

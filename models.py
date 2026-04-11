@@ -47,7 +47,9 @@ class User(db.Model):
 
     # --- NEW: Neutral Profile Picture for all users ---
     profile_picture = db.Column(
-        db.String(255), nullable=True, default="default_avatar.png"
+        db.String(255),
+        nullable=True,
+        default="static/images/avatars/default_avatar.png",
     )
 
     # Identity: Are they a student or staff member?
@@ -73,7 +75,7 @@ class User(db.Model):
         campus_role,
         mentor_status,
         full_name=None,
-        profile_picture="default_avatar.png",
+        profile_picture="static/images/avatars/default_avatar.png",
     ):
         self.email = email
         self.password_hash = password_hash
@@ -157,7 +159,12 @@ class StudentProfile(db.Model):
     preferred_learning_style = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
 
-    user = db.relationship("User", backref=db.backref("student_profile", uselist=False))
+    user = db.relationship(
+        "User",
+        backref=db.backref(
+            "student_profile", uselist=False, cascade="all, delete-orphan"
+        ),
+    )
 
     # --- Timestamps ---
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
@@ -203,7 +210,11 @@ class Availability(db.Model):
     is_booked = db.Column(db.Boolean, default=False)
 
     # Relationship to easily pull a mentor's user data
-    mentor = db.relationship("User", foreign_keys=[mentor_id], backref="availabilities")
+    mentor = db.relationship(
+        "User",
+        foreign_keys=[mentor_id],
+        backref=db.backref("availabilities", cascade="all, delete-orphan"),
+    )
 
     def __init__(self, mentor_id, date, time_slot, is_booked=False):
         self.mentor_id = mentor_id
@@ -235,10 +246,14 @@ class MentorshipSession(db.Model):
 
     # Relationships to easily pull user data for the dashboard cards
     mentor = db.relationship(
-        "User", foreign_keys=[mentor_id], backref="sessions_as_mentor"
+        "User",
+        foreign_keys=[mentor_id],
+        backref=db.backref("sessions_as_mentor", cascade="all, delete-orphan"),
     )
     student = db.relationship(
-        "User", foreign_keys=[student_id], backref="sessions_as_student"
+        "User",
+        foreign_keys=[student_id],
+        backref=db.backref("sessions_as_student", cascade="all, delete-orphan"),
     )
 
     # --- NEW: Workspace Relationships ---
@@ -288,7 +303,11 @@ class SessionDocument(db.Model):
     file_path = db.Column(db.String(255), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    uploader = db.relationship("User", foreign_keys=[uploader_id])
+    uploader = db.relationship(
+        "User",
+        foreign_keys=[uploader_id],
+        backref=db.backref("uploaded_documents", cascade="all, delete-orphan"),
+    )
 
     def __init__(self, session_id, uploader_id, file_name, file_path):
         self.session_id = session_id
@@ -320,9 +339,15 @@ class Message(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    sender = db.relationship("User", foreign_keys=[sender_id], backref="sent_messages")
+    sender = db.relationship(
+        "User",
+        foreign_keys=[sender_id],
+        backref=db.backref("sent_messages", cascade="all, delete-orphan"),
+    )
     receiver = db.relationship(
-        "User", foreign_keys=[receiver_id], backref="received_messages"
+        "User",
+        foreign_keys=[receiver_id],
+        backref=db.backref("received_messages", cascade="all, delete-orphan"),
     )
 
     def __init__(
@@ -356,6 +381,17 @@ class Review(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    student = db.relationship(
+        "User",
+        foreign_keys=[student_id],
+        backref=db.backref("reviews_given", cascade="all, delete-orphan"),
+    )
+    mentor = db.relationship(
+        "User",
+        foreign_keys=[mentor_id],
+        backref=db.backref("reviews_received", cascade="all, delete-orphan"),
+    )
+
     def __init__(self, session_id, student_id, mentor_id, rating, review_text=None):
         self.session_id = session_id
         self.student_id = student_id
@@ -387,8 +423,27 @@ class Report(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, reporter_id, reported_user_id, reason, session_id=None):
+    reporter = db.relationship(
+        "User",
+        foreign_keys=[reporter_id],
+        backref=db.backref("reports_filed", cascade="all, delete-orphan"),
+    )
+    reported_user = db.relationship(
+        "User",
+        foreign_keys=[reported_user_id],
+        backref=db.backref("reports_received", cascade="all, delete-orphan"),
+    )
+
+    def __init__(
+        self,
+        reporter_id,
+        reported_user_id,
+        reason,
+        session_id=None,
+        status=ReportStatus.PENDING,
+    ):
         self.reporter_id = reporter_id
         self.reported_user_id = reported_user_id
         self.reason = reason
         self.session_id = session_id
+        self.status = status

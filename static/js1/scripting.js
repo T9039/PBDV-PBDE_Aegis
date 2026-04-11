@@ -96,7 +96,10 @@ function renderCalendar(containerId, year, month, slotData, onDayClick) {
 
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // 1. Normalize "today" to exactly midnight so time-of-day doesn't mess up comparisons
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     let html = `<div class="flex items-center justify-between mb-4">
         <button type="button" onclick="calNav('${containerId}',-1)" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
@@ -116,12 +119,39 @@ function renderCalendar(containerId, year, month, slotData, onDayClick) {
 
     for (let day = 1; day <= daysInMonth; day++) {
         const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===day;
+        
+        // 2. Create a date object for the current loop iteration
+        const cellDate = new Date(year, month, day);
+        
+        const isToday = cellDate.getTime() === today.getTime();
         const hasSlot = slotData && slotData[ds] && slotData[ds].length > 0;
+        
         let cls = 'calendar-day';
-        if (isToday) cls += ' today';
-        else if (hasSlot) cls += ' has-slot';
-        html += `<div class="${cls}" onclick="calDayClick('${ds}','${containerId}', event)">${day}</div>`;
+        let clickAttr = `onclick="calDayClick('${ds}','${containerId}', event)"`;
+
+        // 3. Logic to handle Past vs Future dates
+        if (cellDate < today) {
+            // PAST DATE: Gray it out, make it look disabled, remove click ability
+            cls += ' opacity-50 cursor-not-allowed bg-gray-50 text-gray-400';
+            clickAttr = ''; // Remove the click handler completely
+        } else {
+            // TODAY OR FUTURE DATE: Upgraded styling
+            if (isToday) {
+                // Make the current day distinctly blue
+                cls += ' today bg-blue-600 text-white font-bold shadow-sm'; 
+            } else if (hasSlot) {
+                // THE Fix: Make available days highly visible (Green background + bold ring)
+                cls += ' has-slot bg-green-100 text-green-800 ring-2 ring-green-400 ring-inset font-bold'; 
+            } else {
+                // Standard future date with no slots
+                cls += ' bg-white text-gray-700 border border-gray-100';
+            }
+            
+            // Give all clickable days a nice hover effect
+            cls += ' cursor-pointer hover:shadow-md hover:scale-105 transition-all'; 
+        }
+
+        html += `<div class="${cls}" ${clickAttr}>${day}</div>`;
     }
 
     html += `</div>`;

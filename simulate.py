@@ -11,6 +11,7 @@ from models import (
     MentorStatus,
     Message,
     Report,
+    ReportStatus,  # <-- ADD THIS!
     Review,
     SessionDocument,
     SessionStatus,
@@ -185,14 +186,48 @@ def run_simulation():
                                     )
                                 )
 
-                            # 1% chance someone was reported
-                            if random.random() < 0.01:
+                            # ---------------------------------------------------
+                            # --- UPGRADED: 5% chance someone was reported ---
+                            # ---------------------------------------------------
+                            if random.random() < 0.05:
+                                # 50/50 chance of who is reporting whom
+                                student_reports = random.choice([True, False])
+
+                                if student_reports:
+                                    reporter = student.id
+                                    reported = mentor.id
+                                    reasons = [
+                                        "The mentor was 20 minutes late and ended the session early.",
+                                        "Mentor's microphone was completely broken, we couldn't communicate.",
+                                        "Felt like the mentor didn't actually know the subject matter.",
+                                        "Mentor was unresponsive and seemed distracted.",
+                                        "Inappropriate language used during the session.",
+                                    ]
+                                else:
+                                    reporter = mentor.id
+                                    reported = student.id
+                                    reasons = [
+                                        "Student was a complete no-show.",
+                                        "Student tried to force me to take their online quiz for them.",
+                                        "Student was extremely rude and demanding.",
+                                        "Student was completely unprepared and expected me to do the assignment.",
+                                        "Student kept dropping off the call due to bad internet, impossible to teach.",
+                                    ]
+
+                                # Make 60% of historical reports RESOLVED, leave 40% PENDING for the Admin UI
+                                r_status = (
+                                    ReportStatus.RESOLVED
+                                    if random.random() < 0.6
+                                    else ReportStatus.PENDING
+                                )
+
                                 db.session.add(
                                     Report(
                                         session_id=session.id,
-                                        reporter_id=mentor.id,
-                                        reported_user_id=student.id,
-                                        reason="Student did not show up.",
+                                        reporter_id=reporter,
+                                        reported_user_id=reported,
+                                        reason=random.choice(reasons),
+                                        status=r_status,
                                     )
                                 )
 
